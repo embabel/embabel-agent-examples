@@ -15,23 +15,11 @@
  */
 package com.embabel.example
 
-import com.embabel.common.util.WinUtils
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class AgentExampleApplication {
-
-    companion object {
-        init {
-            if (WinUtils.IS_OS_WINDOWS()) {
-                // Set console to UTF-8 on Windows
-                // This is necessary to display non-ASCII characters correctly
-                WinUtils.CHCP_TO_UTF8()
-            }
-        }
-    }
-}
+class AgentExampleApplication
 
 fun main(args: Array<String>) {
     runApplication<AgentExampleApplication>(*args)
