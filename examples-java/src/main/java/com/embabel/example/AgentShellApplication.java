@@ -17,11 +17,13 @@ package com.embabel.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.embabel.agent.config.annotation.EnableAgentShell;
 
 @SpringBootApplication
-public class AgentExampleApplication {
+@EnableAgentShell
+public class AgentShellApplication {
     
     public static void main(String[] args) {
-        SpringApplication.run(AgentExampleApplication.class, args);
+        SpringApplication.run(AgentShellApplication.class, args);
     }
 }

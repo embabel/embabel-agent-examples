@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 export AGENT_APPLICATION=../../examples-java
-export SPRING_PROFILES_ACTIVE=shell,severance
+export MAVEN_PROFILE=enable-shell
 
 ../support/agent.sh

@@ -2,7 +2,7 @@
 setlocal
 
 set AGENT_APPLICATION=..\..\examples-java
-set SPRING_PROFILES_ACTIVE=shell,severance
+set MAVEN_PROFILE=enable-shell
 
 call ..\support\agent.bat
 
