@@ -1,4 +1,4 @@
-#!/bin/bash
+f#!/bin/bash
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -32,4 +32,4 @@ if [ ! -f "$POM_FILE" ]; then
 fi
 
 # Run Maven Spring Boot application
-mvn -U -f "$POM_FILE" -Dmaven.test.skip=true spring-boot:run
+mvn -U -P "$MAVEN_PROFILE" -f "$POM_FILE" -Dmaven.test.skip=true spring-boot:run

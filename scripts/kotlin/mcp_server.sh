@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 export AGENT_APPLICATION=../../examples-kotlin
-export SPRING_PROFILES_ACTIVE=web,severance
+export MAVEN_PROFILE=enable-mcp
 
 ../support/agent.sh

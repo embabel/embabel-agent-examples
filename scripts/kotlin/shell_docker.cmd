@@ -2,7 +2,7 @@
 setlocal
 
 set AGENT_APPLICATION=..\..\examples-kotlin
-set SPRING_PROFILES_ACTIVE=shell,starwars,docker-desktop
+set MAVEN_PROFILE=enable-shell
 
 call ..\support\agent.bat
 

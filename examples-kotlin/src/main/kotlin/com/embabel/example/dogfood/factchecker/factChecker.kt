@@ -110,7 +110,7 @@ fun factCheckerAgent(
         aggregate<UserInput, FactualAssertions, RationalizedFactualAssertions>(
             transforms = llms.map { llm ->
                 { context ->
-                    context.promptRunner(llm = llm, toolGroups = setOf(CoreToolGroups.WEB)).createObject(
+                    context.promptRunner(llm = llm).withToolGroup(CoreToolGroups.WEB).createObject(
                         """
             Given the following content, identify any factual assertions.
             Phrase them as standalone assertions.
@@ -141,7 +141,8 @@ fun factCheckerAgent(
     transformation<RationalizedFactualAssertions, FactCheck> { operationContext ->
         val promptRunner = operationContext.promptRunner(
             LlmOptions(ModelSelectionCriteria.Auto),
-            toolGroups = setOf(CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION),
+        ).withToolGroups(
+            setOf(CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION),
         )
         val checks = operationContext.input.factualAssertions.parallelMap(operationContext) { assertion ->
             promptRunner.createObject<AssertionCheck>(

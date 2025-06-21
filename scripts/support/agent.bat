@@ -19,6 +19,6 @@ if not defined AGENT_APPLICATION (
 
 set POM_FILE=%AGENT_APPLICATION%\pom.xml
 
-cmd /c mvn -U -f %POM_FILE% -Dmaven.test.skip=true spring-boot:run
+cmd /c mvn -U -P %MAVEN_PROFILE% -f %POM_FILE% -Dmaven.test.skip=true spring-boot:run
 
 endlocal

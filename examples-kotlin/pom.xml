@@ -41,6 +41,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.embabel.example.AgentShellApplicationKt</mainClass>
+                </configuration>
                 <version>${spring-boot.version}</version>
             </plugin>
 
@@ -48,8 +51,45 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
-
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>enable-shell</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>com.embabel.example.AgentShellApplicationKt</mainClass>
+                        </configuration>
+                        <version>${spring-boot.version}</version>
+                    </plugin>
+                </plugins>
+            </build>           
+        </profile>
+        <profile>
+            <id>enable-mcp</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>com.embabel.example.AgentMcpApplicationKt</mainClass>
+                        </configuration>
+                        <version>${spring-boot.version}</version>
+                    </plugin>
+                </plugins>
+            </build>           
+        </profile>
+    </profiles>
 </project>

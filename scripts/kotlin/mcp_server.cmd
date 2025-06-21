@@ -2,7 +2,7 @@
 setlocal
 
 set AGENT_APPLICATION=..\..\examples-kotlin
-set SPRING_PROFILES_ACTIVE=web,severance
+set MAVEN_PROFILE=enable-mcp
 
 call ..\support\agent.bat
 
