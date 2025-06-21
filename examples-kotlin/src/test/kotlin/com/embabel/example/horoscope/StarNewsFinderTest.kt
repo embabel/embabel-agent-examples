@@ -17,7 +17,7 @@ package com.embabel.example.horoscope
 
 import com.embabel.agent.domain.library.NewsStory
 import com.embabel.agent.domain.library.RelevantNewsStories
-import com.embabel.agent.testing.UnitTestUtils
+import com.embabel.agent.testing.unit.UnitTestUtils
 import com.embabel.example.horoscope.Horoscope
 import com.embabel.example.horoscope.StarNewsFinder
 import com.embabel.example.horoscope.StarPerson

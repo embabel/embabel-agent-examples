@@ -24,8 +24,8 @@ import com.embabel.agent.domain.io.UserInput
 import com.embabel.agent.domain.persistence.support.FinderInvocation
 import com.embabel.agent.domain.persistence.support.FinderInvocations
 import com.embabel.agent.spi.LlmInteraction
-import com.embabel.agent.testing.DummyObjectCreatingLlmOperations
-import com.embabel.agent.testing.IntegrationTestUtils.dummyAgentPlatform
+import com.embabel.agent.testing.integration.DummyObjectCreatingLlmOperations
+import com.embabel.agent.testing.integration.IntegrationTestUtils.dummyAgentPlatform
 import com.embabel.common.util.DummyInstanceCreator
 import io.mockk.every
 import io.mockk.mockk
