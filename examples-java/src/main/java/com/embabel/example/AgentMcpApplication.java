@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.embabel.agent.config.annotation.EnableAgentMcp;
 
 @SpringBootApplication
-@EnableAgentMcp(loggingTheme="severance")
+@EnableAgentMcp(loggingTheme="starwars")
 public class AgentMcpApplication {
   
     public static void main(String[] args) {
