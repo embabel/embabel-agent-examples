@@ -36,7 +36,7 @@ Learn agentic AI development with **Spring Framework** and **Kotlin/Java**. Thes
 
 ### 1. Clone & Build
 ```bash
-git clone <repository-url>
+git clone https://github.com/embabel/embabel-agent-examples.git
 cd embabel-agent-examples
 mvn clean install
 ```
@@ -142,14 +142,13 @@ The new `loggingTheme` attribute on `@EnableAgentShell` allows you to customize 
 // Severance themed logging
 @EnableAgentShell(loggingTheme = "severance")
 
-// Default logging (no theme)
+// Default logging theme is set to "severance"
 @EnableAgentShell
 ```
 
 Available themes:
 - **`starwars`** - May the Force be with your logs! Adds Star Wars-themed logging messages
-- **`severance`** - Welcome to Lumon Industries. Professional, corporate-themed logging
-- **`""`** (empty/default) - Standard logging without theming
+- **`severance`** - Welcome to Lumon Industries.
 
 ---
 
