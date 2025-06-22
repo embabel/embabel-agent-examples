@@ -70,6 +70,68 @@ shell.cmd            # Windows
 
 ---
 
+## 🆕 **Spring Boot Starter Integration**
+
+### **Zero-Configuration Setup**
+The Embabel Agent framework now provides dedicated Spring Boot starter annotations that eliminate manual configuration:
+
+```kotlin
+// For Interactive Shell Mode
+@SpringBootApplication
+@EnableAgentShell
+class AgentShellApplication
+
+fun main(args: Array<String>) {
+    runApplication<AgentShellApplication>(*args)
+}
+
+// For MCP Server Mode  
+@SpringBootApplication
+@EnableAgentMcp
+class AgentMcpApplication
+
+fun main(args: Array<String>) {
+    runApplication<AgentMcpApplication>(*args)
+}
+```
+
+```java
+// Java versions
+@SpringBootApplication
+@EnableAgentShell
+public class AgentShellApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AgentShellApplication.class, args);
+    }
+}
+
+@SpringBootApplication  
+@EnableAgentMcp
+public class AgentMcpApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AgentMcpApplication.class, args);
+    }
+}
+```
+
+### **What These Annotations Provide:**
+
+#### **`@EnableAgentShell`**
+- ✅ Interactive command-line interface
+- ✅ Agent discovery and registration
+- ✅ Human-in-the-loop capabilities
+- ✅ Progress tracking and logging
+- ✅ Development-friendly error handling
+
+#### **`@EnableAgentMcp`**
+- ✅ MCP protocol server implementation
+- ✅ Tool registration and discovery
+- ✅ JSON-RPC communication handling
+- ✅ Claude Desktop integration
+- ✅ Security and sandboxing
+
+---
+
 ## 📚 Examples by Learning Level
 
 ### 🌟 **Beginner: Horoscope News Agent**
@@ -299,11 +361,19 @@ data class AssertionCheck(
 ## 🛠️ Core Concepts You'll Learn
 
 ### **Spring Framework Integration**
+- **Auto-Configuration:** `@EnableAgentShell` and `@EnableAgentMcp` provide zero-config setup
+- **Starter Dependencies:** Simplified dependency management through starters
+- **Dedicated Applications:** Purpose-built applications for different modes
 - **Dependency Injection:** Constructor-based injection with agents as Spring beans
 - **Configuration Properties:** Type-safe configuration with `@ConfigurationProperties`
 - **Conditional Beans:** Environment-specific components with `@ConditionalOnBean`
 - **Repository Pattern:** Spring Data integration for domain entities
-- **Profile Management:** Environment-specific behavior activation
+
+### **Modern Spring Boot Patterns**
+- **Custom Starters:** Learn how `@Enable*` annotations work
+- **Auto-Configuration Classes:** Understand Spring Boot's auto-configuration magic
+- **Conditional Configuration:** See how different modes are enabled
+- **Application Context Customization:** Mode-specific bean loading
 
 ### **Modern Kotlin Features**
 - **Data Classes:** Rich domain models with computed properties
@@ -333,18 +403,28 @@ cd scripts/kotlin && ./shell.sh
 cd scripts/java && ./shell.sh
 ```
 
-### **Programmatic Execution**
-```bash
-# Kotlin examples
-cd examples-kotlin
-export SPRING_PROFILES_ACTIVE=shell,starwars,docker-desktop
-mvn spring-boot:run
+**Uses:** `AgentShellApplication` with `@EnableAgentShell`
 
-# Java examples  
+### **Manual Execution - Simplified**
+```bash
+# Kotlin shell mode
+cd examples-kotlin
+mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentShellApplication
+
+# Kotlin MCP mode
+cd examples-kotlin  
+mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentMcpApplication
+
+# Java shell mode
 cd examples-java
-export SPRING_PROFILES_ACTIVE=shell,starwars,docker-desktop
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentShellApplication
+
+# Java MCP mode
+cd examples-java
+mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentMcpApplication
 ```
+
+**No more manual Spring profile configuration needed!** 🎉
 
 ### **Testing**
 ```bash
@@ -385,6 +465,8 @@ cd scripts/java
 ./mcp_server.sh          # Unix/Linux/macOS
 mcp_server.cmd           # Windows
 ```
+
+**Uses:** `AgentMcpApplication` with `@EnableAgentMcp`
 
 ### **MCP Server Configuration**
 
@@ -478,6 +560,32 @@ export MCP_AGENT_TIMEOUT=30000
 
 ---
 
+## 🎯 **Creating Your Own Agent Application**
+
+### **Basic Shell Application**
+```kotlin
+@SpringBootApplication
+@EnableAgentShell
+class MyAgentApplication
+
+fun main(args: Array<String>) {
+    runApplication<MyAgentApplication>(*args)
+}
+```
+
+### **MCP Server Application**  
+```kotlin
+@SpringBootApplication
+@EnableAgentMcp
+class MyMcpServerApplication
+
+fun main(args: Array<String>) {
+    runApplication<MyMcpServerApplication>(*args)
+}
+```
+
+---
+
 ## 🎯 Getting Started Recommendations
 
 ### **New to Agents?**
@@ -489,6 +597,7 @@ export MCP_AGENT_TIMEOUT=30000
 1. Examine the **Movie Finder** for advanced Spring patterns
 2. Look at the configuration classes and repository integration
 3. Study the domain model design and service composition
+4. Explore the new `@EnableAgentShell` and `@EnableAgentMcp` annotations
 
 ### **Kotlin Enthusiast?**
 1. Start with **Movie Finder** for advanced Kotlin features
@@ -511,6 +620,8 @@ export MCP_AGENT_TIMEOUT=30000
 | **Wrong examples load** | Use correct script: `kotlin/shell.sh` vs `java/shell.sh` |
 | **Build failures** | Run `mvn clean install` from project root |
 | **Tests fail** | Check API keys are set in test environment |
+| **🆕 Application class not found** | Use `AgentShellApplication` or `AgentMcpApplication` |
+| **🆕 Annotation not recognized** | Ensure you're using the latest embabel-agent-starter |
 
 ---
 
@@ -520,6 +631,8 @@ export MCP_AGENT_TIMEOUT=30000
 embabel-agent-examples/
 ├── examples-kotlin/                 # 🏆 Kotlin implementations
 │   └── src/main/kotlin/com/embabel/example/
+│       ├── AgentShellApplication.kt    # 🆕 Shell mode application
+│       ├── AgentMcpApplication.kt      # 🆕 MCP server application  
 │       ├── horoscope/              # 🌟 Beginner: Star news agent
 │       ├── movie/                  # 🎬 Advanced: Movie recommender  
 │       └── dogfood/
@@ -528,12 +641,18 @@ embabel-agent-examples/
 │
 ├── examples-java/                   # ☕ Java implementations  
 │   └── src/main/java/com/embabel/example/
+│       ├── AgentShellApplication.java  # 🆕 Shell mode application
+│       ├── AgentMcpApplication.java    # 🆕 MCP server application
 │       └── horoscope/              # 🌟 Beginner: Star news agent
 │
 ├── examples-common/                 # 🔧 Shared services & utilities
 ├── scripts/                        # 🚀 Quick-start scripts
-│   ├── kotlin/shell.sh             # Launch Kotlin examples
-│   └── java/shell.sh               # Launch Java examples
+│   ├── kotlin/
+│   │   ├── shell.sh               # Launch shell mode (uses AgentShellApplication)
+│   │   └── mcp_server.sh          # Launch MCP mode (uses AgentMcpApplication)
+│   └── java/
+│       ├── shell.sh               # Launch shell mode (uses AgentShellApplication)  
+│       └── mcp_server.sh          # Launch MCP mode (uses AgentMcpApplication)
 └── pom.xml                         # Maven configuration
 ```
 

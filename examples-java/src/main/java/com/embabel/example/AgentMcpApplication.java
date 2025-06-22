@@ -22,8 +22,9 @@ import com.embabel.agent.config.annotation.EnableAgentMcp;
 @SpringBootApplication
 @EnableAgentMcp(loggingTheme="severance")
 public class AgentMcpApplication {
-    
+  
     public static void main(String[] args) {
         SpringApplication.run(AgentMcpApplication.class, args);
     }
+  
 }
