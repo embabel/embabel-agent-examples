@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.embabel.agent.config.annotation.EnableAgentShell;
 
 @SpringBootApplication
-@EnableAgentShell
+@EnableAgentShell(loggingTheme="starwars")
 public class AgentShellApplication {
     
     public static void main(String[] args) {
