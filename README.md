@@ -139,10 +139,10 @@ The new `loggingTheme` attribute on `@EnableAgentShell` allows you to customize 
 // Star Wars themed logging
 @EnableAgentShell(loggingTheme = LoggingTheme.STARWARS)
 
-// Severance themed logging
-@EnableAgentShell(loggingTheme = "severance")
+// Severance themed logging is a default.
+@EnableAgentShell
 
-// Default logging theme is set to "severance"
+// Default logging theme is set to LoggingTheme.SEVERANCE
 @EnableAgentShell
 ```
 
