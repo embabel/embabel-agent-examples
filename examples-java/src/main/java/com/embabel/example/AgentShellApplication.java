@@ -18,9 +18,10 @@ package com.embabel.example;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.embabel.agent.config.annotation.EnableAgentShell;
+import com.embabel.agent.config.annotation.LoggingTheme;
 
 @SpringBootApplication
-@EnableAgentShell(loggingTheme="starwars")
+@EnableAgentShell(loggingTheme=LoggingTheme.STARWARS)
 public class AgentShellApplication {    
     
   public static void main(String[] args) {

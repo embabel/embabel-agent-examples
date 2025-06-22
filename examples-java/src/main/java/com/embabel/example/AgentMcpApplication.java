@@ -18,9 +18,10 @@ package com.embabel.example;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.embabel.agent.config.annotation.EnableAgentMcp;
+import com.embabel.agent.config.annotation.LoggingTheme;
 
 @SpringBootApplication
-@EnableAgentMcp(loggingTheme="starwars")
+@EnableAgentMcp
 public class AgentMcpApplication {
   
     public static void main(String[] args) {
