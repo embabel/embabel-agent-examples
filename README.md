@@ -78,7 +78,7 @@ The Embabel Agent framework now provides dedicated Spring Boot starter annotatio
 ```kotlin
 // For Interactive Shell Mode with Star Wars themed logging
 @SpringBootApplication
-@EnableAgentShell(loggingTheme = "starwars")
+@EnableAgentShell(loggingTheme = LoggingTheme.STARWARS)
 class AgentShellApplication
 
 fun main(args: Array<String>) {
@@ -98,7 +98,7 @@ fun main(args: Array<String>) {
 ```java
 // Java versions
 @SpringBootApplication
-@EnableAgentShell(loggingTheme = "starwars")
+@EnableAgentShell(loggingTheme = LoggingTheme.STARWARS)
 public class AgentShellApplication {
     public static void main(String[] args) {
         SpringApplication.run(AgentShellApplication.class, args);
@@ -122,7 +122,7 @@ public class AgentMcpApplication {
 - ✅ Human-in-the-loop capabilities
 - ✅ Progress tracking and logging
 - ✅ Development-friendly error handling
-- 🎨 **NEW**: Themed logging support (e.g., "starwars", "severance")
+- 🎨 **NEW**: Themed logging support (e.g., LoggingTheme.STARWARS, LoggingTheme.SEVERANCE)
 
 #### **`@EnableAgentMcp`**
 - ✅ MCP protocol server implementation
@@ -137,7 +137,7 @@ The new `loggingTheme` attribute on `@EnableAgentShell` allows you to customize 
 
 ```kotlin
 // Star Wars themed logging
-@EnableAgentShell(loggingTheme = "starwars")
+@EnableAgentShell(loggingTheme = LoggingTheme.STARWARS)
 
 // Severance themed logging
 @EnableAgentShell(loggingTheme = "severance")
@@ -147,8 +147,8 @@ The new `loggingTheme` attribute on `@EnableAgentShell` allows you to customize 
 ```
 
 Available themes:
-- **`starwars`** - May the Force be with your logs! Adds Star Wars-themed logging messages
-- **`severance`** - Welcome to Lumon Industries.
+- **`LoggingTheme.STARWARS`** - May the Force be with your logs! Adds Star Wars-themed logging messages
+- **`LoggingTheme.SEVERANCE`** - Welcome to Lumon Industries.
 
 ---
 
@@ -598,7 +598,7 @@ fun main(args: Array<String>) {
 ### **Shell Application with Themed Logging**
 ```kotlin
 @SpringBootApplication
-@EnableAgentShell(loggingTheme = "starwars")
+@EnableAgentShell(loggingTheme = LoggingTheme.STARWARS)
 class MyThemedAgentApplication
 
 fun main(args: Array<String>) {
@@ -657,7 +657,6 @@ fun main(args: Array<String>) {
 | **Tests fail** | Check API keys are set in test environment |
 | **🆕 Application class not found** | Use `AgentShellApplication` or `AgentMcpApplication` |
 | **🆕 Annotation not recognized** | Ensure you're using the latest embabel-agent-starter |
-| **🆕 Logging theme not working** | Check if the theme name is supported ("starwars", "severance") |
 
 ---
 
