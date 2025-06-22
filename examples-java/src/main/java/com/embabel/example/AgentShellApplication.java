@@ -21,7 +21,7 @@ import com.embabel.agent.config.annotation.EnableAgentShell;
 import com.embabel.agent.config.annotation.LoggingTheme;
 
 @SpringBootApplication
-@EnableAgentShell(loggingTheme=LoggingTheme.STARWARS)
+@EnableAgentShell(loggingTheme=LoggingTheme.STAR_WARS)
 public class AgentShellApplication {    
     
   public static void main(String[] args) {
