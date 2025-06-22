@@ -58,14 +58,14 @@ export X_RAPIDAPI_KEY="your_rapidapi_key"     # https://rapidapi.com/
 ```bash
 cd scripts/kotlin
 ./shell.sh          # Unix/Linux/macOS
-shell.cmd            # Windows
+shell.cmd           # Windows
 ```
 
 #### **Java Examples**
 ```bash
 cd scripts/java
 ./shell.sh          # Unix/Linux/macOS  
-shell.cmd            # Windows
+shell.cmd           # Windows
 ```
 
 ---
@@ -76,9 +76,9 @@ shell.cmd            # Windows
 The Embabel Agent framework now provides dedicated Spring Boot starter annotations that eliminate manual configuration:
 
 ```kotlin
-// For Interactive Shell Mode
+// For Interactive Shell Mode with Star Wars themed logging
 @SpringBootApplication
-@EnableAgentShell
+@EnableAgentShell(loggingTheme = "starwars")
 class AgentShellApplication
 
 fun main(args: Array<String>) {
@@ -98,7 +98,7 @@ fun main(args: Array<String>) {
 ```java
 // Java versions
 @SpringBootApplication
-@EnableAgentShell
+@EnableAgentShell(loggingTheme = "starwars")
 public class AgentShellApplication {
     public static void main(String[] args) {
         SpringApplication.run(AgentShellApplication.class, args);
@@ -122,6 +122,7 @@ public class AgentMcpApplication {
 - ✅ Human-in-the-loop capabilities
 - ✅ Progress tracking and logging
 - ✅ Development-friendly error handling
+- 🎨 **NEW**: Themed logging support (e.g., "starwars", "severance")
 
 #### **`@EnableAgentMcp`**
 - ✅ MCP protocol server implementation
@@ -129,6 +130,26 @@ public class AgentMcpApplication {
 - ✅ JSON-RPC communication handling
 - ✅ Claude Desktop integration
 - ✅ Security and sandboxing
+
+### **🎨 Logging Themes**
+
+The new `loggingTheme` attribute on `@EnableAgentShell` allows you to customize your agent's logging personality:
+
+```kotlin
+// Star Wars themed logging
+@EnableAgentShell(loggingTheme = "starwars")
+
+// Severance themed logging
+@EnableAgentShell(loggingTheme = "severance")
+
+// Default logging (no theme)
+@EnableAgentShell
+```
+
+Available themes:
+- **`starwars`** - May the Force be with your logs! Adds Star Wars-themed logging messages
+- **`severance`** - Welcome to Lumon Industries. Professional, corporate-themed logging
+- **`""`** (empty/default) - Standard logging without theming
 
 ---
 
@@ -368,12 +389,14 @@ data class AssertionCheck(
 - **Configuration Properties:** Type-safe configuration with `@ConfigurationProperties`
 - **Conditional Beans:** Environment-specific components with `@ConditionalOnBean`
 - **Repository Pattern:** Spring Data integration for domain entities
+- **Profile Activation:** Theme-based Spring profiles for customized behavior
 
 ### **Modern Spring Boot Patterns**
 - **Custom Starters:** Learn how `@Enable*` annotations work
 - **Auto-Configuration Classes:** Understand Spring Boot's auto-configuration magic
 - **Conditional Configuration:** See how different modes are enabled
 - **Application Context Customization:** Mode-specific bean loading
+- **Environment Post-Processing:** Profile activation based on annotation attributes
 
 ### **Modern Kotlin Features**
 - **Data Classes:** Rich domain models with computed properties
@@ -456,14 +479,14 @@ MCP (Model Context Protocol) is Anthropic's open protocol that enables AI assist
 ```bash
 cd scripts/kotlin
 ./mcp_server.sh         # Unix/Linux/macOS
-mcp_server.cmd           # Windows
+mcp_server.cmd          # Windows
 ```
 
 #### **Java Agents as MCP Server**
 ```bash
 cd scripts/java
-./mcp_server.sh          # Unix/Linux/macOS
-mcp_server.cmd           # Windows
+./mcp_server.sh         # Unix/Linux/macOS
+mcp_server.cmd          # Windows
 ```
 
 **Uses:** `AgentMcpApplication` with `@EnableAgentMcp`
@@ -573,6 +596,17 @@ fun main(args: Array<String>) {
 }
 ```
 
+### **Shell Application with Themed Logging**
+```kotlin
+@SpringBootApplication
+@EnableAgentShell(loggingTheme = "starwars")
+class MyThemedAgentApplication
+
+fun main(args: Array<String>) {
+    runApplication<MyThemedAgentApplication>(*args)
+}
+```
+
 ### **MCP Server Application**  
 ```kotlin
 @SpringBootApplication
@@ -592,12 +626,14 @@ fun main(args: Array<String>) {
 1. Start with **Horoscope News Agent** (Java or Kotlin)
 2. Compare the Java vs Kotlin implementations
 3. Experiment with different prompts and see how the agent plans different workflows
+4. Try different logging themes to make development more fun!
 
 ### **Spring Developer?**
 1. Examine the **Movie Finder** for advanced Spring patterns
 2. Look at the configuration classes and repository integration
 3. Study the domain model design and service composition
 4. Explore the new `@EnableAgentShell` and `@EnableAgentMcp` annotations
+5. See how logging themes activate Spring profiles
 
 ### **Kotlin Enthusiast?**
 1. Start with **Movie Finder** for advanced Kotlin features
@@ -622,6 +658,7 @@ fun main(args: Array<String>) {
 | **Tests fail** | Check API keys are set in test environment |
 | **🆕 Application class not found** | Use `AgentShellApplication` or `AgentMcpApplication` |
 | **🆕 Annotation not recognized** | Ensure you're using the latest embabel-agent-starter |
+| **🆕 Logging theme not working** | Check if the theme name is supported ("starwars", "severance") |
 
 ---
 
@@ -631,7 +668,7 @@ fun main(args: Array<String>) {
 embabel-agent-examples/
 ├── examples-kotlin/                 # 🏆 Kotlin implementations
 │   └── src/main/kotlin/com/embabel/example/
-│       ├── AgentShellApplication.kt    # 🆕 Shell mode application
+│       ├── AgentShellApplication.kt    # 🆕 Shell mode with Star Wars logging
 │       ├── AgentMcpApplication.kt      # 🆕 MCP server application  
 │       ├── horoscope/              # 🌟 Beginner: Star news agent
 │       ├── movie/                  # 🎬 Advanced: Movie recommender  
@@ -641,7 +678,7 @@ embabel-agent-examples/
 │
 ├── examples-java/                   # ☕ Java implementations  
 │   └── src/main/java/com/embabel/example/
-│       ├── AgentShellApplication.java  # 🆕 Shell mode application
+│       ├── AgentShellApplication.java  # 🆕 Shell mode with Star Wars logging
 │       ├── AgentMcpApplication.java    # 🆕 MCP server application
 │       └── horoscope/              # 🌟 Beginner: Star news agent
 │
@@ -663,3 +700,5 @@ embabel-agent-examples/
 Licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.
 
 **🎉 Happy coding with Spring Framework and agentic AI!**
+
+### 🌟 May the Force be with your agents! 🌟
