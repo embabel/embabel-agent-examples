@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 export AGENT_APPLICATION=../../examples-java
-export MAVEN_PROFILE=enable-agent-mcp-server
+export MAVEN_PROFILE=enable-shell-mcp-client
 
 ../support/agent.sh
