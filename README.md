@@ -70,26 +70,32 @@ shell.cmd           # Windows
 
 ---
 
-## 🆕 **Spring Boot Integration Updates**
+## 🆕 **Spring Boot Integration Architecture**
 
-### **Enhanced Annotations Architecture**
-The Embabel Agent framework now provides a cleaner separation of concerns with dedicated annotations:
+### **Three Application Modes**
+The Embabel Agent framework provides three distinct application modes through dedicated starter classes:
 
 ```kotlin
-// For Interactive Shell Mode with themed logging
+// 1. Interactive Shell Mode with Star Wars themed logging
+@SpringBootApplication
+@EnableAgentShell
+@EnableAgents(loggingTheme = "starwars")
+class AgentShellApplication
+
+// 2. Shell Mode with MCP Client Support (Docker Desktop integration)
 @SpringBootApplication
 @EnableAgentShell
 @EnableAgents(
-    loggingTheme = "starwars",
+    loggingTheme = "severance",
     mcpClients = ["docker-desktop"]
 )
-class AgentShellApplication
+class AgentShellMcpClientApplication
 
-// For MCP Server Mode  
+// 3. MCP Server Mode  
 @SpringBootApplication
 @EnableAgentMcpServer
-@EnableAgents(mcpClients = "docker-desktop")
-class AgentMcpApplication
+@EnableAgents(mcpClients = ["docker-desktop"])
+class AgentMcpServerApplication
 ```
 
 ```java
@@ -108,7 +114,7 @@ public class AgentShellApplication
 public class AgentMcpApplication
 ```
 
-### **What These Annotations Provide:**
+### **Annotation Guide:**
 
 #### **`@EnableAgentShell`**
 - ✅ Interactive command-line interface
@@ -120,39 +126,17 @@ public class AgentMcpApplication
 #### **`@EnableAgentMcpServer`**
 - ✅ MCP protocol server implementation
 - ✅ Tool registration and discovery
-- ✅ JSON-RPC communication handling
+- ✅ JSON-RPC communication via SSE (Server-Sent Events)
+- ✅ Integration with MCP-compatible clients
 - ✅ Security and sandboxing
 
 #### **`@EnableAgents`**
-- 🎨 **Logging Themes**: Customize your agent's logging personality
-- 🐳 **MCP Client Support**: Enable Docker Desktop and other MCP client integrations
-- 🔧 **Common Agent Configuration**: Shared settings for all agent modes
-
-### **🎨 Logging Themes**
-
-The `loggingTheme` attribute on `@EnableAgents` allows you to customize your agent's logging personality:
-
-```kotlin
-// Star Wars themed logging
-@EnableAgents(loggingTheme = "starwars")
-
-// Severance themed logging (default)
-@EnableAgents(loggingTheme = "severance")
-```
-
-Available themes:
-- **`starwars`** - May the Force be with your logs! Adds Star Wars-themed logging messages
-- **`severance`** - Welcome to Lumon Industries (default theme)
-
-### **🐳 Docker Desktop Integration**
-
-The new `mcpClients` attribute enables integration with various MCP clients:
-
-```kotlin
-@EnableAgents(mcpClients = ["docker-desktop"])
-```
-
-This enables your agents to work with Docker Desktop's AI capabilities and other MCP-compatible tools.
+- 🎨 **loggingTheme**: Customize your agent's logging personality
+  - `"starwars"` - May the Force be with your logs!
+  - `"severance"` - Welcome to Lumon Industries (default)
+- 🐳 **mcpClients**: Enable MCP client integrations
+  - `"docker-desktop"` - Docker Desktop AI capabilities
+  - Custom clients can be added
 
 ---
 
@@ -389,9 +373,8 @@ data class AssertionCheck(
 ## 🛠️ Core Concepts You'll Learn
 
 ### **Spring Framework Integration**
-- **Separation of Concerns:** `@EnableAgentShell` and `@EnableAgentMcpServer` for different modes
-- **Shared Configuration:** `@EnableAgents` for common settings across modes
-- **Docker Integration:** MCP client support for containerized tools
+- **Multiple Application Classes:** Dedicated starters for different modes
+- **Maven Profiles:** `enable-shell`, `enable-shell-mcp-client`, `enable-agent-mcp-server`
 - **Dependency Injection:** Constructor-based injection with agents as Spring beans
 - **Configuration Properties:** Type-safe configuration with `@ConfigurationProperties`
 - **Conditional Beans:** Environment-specific components with `@ConditionalOnBean`
@@ -399,10 +382,10 @@ data class AssertionCheck(
 
 ### **Modern Spring Boot Patterns**
 - **Multi-Annotation Architecture:** Combining multiple `@Enable*` annotations
-- **Configuration Attributes:** Using annotation attributes for customization
+- **Profile-Based Execution:** Maven profiles control which application class runs
 - **Auto-Configuration Classes:** Understanding Spring Boot's auto-configuration
 - **Conditional Configuration:** Mode-specific bean loading
-- **Theme-Based Profiles:** Dynamic profile activation based on configuration
+- **Theme-Based Customization:** Dynamic behavior based on configuration
 
 ### **Modern Kotlin Features**
 - **Data Classes:** Rich domain models with computed properties
@@ -432,25 +415,43 @@ cd scripts/kotlin && ./shell.sh
 cd scripts/java && ./shell.sh
 ```
 
-**Uses:** `AgentShellApplication` with `@EnableAgentShell` and `@EnableAgents`
+Uses Maven profile: `enable-shell`
+
+### **Shell with MCP Client Support**
+```bash
+cd scripts/kotlin && ./shell_mcp_client.sh
+# or
+cd scripts/java && ./shell_mcp_client.cmd
+```
+
+Uses Maven profile: `enable-shell-mcp-client`
+
+### **MCP Server Mode**
+```bash
+cd scripts/kotlin && ./mcp_server.sh
+# or
+cd scripts/java && ./mcp_server.cmd
+```
+
+Uses Maven profile: `enable-agent-mcp-server`
 
 ### **Manual Execution**
 ```bash
 # Kotlin shell mode
 cd examples-kotlin
-mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentShellApplication
+mvn -P enable-shell spring-boot:run
 
-# Kotlin MCP mode
+# Kotlin shell with MCP client
+cd examples-kotlin
+mvn -P enable-shell-mcp-client spring-boot:run
+
+# Kotlin MCP server mode
 cd examples-kotlin  
-mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentMcpApplication
+mvn -P enable-agent-mcp-server spring-boot:run
 
-# Java shell mode
+# Java equivalents use the same pattern
 cd examples-java
-mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentShellApplication
-
-# Java MCP mode
-cd examples-java
-mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentMcpApplication
+mvn -P enable-shell spring-boot:run
 ```
 
 ### **Testing**
@@ -465,69 +466,51 @@ cd examples-java && mvn test
 
 ---
 
-## 🌐 **MCP Server Mode (Model Context Protocol)**
-
-**Expose your agents as MCP servers** to integrate with Claude Desktop, IDEs, and other AI assistants that support the Model Context Protocol.
+## 🌐 **MCP (Model Context Protocol) Support**
 
 ### **What is MCP?**
-MCP (Model Context Protocol) is Anthropic's open protocol that enables AI assistants to securely connect to data sources and tools. By running your agents as MCP servers, you can:
+MCP (Model Context Protocol) is an open protocol that enables AI assistants and applications to securely connect to data sources and tools. Embabel supports MCP in two ways:
 
-- 🤖 **Use agents as tools** in Claude Desktop
-- 🔧 **Integrate with IDEs** that support MCP
-- 🌉 **Bridge AI assistants** with your domain-specific agents
-- 🔒 **Secure tool access** with proper authentication
-- 🐳 **Docker Desktop Integration** with containerized execution
+1. **MCP Server Mode**: Your agents become tools that can be called by MCP clients
+2. **MCP Client Support**: Your agents can call external MCP servers (like Docker Desktop)
 
-### **Start MCP Server**
+### **MCP Server Mode**
 
-#### **Kotlin Agents as MCP Server**
+Run your agents as an MCP server that exposes tools over Server-Sent Events (SSE):
+
 ```bash
-cd scripts/kotlin
-./mcp_server.sh         # Unix/Linux/macOS
-mcp_server.cmd          # Windows
+# Start Kotlin agents as MCP server
+cd scripts/kotlin && ./mcp_server.sh
+
+# Start Java agents as MCP server  
+cd scripts/java && ./mcp_server.sh
 ```
 
-#### **Java Agents as MCP Server**
-```bash
-cd scripts/java
-./mcp_server.sh         # Unix/Linux/macOS
-mcp_server.cmd          # Windows
+Your agents become available as tools:
+- **StarNewsFinder** - `find_horoscope_news`
+- **MovieFinder** - `suggest_movies` 
+- **Researcher** - `research_topic`
+- **FactChecker** - `check_facts`
+
+### **MCP Client Support**
+
+Enable your agents to use external MCP tools:
+
+```kotlin
+@EnableAgents(mcpClients = ["docker-desktop"])
 ```
 
-**Uses:** `AgentMcpApplication` with `@EnableAgentMcpServer` and `@EnableAgents`
+This allows your agents to:
+- Execute commands in Docker containers
+- Access containerized services
+- Integrate with other MCP-compatible tools
 
-### **MCP Server Configuration**
-
-The MCP server exposes your agents as tools that can be called by Claude or other MCP-compatible clients:
-
-### **Available Agent Tools via MCP**
-
-When running as an MCP server, your agents become available as tools:
-
-- **🌟 StarNewsFinder** - `find_horoscope_news`
-  - *Input*: Person's name and star sign
-  - *Output*: Personalized news writeup based on horoscope
-
-- **🎬 MovieFinder** - `suggest_movies` 
-  - *Input*: Movie buff preferences and request
-  - *Output*: Streaming-available movie recommendations
-
-- **🔬 Researcher** - `research_topic`
-  - *Input*: Research question or topic
-  - *Output*: Comprehensive research report using multiple LLMs
-
-- **✅ FactChecker** - `check_facts`
-  - *Input*: Content with factual claims
-  - *Output*: Fact-check results with confidence scores
-
-### **MCP Server Benefits**
-
-- **🔄 Seamless Integration** - Agents work directly in Claude conversations
+### **Benefits of MCP**
+- **🔄 Tool Interoperability** - Agents can use and be used as tools
 - **🎯 Domain Expertise** - Specialized agents for specific tasks
-- **🛠️ Tool Composition** - Combine multiple agents in complex workflows
+- **🛠️ Tool Composition** - Combine multiple tools in workflows
 - **🔒 Secure Access** - MCP handles authentication and sandboxing
-- **📈 Scalable** - Add new agents without changing client configuration
-- **🐳 Docker Support** - Run agents in containerized environments
+- **📈 Scalable Architecture** - Add new tools without changing code
 
 ---
 
@@ -545,11 +528,14 @@ fun main(args: Array<String>) {
 }
 ```
 
-### **Shell Application with Themed Logging**
+### **Shell with Theme and MCP Client**
 ```kotlin
 @SpringBootApplication
 @EnableAgentShell
-@EnableAgents(loggingTheme = "starwars")
+@EnableAgents(
+    loggingTheme = "starwars",
+    mcpClients = ["docker-desktop"]
+)
 class MyThemedAgentApplication
 
 fun main(args: Array<String>) {
@@ -569,21 +555,6 @@ fun main(args: Array<String>) {
 }
 ```
 
-### **Full-Featured Application with Docker Support**
-```kotlin
-@SpringBootApplication
-@EnableAgentShell
-@EnableAgents(
-    loggingTheme = "starwars",
-    mcpClients = ["docker-desktop", "custom-client"]
-)
-class MyFullAgentApplication
-
-fun main(args: Array<String>) {
-    runApplication<MyFullAgentApplication>(*args)
-}
-```
-
 ---
 
 ## 🎯 Getting Started Recommendations
@@ -598,7 +569,7 @@ fun main(args: Array<String>) {
 1. Examine the **Movie Finder** for advanced Spring patterns
 2. Look at the configuration classes and repository integration
 3. Study the domain model design and service composition
-4. Explore the new annotation architecture with `@EnableAgentShell`, `@EnableAgentMcpServer`, and `@EnableAgents`
+4. Explore the different application modes and Maven profiles
 5. See how themes and MCP clients are configured
 
 ### **Kotlin Enthusiast?**
@@ -610,7 +581,7 @@ fun main(args: Array<String>) {
 1. Study prompt engineering techniques in any example
 2. Examine the **Researcher** for multi-model consensus patterns
 3. Look at **Fact Checker** for confidence scoring and source evaluation
-4. Explore MCP integration for using agents with Claude Desktop
+4. Explore MCP integration for tool composition
 
 ---
 
@@ -623,8 +594,7 @@ fun main(args: Array<String>) {
 | **Wrong examples load** | Use correct script: `kotlin/shell.sh` vs `java/shell.sh` |
 | **Build failures** | Run `mvn clean install` from project root |
 | **Tests fail** | Check API keys are set in test environment |
-| **Application class not found** | Use `AgentShellApplication` or `AgentMcpApplication` |
-| **Annotation not recognized** | Ensure you're using the latest embabel-agent-starter |
+| **Application class not found** | Check Maven profile matches application class |
 | **MCP server fails to start** | Check port availability and Docker Desktop status |
 
 ---
@@ -635,18 +605,20 @@ fun main(args: Array<String>) {
 embabel-agent-examples/
 ├── examples-kotlin/                 # 🏆 Kotlin implementations
 │   ├── src/main/kotlin/com/embabel/example/
-│   │   ├── AgentShellApplication.kt    # Shell mode with @EnableAgents
-│   │   ├── AgentMcpApplication.kt      # MCP server mode  
+│   │   ├── AgentShellApplication.kt         # Basic shell mode
+│   │   ├── AgentShellMcpClientApplication.kt # Shell + MCP client
+│   │   ├── AgentMcpServerApplication.kt     # MCP server mode  
 │   │   ├── horoscope/              # 🌟 Beginner: Star news agent
 │   │   ├── movie/                  # 🎬 Advanced: Movie recommender  
 │   │   └── dogfood/
 │   │       ├── research/           # 🔬 Expert: Multi-LLM researcher
 │   │       └── factchecker/        # ✅ Expert: Fact checker (DSL)
+│   ├── pom.xml                     # Maven profiles for each mode
 │   └── README.md                   # 📖 Kotlin-specific documentation
 │
 ├── examples-java/                   # ☕ Java implementations  
 │   ├── src/main/java/com/embabel/example/
-│   │   ├── AgentShellApplication.java  # Shell mode with @EnableAgents
+│   │   ├── AgentShellApplication.java  # Shell mode with themes
 │   │   ├── AgentMcpApplication.java    # MCP server mode
 │   │   └── horoscope/              # 🌟 Beginner: Star news agent
 │   └── README.md                   # 📖 Java-specific documentation
@@ -654,13 +626,16 @@ embabel-agent-examples/
 ├── examples-common/                 # 🔧 Shared services & utilities
 ├── scripts/                        # 🚀 Quick-start scripts
 │   ├── kotlin/
-│   │   ├── shell.sh               # Launch shell mode
-│   │   └── mcp_server.sh          # Launch MCP mode
+│   │   ├── shell.sh               # Launch basic shell
+│   │   ├── shell_mcp_client.sh    # Launch shell with MCP client
+│   │   └── mcp_server.sh          # Launch MCP server
 │   ├── java/
-│   │   ├── shell.sh               # Launch shell mode  
-│   │   └── mcp_server.sh          # Launch MCP mode
+│   │   ├── shell.sh               # Launch basic shell
+│   │   ├── shell_mcp_client.cmd   # Launch shell with MCP client  
+│   │   └── mcp_server.sh          # Launch MCP server
+│   ├── support/                   # Shared script utilities
 │   └── README.md                  # 📖 Scripts documentation
-└── pom.xml                         # Maven configuration
+└── pom.xml                         # Parent Maven configuration
 ```
 
 ---
