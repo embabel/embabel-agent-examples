@@ -38,7 +38,7 @@ import com.embabel.agent.config.annotation.EnableAgents;
 @EnableAgents(
     mcpClients = "docker-desktop"
 )
-public class AgentMcpApplication {
+public class AgentMcpServerApplication {
     
     /**
      * Application entry point.
@@ -49,6 +49,6 @@ public class AgentMcpApplication {
      * @param args command line arguments passed to the application
      */
     public static void main(String[] args) {
-        SpringApplication.run(AgentMcpApplication.class, args);
+        SpringApplication.run(AgentMcpServerApplication.class, args);
     }
 }

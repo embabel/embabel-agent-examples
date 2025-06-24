@@ -74,7 +74,7 @@
             </build>           
         </profile>
         <profile>
-            <id>enable-mcp</id>
+            <id>enable-shell-mcp-client</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
@@ -84,7 +84,25 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.embabel.example.AgentMcpApplicationKt</mainClass>
+                            <mainClass>com.embabel.example.AgentShellMcpClientApplicationKt</mainClass>
+                        </configuration>
+                        <version>${spring-boot.version}</version>
+                    </plugin>
+                </plugins>
+            </build>           
+        </profile>
+        <profile>
+            <id>enable-agent-mcp-server</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>com.embabel.example.AgentMcpServerApplicationKt</mainClass>
                         </configuration>
                         <version>${spring-boot.version}</version>
                     </plugin>

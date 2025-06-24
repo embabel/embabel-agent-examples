@@ -36,9 +36,10 @@ import com.embabel.agent.config.annotation.EnableAgents;
 @SpringBootApplication
 @EnableAgentShell
 @EnableAgents(
-    loggingTheme = "severance"
+    loggingTheme = "starwars",
+    mcpClients = {"docker-desktop"}
 )
-public class AgentShellApplication {
+public class AgentShellMcpClientApplication {
     
     /**
      * Application entry point.
@@ -49,6 +50,6 @@ public class AgentShellApplication {
      * @param args command line arguments passed to the application
      */
     public static void main(String[] args) {
-        SpringApplication.run(AgentShellApplication.class, args);
+        SpringApplication.run(AgentShellMcpClientApplication.class, args);
     }
 }

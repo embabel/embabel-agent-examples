@@ -18,32 +18,32 @@ package com.embabel.example
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import com.embabel.agent.config.annotation.EnableAgentMcpServer
+import com.embabel.agent.config.annotation.EnableAgents
 
 /**
  * Spring Boot application that runs Embabel agents as an MCP (Model Context Protocol) server.
- * 
+ *
  * This application exposes agents as MCP-compatible tools that can be consumed by
  * AI assistants like Claude Desktop, IDEs, or other MCP clients. The server
  * implements the JSON-RPC based MCP protocol for tool discovery and execution.
- * 
- * ## Active Profile
- * - `mcp-server` - Enables MCP protocol server and JSON-RPC endpoints
- * 
- * 
+ *
  * @see EnableAgentMcpServer
  */
 @SpringBootApplication
 @EnableAgentMcpServer
-class AgentMcpApplication
+@EnableAgents(
+    mcpClients = ["docker-desktop"]
+)
+class AgentMcpServerApplication
 
 /**
  * Application entry point that starts the MCP server.
- * 
+ *
  * Initializes Spring Boot with MCP server configuration and begins
  * listening for JSON-RPC requests from MCP clients.
- * 
+ *
  * @param args Command line arguments passed to the application
  */
 fun main(args: Array<String>) {
-    runApplication<AgentMcpApplication>(*args)
+    runApplication<AgentMcpServerApplication>(*args)
 }

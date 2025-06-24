@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 export AGENT_APPLICATION=../../examples-kotlin
-export MAVEN_PROFILE=enable-mcp
+export MAVEN_PROFILE=enable-agent-mcp-server
 
-../support/check_env.sh
+../support/agent.sh
