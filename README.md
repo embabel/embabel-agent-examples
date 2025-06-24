@@ -31,14 +31,15 @@ Learn agentic AI development with **Spring Framework** and **Kotlin/Java**. Thes
 
 ### Prerequisites
 - **Java 21+**
-- **Maven 3.9+** 
 - **API Key** (at least one): [OpenAI](https://platform.openai.com/api-keys) or [Anthropic](https://www.anthropic.com/api)
+- **Maven 3.9+** (optional - project includes Maven wrapper)
 
 ### 1. Clone & Build
 ```bash
 git clone https://github.com/embabel/embabel-agent-examples.git
 cd embabel-agent-examples
-mvn clean install
+./mvnw clean install    # Unix/Linux/macOS
+mvnw.cmd clean install  # Windows
 ```
 
 ### 2. Set API Keys
@@ -421,7 +422,8 @@ Uses Maven profile: `enable-shell`
 ```bash
 cd scripts/kotlin && ./shell_mcp_client.sh
 # or
-cd scripts/java && ./shell_mcp_client.cmd
+cd scripts/java && ./shell_mcp_client.sh     # Unix/Linux/macOS
+cd scripts/java && shell_mcp_client.cmd      # Windows
 ```
 
 Uses Maven profile: `enable-shell-mcp-client`
@@ -457,11 +459,12 @@ mvn -P enable-shell spring-boot:run
 ### **Testing**
 ```bash
 # Run all tests
-mvn test
+./mvnw test             # Unix/Linux/macOS
+mvnw.cmd test           # Windows
 
 # Module-specific tests
-cd examples-kotlin && mvn test
-cd examples-java && mvn test
+cd examples-kotlin && ../mvnw test
+cd examples-java && ../mvnw test
 ```
 
 ---
@@ -592,7 +595,7 @@ fun main(args: Array<String>) {
 | **"No API keys found"** | Set `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` |
 | **Movie agent fails** | Set `OMDB_API_KEY` and `X_RAPIDAPI_KEY` |
 | **Wrong examples load** | Use correct script: `kotlin/shell.sh` vs `java/shell.sh` |
-| **Build failures** | Run `mvn clean install` from project root |
+| **Build failures** | Run `./mvnw clean install` (Unix/macOS) or `mvnw.cmd clean install` (Windows) from project root |
 | **Tests fail** | Check API keys are set in test environment |
 | **Application class not found** | Check Maven profile matches application class |
 | **MCP server fails to start** | Check port availability and Docker Desktop status |
