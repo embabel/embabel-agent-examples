@@ -205,8 +205,6 @@ mvn test
 # Run specific test
 mvn test -Dtest=StarNewsFinderTest
 
-# Run with different profiles
-mvn test -Dspring.profiles.active=test
 ```
 
 ### Test Structure
