@@ -87,29 +87,13 @@ class AgentShellApplication
     loggingTheme = LoggingTheme.SEVERANCE,
     mcpServers = [McpServers.DOCKER_DESKTOP]
 )
-class AgentShellMcpServerApplication
+class AgentShellMcpClientApplication
 
 // 3. MCP Server Mode  
 @SpringBootApplication
 @EnableAgentMcpServer
 @EnableAgents(mcpServers = [McpServers.DOCKER_DESKTOP])
 class AgentMcpServerApplication
-```
-
-```java
-// Java versions
-@SpringBootApplication
-@EnableAgentShell
-@EnableAgents(
-    loggingTheme = LoggingTheme.SEVERANCE,
-    mcpServers = {McpServers.DOCKER_DESKTOP}
-)
-public class AgentShellApplication
-
-@SpringBootApplication  
-@EnableAgentMcpServer
-@EnableAgents(mcpServers = McpServers.DOCKER_DESKTOP)
-public class AgentMcpApplication
 ```
 
 ### **Annotation Guide:**
