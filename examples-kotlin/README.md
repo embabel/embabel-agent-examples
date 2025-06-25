@@ -59,13 +59,6 @@ cd scripts/kotlin
 shell.cmd           # Windows
 ```
 
-#### **Java Examples**
-```bash
-cd scripts/java
-./shell.sh          # Unix/Linux/macOS  
-shell.cmd           # Windows
-```
-
 ---
 
 ## 🆕 **Spring Boot Integration Architecture**
@@ -346,15 +339,6 @@ cd scripts/kotlin && ./mcp_server.sh
 cd scripts/java && ./mcp_server.cmd
 ```
 
----
-
-# Module-specific tests
-cd examples-kotlin && ../mvnw test
-cd examples-java && ../mvnw test
-```
-
----
-
 ## 🌐 **MCP (Model Context Protocol) Support**
 
 ### **What is MCP?**
@@ -370,9 +354,6 @@ Run your agents as an MCP server that exposes tools over Server-Sent Events (SSE
 ```bash
 # Start Kotlin agents as MCP server
 cd scripts/kotlin && ./mcp_server.sh
-
-# Start Java agents as MCP server  
-cd scripts/java && ./mcp_server.sh
 ```
 
 Your agents become available as tools:
