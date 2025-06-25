@@ -23,7 +23,7 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
-# 🤖 Embabel Agent Examples
+# 🤖 Embabel Agent Kotlin Examples
 
 Learn agentic AI development with **Spring Framework** and **Kotlin/Java**. These examples demonstrate building intelligent agents that can plan, execute workflows, use tools, and interact with humans.
 
@@ -362,6 +362,7 @@ cd scripts/kotlin && ./mcp_server.sh
 cd scripts/java && ./mcp_server.cmd
 ```
 
+---
 
 # Module-specific tests
 cd examples-kotlin && ../mvnw test
