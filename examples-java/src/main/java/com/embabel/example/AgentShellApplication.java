@@ -15,12 +15,12 @@
  */
 package com.embabel.example;
 
-import com.embabel.agent.config.annotation.LoggingThemes;
-import com.embabel.agent.config.annotation.McpServers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.embabel.agent.config.annotation.EnableAgentShell;
 import com.embabel.agent.config.annotation.EnableAgents;
+import com.embabel.agent.config.annotation.LoggingThemes;
+
 
 /**
  * Spring Boot application that provides an interactive command-line shell for Embabel agents
@@ -38,9 +38,7 @@ import com.embabel.agent.config.annotation.EnableAgents;
 @SpringBootApplication
 @EnableAgentShell
 @EnableAgents(
-    loggingTheme = LoggingThemes.SEVERANCE,
-        mcpServers = { com.embabel.agent.config.annotation.McpServers.DOCKER_DESKTOP,
-                       McpServers.DOCKER }
+    loggingTheme = LoggingThemes.SEVERANCE
 )
 public class AgentShellApplication {
     
