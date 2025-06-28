@@ -12,10 +12,15 @@ This module contains Java implementations of Embabel Agent examples, demonstrati
 ### Running Examples
 
 ```bash
-# Interactive Shell Mode (recommended for development)
+# Interactive Shell Mode - Basic features (recommended for development)
 cd ../scripts/java
 ./shell.sh        # Unix/Linux/macOS
 shell.cmd         # Windows
+
+# Interactive Shell Mode - With Docker integration
+cd ../scripts/java
+./shell.sh --docker-tools     # Unix/Linux/macOS
+shell.cmd --docker-tools      # Windows
 
 # Or run directly with Maven
 mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentShellApplication
@@ -26,14 +31,15 @@ mvn spring-boot:run -Dspring-boot.run.main-class=com.embabel.example.AgentShellA
 ```
 examples-java/
 ├── src/main/java/com/embabel/example/
-│   ├── AgentShellApplication.java    # Interactive shell with Star Wars logging
-│   ├── AgentMcpApplication.java      # MCP server for Claude Desktop integration
-│   └── horoscope/                    # 🌟 Horoscope news finder example
-│       ├── StarNewsFinder.java       # Main agent implementation
-│       ├── model/                    # Domain models
-│       └── service/                  # Supporting services
+│   ├── AgentShellApplication.java           # Basic shell with Star Wars logging
+│   ├── AgentShellMcpClientApplication.java  # Shell with Docker integration
+│   ├── AgentMcpApplication.java            # MCP server for Claude Desktop integration
+│   └── horoscope/                          # 🌟 Horoscope news finder example
+│       ├── StarNewsFinder.java             # Main agent implementation
+│       ├── model/                          # Domain models
+│       └── service/                        # Supporting services
 └── src/main/resources/
-    └── application.yml               # Configuration
+    └── application.yml                     # Configuration
 ```
 
 ## 🎯 Available Example
@@ -106,6 +112,7 @@ spring:
 
 ### Interactive Shell (Development)
 
+**Basic Shell Mode:**
 ```java
 import com.embabel.agent.config.annotation.LoggingThemes;
 
@@ -124,6 +131,27 @@ Features:
 - Star Wars themed logging messages
 - Real-time execution feedback
 - Debug options with `-p` and `-r` flags
+
+**Shell with Docker Integration:**
+```java
+@SpringBootApplication
+@EnableAgentShell
+@EnableAgents(
+    loggingTheme = LoggingThemes.STAR_WARS,
+    mcpServers = {McpServers.DOCKER_DESKTOP}
+)
+public class AgentShellMcpClientApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AgentShellMcpClientApplication.class, args);
+    }
+}
+```
+
+Features:
+- All basic shell features
+- Docker Desktop MCP integration
+- Container execution capabilities
+- Enhanced tool access
 
 ### MCP Server (Integration)
 ```java
@@ -231,6 +259,7 @@ class StarNewsFinderTest {
 | `ClassNotFoundException` | Run `mvn clean install` from project root |
 | `Port already in use` | Change port with `--server.port=8081` |
 | `Bean creation error` | Check Spring profile configuration |
+| `WARNING: Only Basic Agent features` | Use `--docker-tools` parameter to enable Docker integration |
 
 ## 📊 Comparison with Kotlin Examples
 

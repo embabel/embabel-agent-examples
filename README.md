@@ -55,15 +55,21 @@ export ANTHROPIC_API_KEY="your_anthropic_key"
 #### **Kotlin Examples**
 ```bash
 cd scripts/kotlin
-./shell.sh          # Unix/Linux/macOS
-shell.cmd           # Windows
+./shell.sh                    # Unix/Linux/macOS - Basic features
+shell.cmd                     # Windows - Basic features
+
+./shell.sh --docker-tools     # Unix/Linux/macOS - With Docker integration
+shell.cmd --docker-tools      # Windows - With Docker integration
 ```
 
 #### **Java Examples**
 ```bash
 cd scripts/java
-./shell.sh          # Unix/Linux/macOS  
-shell.cmd           # Windows
+./shell.sh                    # Unix/Linux/macOS - Basic features
+shell.cmd                     # Windows - Basic features
+
+./shell.sh --docker-tools     # Unix/Linux/macOS - With Docker integration
+shell.cmd --docker-tools      # Windows - With Docker integration
 ```
 
 ---
@@ -380,19 +386,22 @@ See:
 
 ### **Interactive Shell Mode** (Default)
 ```bash
-cd scripts/kotlin && ./shell.sh
+cd scripts/kotlin && ./shell.sh          # Basic features
+cd scripts/kotlin && shell.cmd           # Basic features (Windows)
 # or
-cd scripts/java && ./shell.sh
+cd scripts/java && ./shell.sh            # Basic features
+cd scripts/java && shell.cmd             # Basic features (Windows)
 ```
 
 Uses Maven profile: `enable-shell`
 
 ### **Shell with MCP Client Support**
 ```bash
-cd scripts/kotlin && ./shell_mcp_client.sh
+cd scripts/kotlin && ./shell.sh --docker-tools     # Advanced Docker integration
+cd scripts/kotlin && shell.cmd --docker-tools      # Advanced Docker integration (Windows)
 # or
-cd scripts/java && ./shell_mcp_client.sh     # Unix/Linux/macOS
-cd scripts/java && shell_mcp_client.cmd      # Windows
+cd scripts/java && ./shell.sh --docker-tools       # Advanced Docker integration
+cd scripts/java && shell.cmd --docker-tools        # Advanced Docker integration (Windows)
 ```
 
 Uses Maven profile: `enable-shell-mcp-client`
@@ -400,8 +409,10 @@ Uses Maven profile: `enable-shell-mcp-client`
 ### **MCP Server Mode**
 ```bash
 cd scripts/kotlin && ./mcp_server.sh
+cd scripts/kotlin && mcp_server.cmd      # Windows
 # or
-cd scripts/java && ./mcp_server.cmd
+cd scripts/java && ./mcp_server.sh
+cd scripts/java && mcp_server.cmd        # Windows
 ```
 
 Uses Maven profile: `enable-agent-mcp-server`
@@ -465,10 +476,12 @@ Your agents become available as tools:
 
 ### **MCP Client Support**
 
-Enable your agents to use external MCP tools:
+Enable your agents to use external MCP tools by using the `--docker-tools` parameter:
 
-```kotlin
-@EnableAgents(mcpServers = [McpServers.DOCKER_DESKTOP, McpServers.DOCKER])
+```bash
+# Enable Docker Desktop MCP integration
+cd scripts/kotlin && ./shell.sh --docker-tools
+cd scripts/java && ./shell.sh --docker-tools
 ```
 
 This allows your agents to:
@@ -591,12 +604,10 @@ embabel-agent-examples/
 ├── examples-common/                 # 🔧 Shared services & utilities
 ├── scripts/                        # 🚀 Quick-start scripts
 │   ├── kotlin/
-│   │   ├── shell.sh               # Launch basic shell
-│   │   ├── shell_mcp_client.sh    # Launch shell with MCP client
+│   │   ├── shell.sh               # Launch shell (with --docker-tools option)
 │   │   └── mcp_server.sh          # Launch MCP server
 │   ├── java/
-│   │   ├── shell.sh               # Launch basic shell
-│   │   ├── shell_mcp_client.cmd   # Launch shell with MCP client  
+│   │   ├── shell.sh               # Launch shell (with --docker-tools option)
 │   │   └── mcp_server.sh          # Launch MCP server
 │   ├── support/                   # Shared script utilities
 │   └── README.md                  # 📖 Scripts documentation

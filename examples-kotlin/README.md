@@ -55,8 +55,11 @@ export ANTHROPIC_API_KEY="your_anthropic_key"
 #### **Kotlin Examples**
 ```bash
 cd scripts/kotlin
-./shell.sh          # Unix/Linux/macOS
-shell.cmd           # Windows
+./shell.sh                    # Unix/Linux/macOS - Basic features
+shell.cmd                     # Windows - Basic features
+
+./shell.sh --docker-tools     # Unix/Linux/macOS - With Docker integration
+shell.cmd --docker-tools      # Windows - With Docker integration
 ```
 
 ---
@@ -315,19 +318,16 @@ data class AssertionCheck(
 
 ### **Interactive Shell Mode** (Default)
 ```bash
-cd scripts/kotlin && ./shell.sh
-# or
-cd scripts/java && ./shell.sh
+cd scripts/kotlin && ./shell.sh          # Basic features
+cd scripts/kotlin && shell.cmd           # Basic features (Windows)
 ```
 
 Uses Maven profile: `enable-shell`
 
 ### **Shell with MCP Client Support**
 ```bash
-cd scripts/kotlin && ./shell_mcp_client.sh
-# or
-cd scripts/java && ./shell_mcp_client.sh     # Unix/Linux/macOS
-cd scripts/java && shell_mcp_client.cmd      # Windows
+cd scripts/kotlin && ./shell.sh --docker-tools     # Advanced Docker integration
+cd scripts/kotlin && shell.cmd --docker-tools      # Advanced Docker integration (Windows)
 ```
 
 Uses Maven profile: `enable-shell-mcp-client`
@@ -335,8 +335,7 @@ Uses Maven profile: `enable-shell-mcp-client`
 ### **MCP Server Mode**
 ```bash
 cd scripts/kotlin && ./mcp_server.sh
-# or
-cd scripts/java && ./mcp_server.cmd
+cd scripts/kotlin && mcp_server.cmd      # Windows
 ```
 
 ## 🌐 **MCP (Model Context Protocol) Support**
@@ -364,10 +363,11 @@ Your agents become available as tools:
 
 ### **MCP Server Support**
 
-Enable your agents to connect to external MCP servers:
+Enable your agents to connect to external MCP servers using the `--docker-tools` parameter:
 
-```kotlin
-@EnableAgents(mcpServers = [McpServers.DOCKER_DESKTOP])
+```bash
+# Enable Docker Desktop MCP integration
+cd scripts/kotlin && ./shell.sh --docker-tools
 ```
 
 This allows your agents to:
@@ -465,6 +465,7 @@ fun main(args: Array<String>) {
 | **Tests fail** | Check API keys are set in test environment |
 | **Application class not found** | Check Maven profile matches application class |
 | **MCP server fails to start** | Check port availability and Docker Desktop status |
+| **WARNING: Only Basic Agent features** | Use `--docker-tools` parameter to enable Docker integration |
 
 ---
 
@@ -485,8 +486,7 @@ embabel-agent-examples/
 ├── examples-common/                 # 🔧 Shared services & utilities
 ├── scripts/                        # 🚀 Quick-start scripts
 │   ├── kotlin/
-│   │   ├── shell.sh               # Launch basic shell
-│   │   ├── shell_mcp_client.sh    # Launch shell with MCP client
+│   │   ├── shell.sh               # Launch shell (with --docker-tools option)
 │   │   └── mcp_server.sh          # Launch MCP server
 │   ├── support/                   # Shared script utilities
 │   └── README.md                  # 📖 Scripts documentation

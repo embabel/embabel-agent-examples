@@ -17,8 +17,18 @@ if not defined AGENT_APPLICATION (
     exit /b 1
 )
 
+if not defined MAVEN_PROFILE (
+    echo ERROR: MAVEN_PROFILE environment variable is NOT set
+    echo Please set it in the calling script
+    exit /b 1
+)
+
 set POM_FILE=%AGENT_APPLICATION%\pom.xml
 
-cmd /c mvn -U -P %MAVEN_PROFILE% -f %POM_FILE% -Dmaven.test.skip=true spring-boot:run
+REM Display what we're running
+echo Starting application with profile: %MAVEN_PROFILE%
+echo Application path: %AGENT_APPLICATION%
+
+cmd /c ..\..\mvnw -U -P %MAVEN_PROFILE% -f %POM_FILE% -Dmaven.test.skip=true spring-boot:run
 
 endlocal

@@ -1,4 +1,4 @@
-f#!/bin/bash
+#!/bin/bash
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -22,6 +22,13 @@ if [ -z "$AGENT_APPLICATION" ]; then
     exit 1
 fi
 
+# Check if MAVEN_PROFILE environment variable is set
+if [ -z "$MAVEN_PROFILE" ]; then
+    echo "ERROR: MAVEN_PROFILE environment variable is NOT set"
+    echo "Please set it in the calling script"
+    exit 1
+fi
+
 # Set the POM file path
 POM_FILE="$AGENT_APPLICATION/pom.xml"
 
@@ -30,6 +37,10 @@ if [ ! -f "$POM_FILE" ]; then
     echo "ERROR: POM file not found at $POM_FILE"
     exit 1
 fi
+
+# Display what we're running
+echo "Starting application with profile: $MAVEN_PROFILE"
+echo "Application path: $AGENT_APPLICATION"
 
 # Run Maven Spring Boot application
 ../../mvnw -U -P "$MAVEN_PROFILE" -f "$POM_FILE" -Dmaven.test.skip=true spring-boot:run
