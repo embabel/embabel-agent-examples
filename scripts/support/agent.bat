@@ -29,6 +29,6 @@ REM Display what we're running
 echo Starting application with profile: %MAVEN_PROFILE%
 echo Application path: %AGENT_APPLICATION%
 
-cmd /c ..\..\mvnw -U -P %MAVEN_PROFILE% -f %POM_FILE% -Dmaven.test.skip=true spring-boot:run
+cmd /c ..\..\mvnw -U -P %MAVEN_PROFILE% -f %POM_FILE% -Dmaven.test.skip=true clean spring-boot:run
 
 endlocal
