@@ -245,6 +245,7 @@ class StarNewsFinder(
     @AchievesGoal(
         description = "Create an amusing writeup for the target person based on their horoscope",
         startingInputTypes = [StarPerson::class],
+        export= Export(remote=true, name="StarNewsWriteup")
     )
     @Action
     fun starNewsWriteup(
