@@ -244,8 +244,11 @@ class StarNewsFinder(
     // achieves the given goal, so the agent flow can be complete
     @AchievesGoal(
         description = "Create an amusing writeup for the target person based on their horoscope",
-        startingInputTypes = [StarPerson::class],
-        export= Export(remote=true, name="StarNewsWriteup")
+        export= Export(
+            remote=true,
+            name="StarNewsWriteup",
+            startingInputTypes = [StarPerson::class],
+        )
     )
     @Action
     fun starNewsWriteup(
