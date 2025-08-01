@@ -15,6 +15,7 @@
  */
 package com.embabel.example;
 
+import com.embabel.agent.config.annotation.McpServers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.embabel.agent.config.annotation.EnableAgentShell;
@@ -38,7 +39,8 @@ import com.embabel.agent.config.annotation.LoggingThemes;
 @SpringBootApplication
 @EnableAgentShell
 @EnableAgents(
-    loggingTheme = LoggingThemes.SEVERANCE
+    loggingTheme = LoggingThemes.SEVERANCE,
+        mcpServers = {McpServers.DOCKER_DESKTOP}
 )
 public class AgentShellApplication {
     
