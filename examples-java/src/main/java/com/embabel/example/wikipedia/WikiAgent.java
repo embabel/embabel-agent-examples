@@ -25,9 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 import java.util.stream.Collectors;
 
-record ResearchSubject(String name) {
-}
-
 record FocusAreas(List<FocusArea> focusAreas) {}
 
 record FocusArea(String topic) {

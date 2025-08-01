@@ -15,10 +15,7 @@
  */
 package com.embabel.example.horoscope;
 
-import com.embabel.agent.api.annotation.AchievesGoal;
-import com.embabel.agent.api.annotation.Action;
-import com.embabel.agent.api.annotation.Agent;
-import com.embabel.agent.api.annotation.WaitFor;
+import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.PromptRunner;
 import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.core.CoreToolGroups;
@@ -118,7 +115,11 @@ public class StarNewsFinder {
     // The @AchievesGoal annotation indicates that completing this action
     // achieves the given goal, so the agent can be complete
     @AchievesGoal(
-            description = "Write an amusing writeup for the target person based on their horoscope and current news stories"
+            description = "Write an amusing writeup for the target person based on their horoscope and current news stories",
+            export = @Export(
+                    remote = true,
+                    name = "starNewsWriteup",
+                    startingInputTypes = {StarPerson.class, UserInput.class})
     )
     @Action
     public Writeup writeup(
