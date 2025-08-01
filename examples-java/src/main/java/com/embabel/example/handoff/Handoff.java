@@ -19,9 +19,6 @@ public class Handoff {
 
     /**
      * This action is get user input out of the way in selecting the adventure by handoff
-     * @param userInput
-     * @param operationContext
-     * @return
      */
     @Action
     Choice makeChoice(UserInput userInput, OperationContext operationContext) {
@@ -30,7 +27,7 @@ public class Handoff {
 
     @Action
     @AchievesGoal(description = "Choose your own adventure",
-        export = @Export(remote = true))
+        export = @Export(name="chooseAdventure", remote = true, startingInputTypes = {UserInput.class}))
     AdventureLog chooseAdventure(Choice choice, OperationContext operationContext) {
         return operationContext.promptRunner()
                 .withLlm(LlmOptions.fromModel("gpt-4.1-nano"))

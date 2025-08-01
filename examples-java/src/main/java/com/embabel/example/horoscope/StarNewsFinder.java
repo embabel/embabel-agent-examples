@@ -118,7 +118,7 @@ public class StarNewsFinder {
             description = "Write an amusing writeup for the target person based on their horoscope and current news stories",
             export = @Export(
                     remote = true,
-                    name = "starNewsWriteup",
+                    name = "starNewsWriteupJava",
                     startingInputTypes = {StarPerson.class, UserInput.class})
     )
     @Action
