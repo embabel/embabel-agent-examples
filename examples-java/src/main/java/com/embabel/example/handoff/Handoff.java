@@ -5,6 +5,7 @@ import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.common.ai.model.LlmOptions;
 import com.embabel.example.horoscope.StarPerson;
+import com.embabel.example.horoscope.Writeup;
 import com.embabel.example.wikipedia.ResearchSubject;
 
 record Choice(String choice) {
@@ -31,7 +32,7 @@ public class Handoff {
     AdventureLog chooseAdventure(Choice choice, OperationContext operationContext) {
         return operationContext.promptRunner()
                 .withLlm(LlmOptions.fromModel("gpt-4.1-nano"))
-                .withHandoffs(StarPerson.class, ResearchSubject.class)
+                .withHandoffs(StarPerson.class, Writeup.class)
                 .createObject("""
                     Based on the user's input, decide what to do. You might do something related to a horoscope or some fact checking.
                     What they said: %s
