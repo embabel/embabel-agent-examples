@@ -20,6 +20,7 @@ import org.springframework.boot.runApplication
 import com.embabel.agent.config.annotation.EnableAgentShell
 import com.embabel.agent.config.annotation.EnableAgents
 import com.embabel.agent.config.annotation.LoggingThemes
+import com.embabel.agent.config.annotation.McpServers
 
 /**
  * Spring Boot application that runs Embabel agents in interactive shell mode.
@@ -42,6 +43,7 @@ import com.embabel.agent.config.annotation.LoggingThemes
 @EnableAgentShell
 @EnableAgents(
     loggingTheme = LoggingThemes.STAR_WARS,
+    mcpServers = [McpServers.DOCKER, McpServers.DOCKER_DESKTOP],
 )
 class AgentShellApplication
 
