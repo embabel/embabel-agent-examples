@@ -21,6 +21,16 @@
 
     <repositories>
         <repository>
+            <id>embabel-releases</id>
+            <url>https://repo.embabel.com/artifactory/libs-release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>embabel-snapshots</id>
             <url>https://repo.embabel.com/artifactory/libs-snapshot</url>
             <snapshots>
