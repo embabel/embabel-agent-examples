@@ -16,6 +16,7 @@
 package com.embabel.example.horoscope
 
 import com.embabel.agent.api.annotation.*
+import com.embabel.agent.api.common.OperationContext
 import com.embabel.agent.api.common.createObject
 import com.embabel.agent.api.common.createObjectIfPossible
 import com.embabel.agent.config.models.OpenAiModels
@@ -114,9 +115,9 @@ class StarNewsFinder(
      * @return A Person object if extraction is successful, null otherwise
      */
     @Action
-    fun extractPerson(userInput: UserInput): Person? =
+    fun extractPerson(userInput: UserInput, context: OperationContext): Person? =
         // All prompts are typesafe
-        usingDefaultLlm.createObjectIfPossible(
+        context.promptRunner().createObjectIfPossible(
             """
             Create a person from this user input, extracting their name:
             ${userInput.content}
@@ -171,8 +172,8 @@ class StarNewsFinder(
      * @return A StarPerson object if extraction is successful, null otherwise
      */
     @Action
-    fun extractStarPerson(userInput: UserInput): StarPerson? =
-        using(LlmOptions(Auto)).createObjectIfPossible(
+    fun extractStarPerson(userInput: UserInput, context: OperationContext): StarPerson? =
+        context.promptRunner(llm = LlmOptions(Auto)).createObjectIfPossible(
             """
             Create a person from this user input, extracting their name and star sign:
             ${userInput.content}
@@ -206,8 +207,12 @@ class StarNewsFinder(
      */
     // toolGroups specifies tools that are required for this action to run
     @Action(toolGroups = [CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION])
-    internal fun findNewsStories(person: StarPerson, horoscope: Horoscope): RelevantNewsStories =
-        usingModel(model).createObject(
+    internal fun findNewsStories(
+        person: StarPerson,
+        horoscope: Horoscope,
+        context: OperationContext
+    ): RelevantNewsStories =
+        context.promptRunner(llm = LlmOptions(model)).createObject(
             """
             ${person.name} is an astrology believer with the sign ${person.sign}.
             Their horoscope for today is:
@@ -244,9 +249,9 @@ class StarNewsFinder(
     // achieves the given goal, so the agent flow can be complete
     @AchievesGoal(
         description = "Create an amusing writeup for the target person based on their horoscope",
-        export= Export(
-            remote=true,
-            name="StarNewsWriteup",
+        export = Export(
+            remote = true,
+            name = "StarNewsWriteup",
             startingInputTypes = [StarPerson::class],
         )
     )
@@ -255,8 +260,9 @@ class StarNewsFinder(
         person: StarPerson,
         relevantNewsStories: RelevantNewsStories,
         horoscope: Horoscope,
-    ): Writeup = using(
-        LlmOptions(model).withTemperature(.9)
+        context: OperationContext
+    ): Writeup =
+        context.promptRunner(llm = LlmOptions(model).withTemperature(0.9)
     ).createObject<Writeup>(
         """
         Take the following news stories and write up something

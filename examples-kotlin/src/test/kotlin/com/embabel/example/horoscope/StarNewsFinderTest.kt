@@ -17,6 +17,7 @@ package com.embabel.example.horoscope
 
 import com.embabel.agent.domain.library.NewsStory
 import com.embabel.agent.domain.library.RelevantNewsStories
+import com.embabel.agent.testing.unit.FakeOperationContext
 import com.embabel.agent.testing.unit.UnitTestUtils
 import com.embabel.example.horoscope.Horoscope
 import com.embabel.example.horoscope.StarNewsFinder
@@ -44,6 +45,11 @@ class StarNewsFinderTest {
 
         @Test
         fun `writeup prompt must contain key data`() {
+            val context = FakeOperationContext()
+            val runner = context.promptRunner()
+
+            context.expectResponse(Writeup("Things are gonna get frosty"))
+
             val wordCount = 100
             val starNewsFinder = StarNewsFinder(
                 horoscopeService = mockk(),
@@ -63,21 +69,23 @@ class StarNewsFinderTest {
             val starPerson = StarPerson(name = "Lynda", sign = "Scorpio")
             val relevantNewsStories = RelevantNewsStories(listOf(cockatoos, emus))
 
+            starNewsFinder.starNewsWriteup(
+                person = starPerson,
+                relevantNewsStories = relevantNewsStories,
+                horoscope = Horoscope("This is a good day for you"),
+                context = context
+            )
 
-            val llmCall = UnitTestUtils.captureLlmCall {
-                starNewsFinder.starNewsWriteup(
-                    person = starPerson,
-                    relevantNewsStories = relevantNewsStories,
-                    horoscope = Horoscope("This is a good day for you"),
-                )
-            }
-            assertTrue(llmCall.prompt.contains(starPerson.name))
-            assertTrue(llmCall.prompt.contains("Scorpio"))
-            assertTrue(llmCall.prompt.contains(cockatoos.summary))
-            assertTrue(llmCall.prompt.contains(emus.summary))
-            assertTrue(llmCall.prompt.contains(wordCount.toString()))
+            val prompt = context.llmInvocations.first().prompt
+            val toolGroups = context.llmInvocations.first().interaction.toolGroups
+
+            assertTrue(prompt.contains(starPerson.name))
+            assertTrue(prompt.contains("Scorpio"))
+            assertTrue(prompt.contains(cockatoos.summary))
+            assertTrue(prompt.contains(emus.summary))
+            assertTrue(prompt.contains(wordCount.toString()))
             assertTrue(
-                llmCall.toolGroups.isEmpty(),
+                toolGroups.isEmpty(),
                 "The LLM should not have been given any tool groups",
             )
         }
