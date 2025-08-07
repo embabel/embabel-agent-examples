@@ -52,13 +52,12 @@ public class StarNewsFinder {
 
     @Action
     public Person extractPerson(UserInput userInput, OperationContext context) {
-        return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41))
-                .createObjectIfPossible(
-                        """
-                                Create a person from this user input, extracting their name:
-                                %s""".formatted(userInput.getContent()),
-                        PersonImpl.class
-                );
+        return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41)).createObjectIfPossible(
+                """
+                        Create a person from this user input, extracting their name:
+                        %s""".formatted(userInput.getContent()),
+                PersonImpl.class
+        );
     }
 
     @Action(cost = 100.0) // Make it costly so it won't be used in a plan unless there's no other path
@@ -77,13 +76,12 @@ public class StarNewsFinder {
 
     @Action
     public StarPerson extractStarPerson(UserInput userInput, OperationContext context) {
-        return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41))
-                .createObjectIfPossible(
-                        """
-                                Create a person from this user input, extracting their name and star sign:
-                                %s""".formatted(userInput.getContent()),
-                        StarPerson.class
-                );
+        return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41)).createObjectIfPossible(
+                """
+                        Create a person from this user input, extracting their name and star sign:
+                        %s""".formatted(userInput.getContent()),
+                StarPerson.class
+        );
     }
 
     @Action
