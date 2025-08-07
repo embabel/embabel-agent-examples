@@ -16,6 +16,7 @@
 package com.embabel.example.horoscope;
 
 import com.embabel.agent.api.annotation.*;
+import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.api.common.PromptRunner;
 import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.core.CoreToolGroups;
@@ -50,8 +51,8 @@ public class StarNewsFinder {
     }
 
     @Action
-    public Person extractPerson(UserInput userInput) {
-        return PromptRunner.usingLlm(LlmOptions.fromModel(OpenAiModels.GPT_41)).createObjectIfPossible(
+    public Person extractPerson(UserInput userInput, OperationContext context) {
+        return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41)).createObjectIfPossible(
                 """
                         Create a person from this user input, extracting their name:
                         %s""".formatted(userInput.getContent()),
@@ -74,8 +75,8 @@ public class StarNewsFinder {
     }
 
     @Action
-    public StarPerson extractStarPerson(UserInput userInput) {
-        return PromptRunner.usingLlm(LlmOptions.fromModel(OpenAiModels.GPT_41)).createObjectIfPossible(
+    public StarPerson extractStarPerson(UserInput userInput, OperationContext context) {
+        return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41)).createObjectIfPossible(
                 """
                         Create a person from this user input, extracting their name and star sign:
                         %s""".formatted(userInput.getContent()),
@@ -90,7 +91,7 @@ public class StarNewsFinder {
 
     // toolGroups specifies tools that are required for this action to run
     @Action(toolGroups = {CoreToolGroups.WEB})
-    public RelevantNewsStories findNewsStories(StarPerson person, Horoscope horoscope) {
+    public RelevantNewsStories findNewsStories(StarPerson person, Horoscope horoscope, OperationContext context) {
         var prompt = """
                 %s is an astrology believer with the sign %s.
                 Their horoscope for today is:
@@ -109,7 +110,7 @@ public class StarNewsFinder {
                 find news stories about training courses.""".formatted(
                 person.name(), person.sign(), horoscope.summary(), storyCount);
 
-        return PromptRunner.usingLlm().createObject(prompt, RelevantNewsStories.class);
+        return context.promptRunner().createObject(prompt, RelevantNewsStories.class);
     }
 
     // The @AchievesGoal annotation indicates that completing this action
@@ -125,7 +126,8 @@ public class StarNewsFinder {
     public Writeup writeup(
             StarPerson person,
             RelevantNewsStories relevantNewsStories,
-            Horoscope horoscope) {
+            Horoscope horoscope,
+            OperationContext context) {
         var llm = LlmOptions.fromCriteria(
                 ModelSelectionCriteria.firstOf(OpenAiModels.GPT_41_MINI)
         ).withTemperature(0.9);
@@ -149,6 +151,6 @@ public class StarNewsFinder {
                 
                 Format it as Markdown with links.""".formatted(
                 person.name(), person.sign(), horoscope.summary(), newsItems);
-        return PromptRunner.usingLlm(llm).createObject(prompt, Writeup.class);
+        return context.promptRunner().withLlm(llm).createObject(prompt, Writeup.class);
     }
 }

@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
-export AGENT_APPLICATION=../../examples-java
+# Resolve the directory this script is in
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-../support/shell_template.sh "$@"
+# Set the path relative to this script's directory
+export AGENT_APPLICATION="$SCRIPT_DIR/../../examples-java"
+
+# Call the shell_template.sh relative to this script's location
+"$SCRIPT_DIR/../support/shell_template.sh" "$@"
