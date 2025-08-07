@@ -43,4 +43,4 @@ echo "Starting application with profile: $MAVEN_PROFILE"
 echo "Application path: $AGENT_APPLICATION"
 
 # Run Maven Spring Boot application
-../../mvnw -U -P "$MAVEN_PROFILE" -f "$POM_FILE" -Dmaven.test.skip=true clean spring-boot:run
+$SCRIPT_DIR/../../mvnw -U -P "$MAVEN_PROFILE" -f "$POM_FILE" -Dmaven.test.skip=true clean spring-boot:run
