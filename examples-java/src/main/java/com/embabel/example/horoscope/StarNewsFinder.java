@@ -54,11 +54,11 @@ public class StarNewsFinder {
   public Person extractPerson(UserInput userInput, OperationContext context) {
     return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41))
         .createObjectIfPossible(
-            """
+        """
                 Create a person from this user input, extracting their name:
                 %s""".formatted(userInput.getContent()),
-            PersonImpl.class
-        );
+        PersonImpl.class
+    );
   }
 
   @Action(cost = 100.0) // Make it costly so it won't be used in a plan unless there's no other path
@@ -77,10 +77,11 @@ public class StarNewsFinder {
 
   @Action
   public StarPerson extractStarPerson(UserInput userInput, OperationContext context) {
-    return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41)).createObjectIfPossible(
+    return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41))
+        .createObjectIfPossible(
         """
-            Create a person from this user input, extracting their name and star sign:
-            %s""".formatted(userInput.getContent()),
+                Create a person from this user input, extracting their name and star sign:
+                %s""".formatted(userInput.getContent()),
         StarPerson.class
     );
   }
@@ -94,21 +95,21 @@ public class StarNewsFinder {
   @Action(toolGroups = {CoreToolGroups.WEB})
   public RelevantNewsStories findNewsStories(StarPerson person, Horoscope horoscope, OperationContext context) {
     var prompt = """
-        %s is an astrology believer with the sign %s.
-        Their horoscope for today is:
-            <horoscope>%s</horoscope>
-        Given this, use web tools and generate search queries
-        to find %d relevant news stories summarize them in a few sentences.
-        Include the URL for each story.
-        Do not look for another horoscope reading or return results directly about astrology;
-        find stories relevant to the reading above.
-        
-        For example:
-        - If the horoscope says that they may
-        want to work on relationships, you could find news stories about
-        novel gifts
-        - If the horoscope says that they may want to work on their career,
-        find news stories about training courses.""".formatted(
+                %s is an astrology believer with the sign %s.
+                Their horoscope for today is:
+                    <horoscope>%s</horoscope>
+                Given this, use web tools and generate search queries
+                to find %d relevant news stories summarize them in a few sentences.
+                Include the URL for each story.
+                Do not look for another horoscope reading or return results directly about astrology;
+                find stories relevant to the reading above.
+                
+                For example:
+                - If the horoscope says that they may
+                want to work on relationships, you could find news stories about
+                novel gifts
+                - If the horoscope says that they may want to work on their career,
+                find news stories about training courses.""".formatted(
         person.name(), person.sign(), horoscope.summary(), storyCount);
 
     return context.promptRunner().createObject(prompt, RelevantNewsStories.class);
@@ -129,7 +130,6 @@ public class StarNewsFinder {
       RelevantNewsStories relevantNewsStories,
       Horoscope horoscope,
       OperationContext context) {
-
     var llm = LlmOptions.fromCriteria(
         ModelSelectionCriteria.firstOf(OpenAiModels.GPT_41_MINI)
     ).withTemperature(0.9);
@@ -139,21 +139,20 @@ public class StarNewsFinder {
         .collect(Collectors.joining("\n"));
 
     var prompt = """
-        Take the following news stories and write up something
-        amusing for the target person.
-        
-        Begin by summarizing their horoscope in a concise, amusing way, then
-        talk about the news. End with a surprising signoff.
-        
-        %s is an astrology believer with the sign %s.
-        Their horoscope for today is:
-            <horoscope>%s</horoscope>
-        Relevant news stories are:
-        %s
-        
-        Format it as Markdown with links.""".formatted(
+                Take the following news stories and write up something
+                amusing for the target person.
+                
+                Begin by summarizing their horoscope in a concise, amusing way, then
+                talk about the news. End with a surprising signoff.
+                
+                %s is an astrology believer with the sign %s.
+                Their horoscope for today is:
+                    <horoscope>%s</horoscope>
+                Relevant news stories are:
+                %s
+                
+                Format it as Markdown with links.""".formatted(
         person.name(), person.sign(), horoscope.summary(), newsItems);
-
     return context.promptRunner().withLlm(llm).createObject(prompt, Writeup.class);
   }
 }
