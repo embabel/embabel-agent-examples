@@ -21,10 +21,8 @@ import com.embabel.agent.domain.io.UserInput;
 import com.embabel.common.ai.model.LlmOptions;
 import com.embabel.example.horoscope.StarPerson;
 import com.embabel.example.horoscope.Writeup;
-import com.embabel.example.wikipedia.ResearchSubject;
 
 record Choice(String choice) {
-
 }
 
 record AdventureLog(String log) {
@@ -43,14 +41,14 @@ public class Handoff {
 
     @Action
     @AchievesGoal(description = "Choose your own adventure",
-        export = @Export(name="chooseAdventure", remote = true, startingInputTypes = {UserInput.class}))
+            export = @Export(name = "chooseAdventure", remote = true, startingInputTypes = {UserInput.class}))
     AdventureLog chooseAdventure(Choice choice, OperationContext operationContext) {
         return operationContext.promptRunner()
-                .withLlm(LlmOptions.fromModel("gpt-4.1-nano"))
+                .withLlm(LlmOptions.withAutoLlm())
                 .withHandoffs(StarPerson.class, Writeup.class)
                 .createObject("""
-                    Based on the user's input, decide what to do. You might do something related to a horoscope or some fact checking.
-                    What they said: %s
-                    """.formatted(choice.choice()), AdventureLog.class);
+                        Based on the user's input, decide what to do. You might do something related to a horoscope or some fact checking.
+                        What they said: %s
+                        """.formatted(choice.choice()), AdventureLog.class);
     }
 }
