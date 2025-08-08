@@ -15,7 +15,7 @@
  */
 package com.embabel.example.repeatuntil;
 
-import com.embabel.agent.api.common.workflow.RepeatUntilBuilder;
+import com.embabel.agent.api.common.workflow.RepeatUntilAcceptableBuilder;
 import com.embabel.agent.api.common.workflow.TextFeedback;
 import com.embabel.agent.core.Agent;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +32,7 @@ public class GoatWriterConfig {
 
     @Bean
     public Agent goatWriter() {
-        return RepeatUntilBuilder
+        return RepeatUntilAcceptableBuilder
                 .returning(Goat.class)
                 .withMaxIterations(3)
                 .repeating(context -> {

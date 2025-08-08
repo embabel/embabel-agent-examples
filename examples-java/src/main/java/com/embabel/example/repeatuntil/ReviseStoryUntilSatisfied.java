@@ -19,7 +19,7 @@ import com.embabel.agent.api.annotation.AchievesGoal;
 import com.embabel.agent.api.annotation.Action;
 import com.embabel.agent.api.annotation.Agent;
 import com.embabel.agent.api.common.ActionContext;
-import com.embabel.agent.api.common.workflow.RepeatUntilBuilder;
+import com.embabel.agent.api.common.workflow.RepeatUntilAcceptableBuilder;
 import com.embabel.agent.api.common.workflow.TextFeedback;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.common.ai.model.LlmOptions;
@@ -42,7 +42,7 @@ class ReviseStoryUntilSatisfied {
                 .withLlm(LlmOptions.fromModel("gpt-4.1-mini").withTemperature(.8));
         var reviewerPromptRunner = actionContext.promptRunner()
                 .withLlm(LlmOptions.fromModel("gpt-4.1-mini"));
-        return RepeatUntilBuilder
+        return RepeatUntilAcceptableBuilder
                 .returning(Story.class)
                 .withMaxIterations(7)
                 .withScoreThreshold(.8)
