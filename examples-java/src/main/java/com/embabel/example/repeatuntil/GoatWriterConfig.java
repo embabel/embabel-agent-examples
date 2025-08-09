@@ -23,7 +23,7 @@ import com.embabel.common.ai.model.LlmOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-record Goat(String name) {
+record Goat(String description) {
 }
 
 /**
