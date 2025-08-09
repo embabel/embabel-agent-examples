@@ -112,7 +112,7 @@ class FactChecker {
                 .toList();
         return ConsensusBuilder
                 .returning(DistinctFactualAssertions.class)
-                .withGeneratorTransforms(generators)
+                .withSources(generators)
                 .withConsensusBy(this::getDistinctFactualAssertions)
                 .asSubProcess(actionContext);
     }
