@@ -15,8 +15,8 @@
  */
 package com.embabel.example.repeatuntil;
 
-import com.embabel.agent.api.common.workflow.RepeatUntilAcceptableBuilder;
-import com.embabel.agent.api.common.workflow.TextFeedback;
+import com.embabel.agent.api.common.workflow.loop.RepeatUntilAcceptableBuilder;
+import com.embabel.agent.api.common.workflow.loop.TextFeedback;
 import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.core.Agent;
 import com.embabel.common.ai.model.LlmOptions;

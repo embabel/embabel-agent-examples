@@ -19,8 +19,8 @@ import com.embabel.agent.api.annotation.AchievesGoal;
 import com.embabel.agent.api.annotation.Action;
 import com.embabel.agent.api.annotation.Agent;
 import com.embabel.agent.api.common.ActionContext;
-import com.embabel.agent.api.common.workflow.RepeatUntilAcceptableBuilder;
-import com.embabel.agent.api.common.workflow.TextFeedback;
+import com.embabel.agent.api.common.workflow.loop.RepeatUntilAcceptableBuilder;
+import com.embabel.agent.api.common.workflow.loop.TextFeedback;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.common.ai.model.LlmOptions;
 
