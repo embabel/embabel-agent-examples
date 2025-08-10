@@ -28,7 +28,6 @@ import com.embabel.agent.prompt.ResponseFormat
 import com.embabel.agent.prompt.persona.Persona
 import com.embabel.common.ai.model.LlmOptions
 import com.embabel.common.ai.model.ModelProvider.Companion.CHEAPEST_ROLE
-import com.embabel.common.ai.model.ModelSelectionCriteria.Companion.byRole
 import com.embabel.common.ai.prompt.PromptContributor
 import com.embabel.common.ai.prompt.PromptContributorConsumer
 import com.embabel.common.core.types.Timestamped
@@ -120,16 +119,17 @@ class Researcher(
     @Action
     fun categorize(
         userInput: UserInput,
-    ): Categorization = using(
-        llm = LlmOptions(byRole(CHEAPEST_ROLE)),
-    ).create(
-        """
+        context: OperationContext,
+    ): Categorization = context.ai()
+        .withLlmByRole(CHEAPEST_ROLE)
+        .create(
+            """
         Categorize the following user input:
 
         Topic:
         <${userInput.content}>
     """.trimIndent()
-    )
+        )
 
     /**
      * Performs research using the GPT-4 model.
@@ -366,8 +366,10 @@ class Researcher(
     fun critiqueMergedReport(
         userInput: UserInput,
         @RequireNameMatch mergedReport: ResearchReport,
-    ): Critique = using(LlmOptions(properties.criticModeName)).create(
-        """
+        context: OperationContext,
+    ): Critique = context.ai().withLlm(properties.criticModeName)
+        .create(
+            """
             Is this research report satisfactory? Consider the following question:
             <${userInput.content}>
             The report is satisfactory if it answers the question with adequate references.
@@ -376,7 +378,7 @@ class Researcher(
 
             ${mergedReport.infoString(verbose = true)}
         """.trimIndent(),
-    )
+        )
 
     /**
      * Combines the research reports from different models into a single, improved report.
@@ -396,12 +398,13 @@ class Researcher(
         userInput: UserInput,
         @RequireNameMatch gpt4Report: SingleLlmReport,
         @RequireNameMatch claudeReport: SingleLlmReport,
+        context: OperationContext,
     ): ResearchReport {
         val reports = listOf(
             gpt4Report,
             claudeReport,
         )
-        return using(
+        return context.promptRunner(
             llm = LlmOptions(properties.criticModeName),
             promptContributors = properties.promptContributors,
         ).create(
