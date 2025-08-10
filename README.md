@@ -80,7 +80,11 @@ You can create your own agent repo from our [Java](https://github.com/embabel/ja
 or [Kotlin](https://github.com/embabel/kotlin-agent-template) GitHub template by clicking the "Use this template"
 button.
 
-Or create your own Embabel agent project locally with our quick start tool:
+> Note that this repository uses the latest Embabel snapshots, whereas the Java and Kotlin templates use
+> the latest milestone release.
+
+
+You can also create your own Embabel agent project locally with our quick start tool, which allows some customization:
 
 ```
 uvx --from git+https://github.com/embabel/project-creator.git project-creator
