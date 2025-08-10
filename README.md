@@ -25,7 +25,11 @@
 
 # 🤖 Embabel Agent Examples
 
-Learn agentic AI development with **Spring Framework** and **Kotlin/Java**. These examples demonstrate building intelligent agents that can plan, execute workflows, use tools, and interact with humans.
+Learn agentic AI development with **Spring Framework** and **Java** or **Kotlin**. These examples demonstrate building intelligent agents that can plan, execute workflows, use tools, and interact with humans.
+
+> This repository uses the latest Embabel snapshots to illustrate current best practice, whereas the [Java](https://github.com/embabel/java-agent-template) and [Kotlin](https://github.com/embabel/kotlin-agent-template) template repositories s use the latest milestone release for greater stability.
+> There may be some minor API incompatilibites and not everything you see here may work in your own project created
+> from one of those templates, unless you upgrade the `embabel-agent.version` property in the POM file, as in this repository.
 
 ## 🚀 Quick Start
 
@@ -79,10 +83,6 @@ shell.cmd --docker-tools      # Windows - With Docker integration
 You can create your own agent repo from our [Java](https://github.com/embabel/java-agent-template)
 or [Kotlin](https://github.com/embabel/kotlin-agent-template) GitHub template by clicking the "Use this template"
 button.
-
-> Note that this repository uses the latest Embabel snapshots, whereas the Java and Kotlin templates use
-> the latest milestone release.
-
 
 You can also create your own Embabel agent project locally with our quick start tool, which allows some customization:
 
