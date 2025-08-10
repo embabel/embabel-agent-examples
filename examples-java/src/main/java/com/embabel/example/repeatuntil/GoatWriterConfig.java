@@ -19,7 +19,6 @@ import com.embabel.agent.api.common.workflow.loop.RepeatUntilAcceptableBuilder;
 import com.embabel.agent.api.common.workflow.loop.TextFeedback;
 import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.core.Agent;
-import com.embabel.common.ai.model.LlmOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,8 +39,8 @@ public class GoatWriterConfig {
                 .repeating(context -> {
                     var lastFeedback = context.getInput().lastFeedback();
                     var feedback = lastFeedback != null ? "Feedback: " + lastFeedback.getFeedback() : "";
-                    return context.promptRunner()
-                            .withLlm(LlmOptions.withModel(OpenAiModels.GPT_5_NANO))
+                    return context.ai()
+                            .withLlm(OpenAiModels.GPT_5_NANO)
                             .createObject(
                                     """
                                             Describe a goat in 200 words. Be creative.
@@ -51,7 +50,7 @@ public class GoatWriterConfig {
                                     Goat.class);
                 })
                 .withEvaluator(context ->
-                        context.promptRunner().createObject(
+                        context.ai().withDefaultLlm().createObject(
                                 """
                                         Evaluate the goat description for creativity and detail.
                                         The goat must have a name.

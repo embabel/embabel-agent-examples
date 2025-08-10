@@ -26,7 +26,6 @@ import com.embabel.agent.domain.io.UserInput
 import com.embabel.agent.domain.library.InternetResource
 import com.embabel.agent.domain.library.InternetResources
 import com.embabel.common.ai.model.LlmOptions
-import com.embabel.common.ai.model.ModelSelectionCriteria
 import com.embabel.common.core.types.ZeroToOne
 import com.fasterxml.jackson.annotation.JsonPropertyDescription
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -110,7 +109,7 @@ fun factCheckerAgent(
         aggregate<UserInput, FactualAssertions, RationalizedFactualAssertions>(
             transforms = llms.map { llm ->
                 { context ->
-                    context.promptRunner(llm = llm).withToolGroup(CoreToolGroups.WEB).createObject(
+                    context.ai().withLlm(llm).withToolGroup(CoreToolGroups.WEB).createObject(
                         """
             Given the following content, identify any factual assertions.
             Phrase them as standalone assertions.
@@ -124,7 +123,7 @@ fun factCheckerAgent(
                 }
             },
             merge = { list, context ->
-                context.promptRunner().createObject<RationalizedFactualAssertions>(
+                context.ai().withDefaultLlm().createObject<RationalizedFactualAssertions>(
                     """
                     Given the following factual assertions, merge them into a single list if
                     any are the same. Condense into one assertion if one assertion negates another.
@@ -139,9 +138,7 @@ fun factCheckerAgent(
     }
 
     transformation<RationalizedFactualAssertions, FactCheck> { operationContext ->
-        val promptRunner = operationContext.promptRunner(
-            LlmOptions(ModelSelectionCriteria.Auto),
-        ).withToolGroups(
+        val promptRunner = operationContext.ai().withAutoLlm().withToolGroups(
             setOf(CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION),
         )
         val checks = operationContext.input.factualAssertions.parallelMap(operationContext) { assertion ->

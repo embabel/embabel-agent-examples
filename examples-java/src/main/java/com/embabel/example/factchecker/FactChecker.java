@@ -1,3 +1,18 @@
+/*
+ * Copyright 2024-2025 Embabel Software, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.embabel.example.factchecker;
 
 import com.embabel.agent.api.annotation.AchievesGoal;
@@ -123,7 +138,7 @@ class FactChecker {
     FactChecks factChecks(
             DistinctFactualAssertions distinctFactualAssertions,
             OperationContext context) {
-        var promptRunner = context.promptRunner().withLlm(
+        var promptRunner = context.ai().withLlm(
                         LlmOptions.withModel(OpenAiModels.GPT_41_MINI)
                 )
                 .withToolGroup(CoreToolGroups.WEB);
@@ -152,7 +167,7 @@ class FactChecker {
     }
 
     private DistinctFactualAssertions generate(UserInput userInput, ActionContext context, LlmOptions llm) {
-        return context.promptRunner()
+        return context.ai()
                 .withLlm(llm)
                 .createObject(
                         """
@@ -182,7 +197,7 @@ class FactChecker {
         var assertionsContent = allAssertions.stream()
                 .map(FactualAssertion::standaloneAssertion)
                 .collect(Collectors.joining("\n"));
-        return context.promptRunner().withLlm(
+        return context.ai().withLlm(
                 properties.deduplicationLlm()
         ).createObject(
                 """

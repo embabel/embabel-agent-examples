@@ -21,6 +21,7 @@ import com.embabel.agent.api.annotation.Agent;
 import com.embabel.agent.api.common.ActionContext;
 import com.embabel.agent.api.common.workflow.loop.RepeatUntilAcceptableBuilder;
 import com.embabel.agent.api.common.workflow.loop.TextFeedback;
+import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.common.ai.model.LlmOptions;
 
@@ -38,10 +39,10 @@ class ReviseStoryUntilSatisfied {
     Story rewriteUntilSatisfied(
             UserInput userInput,
             ActionContext actionContext) {
-        var writerPromptRunner = actionContext.promptRunner()
-                .withLlm(LlmOptions.fromModel("gpt-4.1-mini").withTemperature(.8));
-        var reviewerPromptRunner = actionContext.promptRunner()
-                .withLlm(LlmOptions.fromModel("gpt-4.1-mini"));
+        var writerPromptRunner = actionContext.ai()
+                .withLlm(LlmOptions.withModel(OpenAiModels.GPT_41_MINI).withTemperature(.8));
+        var reviewerPromptRunner = actionContext.ai()
+                .withLlm(LlmOptions.withModel(OpenAiModels.GPT_41_MINI).withTemperature(0));
         return RepeatUntilAcceptableBuilder
                 .returning(Story.class)
                 .withMaxIterations(7)

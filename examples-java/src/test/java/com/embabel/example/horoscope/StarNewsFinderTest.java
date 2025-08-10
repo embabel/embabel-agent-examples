@@ -28,46 +28,45 @@ import static org.mockito.Mockito.mock;
 
 public class StarNewsFinderTest {
 
-  @Nested
-  class Writeup {
+    @Nested
+    class Writeup {
 
-    @Test
-    void writeupPromptMustContainKeyData() {
+        @Test
+        void writeupPromptMustContainKeyData() {
 
-      HoroscopeService horoscopeService = mock(HoroscopeService.class);
-      StarNewsFinder starNewsFinder = new StarNewsFinder(horoscopeService, 5);
-      var context = new FakeOperationContext();
-      var runner = context.getPromptRunner();
-      context.expectResponse(new com.embabel.example.horoscope.Writeup("Gonna be a good day"));
+            HoroscopeService horoscopeService = mock(HoroscopeService.class);
+            StarNewsFinder starNewsFinder = new StarNewsFinder(horoscopeService, 5);
+            var context = new FakeOperationContext();
+            context.expectResponse(new com.embabel.example.horoscope.Writeup("Gonna be a good day"));
 
-      NewsStory cockatoos = new NewsStory(
-          "https://fake.com.au",
-          "Cockatoo behavior",
-          "Cockatoos are eating cabbages"
-      );
+            NewsStory cockatoos = new NewsStory(
+                    "https://fake.com.au",
+                    "Cockatoo behavior",
+                    "Cockatoos are eating cabbages"
+            );
 
-      NewsStory emus = new NewsStory(
-          "https://morefake.com.au",
-          "Emu movements",
-          "Emus are massing"
-      );
+            NewsStory emus = new NewsStory(
+                    "https://morefake.com.au",
+                    "Emu movements",
+                    "Emus are massing"
+            );
 
-      StarPerson starPerson = new StarPerson("Lynda", "Scorpio");
-      RelevantNewsStories relevantNewsStories = new RelevantNewsStories(Arrays.asList(cockatoos, emus));
-      Horoscope horoscope = new Horoscope("This is a good day for you");
+            StarPerson starPerson = new StarPerson("Lynda", "Scorpio");
+            RelevantNewsStories relevantNewsStories = new RelevantNewsStories(Arrays.asList(cockatoos, emus));
+            Horoscope horoscope = new Horoscope("This is a good day for you");
 
-      starNewsFinder.writeup(starPerson, relevantNewsStories, horoscope, context);
+            starNewsFinder.writeup(starPerson, relevantNewsStories, horoscope, context);
 
-      var prompt = context.getLlmInvocations().getFirst().getPrompt();
-      var toolGroups = context.getLlmInvocations().getFirst().getInteraction().getToolGroups();
+            var prompt = context.getLlmInvocations().getFirst().getPrompt();
+            var toolGroups = context.getLlmInvocations().getFirst().getInteraction().getToolGroups();
 
 
-      assertTrue(prompt.contains(starPerson.getName()));
-      assertTrue(prompt.contains(starPerson.sign()));
-      assertTrue(prompt.contains(cockatoos.getSummary()));
-      assertTrue(prompt.contains(emus.getSummary()));
+            assertTrue(prompt.contains(starPerson.getName()));
+            assertTrue(prompt.contains(starPerson.sign()));
+            assertTrue(prompt.contains(cockatoos.getSummary()));
+            assertTrue(prompt.contains(emus.getSummary()));
 
-      assertTrue(toolGroups.isEmpty(), "The LLM should not have been given any tool groups");
+            assertTrue(toolGroups.isEmpty(), "The LLM should not have been given any tool groups");
+        }
     }
-  }
 }

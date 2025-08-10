@@ -18,7 +18,6 @@ package com.embabel.example.handoff;
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.domain.io.UserInput;
-import com.embabel.common.ai.model.LlmOptions;
 import com.embabel.example.horoscope.StarPerson;
 import com.embabel.example.horoscope.Writeup;
 
@@ -43,8 +42,8 @@ public class Handoff {
     @AchievesGoal(description = "Choose your own adventure",
             export = @Export(name = "chooseAdventure", remote = true, startingInputTypes = {UserInput.class}))
     AdventureLog chooseAdventure(Choice choice, OperationContext operationContext) {
-        return operationContext.promptRunner()
-                .withLlm(LlmOptions.withAutoLlm())
+        return operationContext.ai()
+                .withAutoLlm()
                 .withHandoffs(StarPerson.class, Writeup.class)
                 .createObject("""
                         Based on the user's input, decide what to do. You might do something related to a horoscope or some fact checking.

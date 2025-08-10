@@ -25,7 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 import java.util.stream.Collectors;
 
-record FocusAreas(List<FocusArea> focusAreas) {}
+record FocusAreas(List<FocusArea> focusAreas) {
+}
 
 record FocusArea(String topic) {
 }
@@ -51,45 +52,45 @@ public class WikiAgent {
 
     @Action
     FocusAreas focusAreas(ResearchSubject researchSubject, OperationContext context) {
-        return context.promptRunner()
+        return context.ai()
                 .withLlm(llm.withTemperature(.6))
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject("""
-                    What are some interesting topics to explore about %s?
-                    Please provide a list of focus areas, each as a separate line.
-                    Go beyond the obvious: emphasize quirky and lesser-known aspects.
-                    Use Wikipedia as the source of information.
-                    """.formatted(researchSubject.name()), FocusAreas.class);
+                        What are some interesting topics to explore about %s?
+                        Please provide a list of focus areas, each as a separate line.
+                        Go beyond the obvious: emphasize quirky and lesser-known aspects.
+                        Use Wikipedia as the source of information.
+                        """.formatted(researchSubject.name()), FocusAreas.class);
     }
 
     @Action
     FocusArea findFocusArea(ResearchSubject researchSubject, FocusAreas focusAreas) {
         return WaitFor.formSubmission(
                 """
-                    Great, there are lots of interesting things to explore about %s.
-                    Choices:
-                        %s
-                    Please select one of the topics above to focus on.
-                    """.formatted(researchSubject.name(),
-                                focusAreas.focusAreas().stream().map(FocusArea::topic)
-                                        .collect(Collectors.joining("\n"))),
+                        Great, there are lots of interesting things to explore about %s.
+                        Choices:
+                            %s
+                        Please select one of the topics above to focus on.
+                        """.formatted(researchSubject.name(),
+                        focusAreas.focusAreas().stream().map(FocusArea::topic)
+                                .collect(Collectors.joining("\n"))),
                 FocusArea.class);
     }
 
     @Action
     @AchievesGoal(description = "Find information from wikipedia according to the user's request.",
-            export = @Export(remote = true, name="wikiSearch", startingInputTypes = {ResearchSubject.class})
+            export = @Export(remote = true, name = "wikiSearch", startingInputTypes = {ResearchSubject.class})
     )
     ResearchReport performResearch(ResearchSubject researchSubject, FocusArea focusArea, OperationContext context) {
-        return context.promptRunner()
+        return context.ai()
                 .withLlm(llm.withTemperature(.8))
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject("""
-                    Research the following subject on Wikipedia, with the given focus area, and summarize it
-                    in %d words:
-                    Subject: %s
-                    Focus Area: %s
-                    """.formatted(wordCount, researchSubject.name(), focusArea.topic()),
+                                Research the following subject on Wikipedia, with the given focus area, and summarize it
+                                in %d words:
+                                Subject: %s
+                                Focus Area: %s
+                                """.formatted(wordCount, researchSubject.name(), focusArea.topic()),
                         ResearchReport.class);
     }
 }

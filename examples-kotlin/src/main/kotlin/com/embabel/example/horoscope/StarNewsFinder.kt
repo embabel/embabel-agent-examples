@@ -26,8 +26,6 @@ import com.embabel.agent.domain.library.HasContent
 import com.embabel.agent.domain.library.Person
 import com.embabel.agent.domain.library.RelevantNewsStories
 import com.embabel.common.ai.model.LlmOptions
-import com.embabel.common.ai.model.ModelSelectionCriteria.Companion.Auto
-import com.embabel.example.horoscope.HoroscopeService
 import com.embabel.ux.form.Text
 import com.fasterxml.jackson.annotation.JsonClassDescription
 import com.fasterxml.jackson.annotation.JsonPropertyDescription
@@ -117,7 +115,7 @@ class StarNewsFinder(
     @Action
     fun extractPerson(userInput: UserInput, context: OperationContext): Person? =
         // All prompts are typesafe
-        context.promptRunner().createObjectIfPossible(
+        context.ai().withDefaultLlm().createObjectIfPossible(
             """
             Create a person from this user input, extracting their name:
             ${userInput.content}
@@ -173,7 +171,7 @@ class StarNewsFinder(
      */
     @Action
     fun extractStarPerson(userInput: UserInput, context: OperationContext): StarPerson? =
-        context.promptRunner(llm = LlmOptions(Auto)).createObjectIfPossible(
+        context.ai().withAutoLlm().createObjectIfPossible(
             """
             Create a person from this user input, extracting their name and star sign:
             ${userInput.content}
@@ -212,7 +210,7 @@ class StarNewsFinder(
         horoscope: Horoscope,
         context: OperationContext
     ): RelevantNewsStories =
-        context.promptRunner(llm = LlmOptions(model)).createObject(
+        context.ai().withLlm(model).createObject(
             """
             ${person.name} is an astrology believer with the sign ${person.sign}.
             Their horoscope for today is:
@@ -262,9 +260,10 @@ class StarNewsFinder(
         horoscope: Horoscope,
         context: OperationContext
     ): Writeup =
-        context.promptRunner(llm = LlmOptions(model).withTemperature(0.9)
-    ).createObject<Writeup>(
-        """
+        context.ai().withLlm(
+            llm = LlmOptions.withModel(model).withTemperature(0.9)
+        ).createObject(
+            """
         Take the following news stories and write up something
         amusing for the target person in $wordCount words.
 
@@ -279,6 +278,6 @@ class StarNewsFinder(
 
         Format it as Markdown with links.
         """.trimIndent()
-    )
+        )
 
 }

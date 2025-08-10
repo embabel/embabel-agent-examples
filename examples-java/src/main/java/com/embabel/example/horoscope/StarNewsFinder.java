@@ -17,7 +17,6 @@ package com.embabel.example.horoscope;
 
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
-import com.embabel.agent.api.common.PromptRunner;
 import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.core.CoreToolGroups;
 import com.embabel.agent.domain.io.UserInput;
@@ -52,7 +51,7 @@ public class StarNewsFinder {
 
     @Action
     public Person extractPerson(UserInput userInput, OperationContext context) {
-        return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41)).createObjectIfPossible(
+        return context.ai().withLlm(OpenAiModels.GPT_41).createObjectIfPossible(
                 """
                         Create a person from this user input, extracting their name:
                         %s""".formatted(userInput.getContent()),
@@ -76,7 +75,7 @@ public class StarNewsFinder {
 
     @Action
     public StarPerson extractStarPerson(UserInput userInput, OperationContext context) {
-        return context.promptRunner().withLlm(LlmOptions.fromModel(OpenAiModels.GPT_41)).createObjectIfPossible(
+        return context.ai().withLlm(OpenAiModels.GPT_41).createObjectIfPossible(
                 """
                         Create a person from this user input, extracting their name and star sign:
                         %s""".formatted(userInput.getContent()),
@@ -110,7 +109,7 @@ public class StarNewsFinder {
                 find news stories about training courses.""".formatted(
                 person.name(), person.sign(), horoscope.summary(), storyCount);
 
-        return context.promptRunner().createObject(prompt, RelevantNewsStories.class);
+        return context.ai().withDefaultLlm().createObject(prompt, RelevantNewsStories.class);
     }
 
     // The @AchievesGoal annotation indicates that completing this action
@@ -151,6 +150,6 @@ public class StarNewsFinder {
                 
                 Format it as Markdown with links.""".formatted(
                 person.name(), person.sign(), horoscope.summary(), newsItems);
-        return context.promptRunner().withLlm(llm).createObject(prompt, Writeup.class);
+        return context.ai().withLlm(llm).createObject(prompt, Writeup.class);
     }
 }
