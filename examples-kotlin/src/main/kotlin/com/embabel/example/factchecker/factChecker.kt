@@ -39,16 +39,16 @@ data class FactualAssertions(val factualAssertions: List<FactualAssertion>)
 
 data class RationalizedFactualAssertions(
     val factualAssertions: List<FactualAssertion>,
-    @JsonPropertyDescription("factual assertions that were merged")
+    @param:JsonPropertyDescription("factual assertions that were merged")
     val numberMerged: Int,
 )
 
 data class AssertionCheck(
     val assertion: String,
     val isTrue: Boolean,
-    @JsonPropertyDescription("confidence in your judgment as to whether the assertion true or false. From 0-1")
+    @param:JsonPropertyDescription("confidence in your judgment as to whether the assertion true or false. From 0-1")
     val confidence: ZeroToOne,
-    @JsonPropertyDescription("reasoning for your scoring")
+    @param:JsonPropertyDescription("reasoning for your scoring")
     val reasoning: String,
     override val links: List<InternetResource>,
 ) : InternetResources
@@ -104,8 +104,6 @@ fun factCheckerAgent(
 
     flow {
 
-//        referencedAgentAction<UserInput, ResearchReport>(agentName = Researcher::class.java.name)
-
         aggregate<UserInput, FactualAssertions, RationalizedFactualAssertions>(
             transforms = llms.map { llm ->
                 { context ->
@@ -138,9 +136,11 @@ fun factCheckerAgent(
     }
 
     transformation<RationalizedFactualAssertions, FactCheck> { operationContext ->
-        val promptRunner = operationContext.ai().withAutoLlm().withToolGroups(
-            setOf(CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION),
-        )
+        val promptRunner = operationContext.ai()
+            .withAutoLlm()
+            .withTools(
+                CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION,
+            )
         val checks = operationContext.input.factualAssertions.parallelMap(operationContext) { assertion ->
             promptRunner.createObject<AssertionCheck>(
                 """
