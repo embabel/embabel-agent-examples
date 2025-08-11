@@ -42,7 +42,7 @@ class ReviseStoryUntilSatisfied {
         var writerPromptRunner = actionContext.ai()
                 .withLlm(LlmOptions.withModel(OpenAiModels.GPT_41_MINI).withTemperature(.8));
         var reviewerPromptRunner = actionContext.ai()
-                .withLlm(LlmOptions.withModel(OpenAiModels.GPT_41_MINI).withTemperature(0));
+                .withLlm(LlmOptions.withModel(OpenAiModels.GPT_41_MINI));
         return RepeatUntilAcceptableBuilder
                 .returning(Story.class)
                 .withMaxIterations(7)
