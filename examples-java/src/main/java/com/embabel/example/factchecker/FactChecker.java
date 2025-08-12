@@ -20,7 +20,6 @@ import com.embabel.agent.api.annotation.Action;
 import com.embabel.agent.api.annotation.Agent;
 import com.embabel.agent.api.common.ActionContext;
 import com.embabel.agent.api.common.OperationContext;
-import com.embabel.agent.api.common.SupplierActionContext;
 import com.embabel.agent.api.common.TransformationActionContext;
 import com.embabel.agent.api.common.workflow.control.ResultList;
 import com.embabel.agent.api.common.workflow.multimodel.ConsensusBuilder;
@@ -30,10 +29,11 @@ import com.embabel.agent.domain.io.UserInput;
 import com.embabel.agent.domain.library.InternetResource;
 import com.embabel.common.ai.model.LlmOptions;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.google.common.base.Supplier;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 record FactualAssertion(String standaloneAssertion) {
@@ -51,10 +51,6 @@ record FactCheck(
         String reasoning,
         List<InternetResource> links
 ) {
-
-    List<InternetResource> getLinks() {
-        return links;
-    }
 }
 
 record FactChecks(
@@ -72,31 +68,6 @@ record FactCheckerProperties(
         String deduplicationModel,
         int maxConcurrency
 ) {
-    FactCheckerProperties() {
-        this(
-                30,
-                List.of(
-                        "Wikipedia",
-                        "Wikidata",
-                        "Britannica",
-                        "BBC",
-                        "Reuters",
-                        "ABC Australia"
-                ),
-                List.of(
-                        "Reddit",
-                        "4chan",
-                        "Twitter"
-                ),
-                List.of(
-                        OpenAiModels.GPT_41_MINI,
-                        OpenAiModels.GPT_5_NANO,
-                        OpenAiModels.GPT_5_MINI
-                ),
-                OpenAiModels.GPT_5_MINI,
-                8
-        );
-    }
 
     List<LlmOptions> llms() {
         return models.stream()
@@ -117,17 +88,16 @@ class FactChecker {
 
     public FactChecker(FactCheckerProperties properties) {
         this.properties = properties;
+        LoggerFactory.getLogger(FactChecker.class).info("FactChecker initialized with properties: {}", properties);
     }
 
     @Action
-    DistinctFactualAssertions identifyDistinctFactualAssertions(UserInput userInput, ActionContext actionContext) {
-        var generators = properties.llms().stream()
-                .map(llm -> (Function<SupplierActionContext<DistinctFactualAssertions>, DistinctFactualAssertions>) context ->
-                        generate(userInput, context, llm))
-                .toList();
+    DistinctFactualAssertions identifyDistinctFactualAssertions(
+            UserInput userInput,
+            ActionContext actionContext) {
         return ConsensusBuilder
                 .returning(DistinctFactualAssertions.class)
-                .withSources(generators)
+                .sourcedFrom(generators(userInput, actionContext))
                 .withConsensusBy(this::getDistinctFactualAssertions)
                 .asSubProcess(actionContext);
     }
@@ -166,6 +136,15 @@ class FactChecker {
         return new FactChecks(checks);
     }
 
+    private List<Supplier<DistinctFactualAssertions>> generators(UserInput userInput, ActionContext actionContext) {
+        return properties.llms().stream()
+                .map(llm -> (Supplier<DistinctFactualAssertions>) () -> generate(userInput, actionContext, llm))
+                .toList();
+    }
+
+    /**
+     * Generate distinct factual assertions from the user input using the given LLM
+     */
     private DistinctFactualAssertions generate(UserInput userInput, ActionContext context, LlmOptions llm) {
         return context.ai()
                 .withLlm(llm)
@@ -177,6 +156,9 @@ class FactChecker {
                                 
                                 The assertions may overlap, so you should
                                 return a list of distinct factual assertions, each expressed it at most %d words.
+                                
+                                If the input directs you to fact check, ignore that (that's not a fact you need worry about!)
+                                and focus on extracting factual assertions.
                                 
                                 TEXT TO ANALYZE FOLLOWS:
                                 %s
@@ -197,40 +179,40 @@ class FactChecker {
         var assertionsContent = allAssertions.stream()
                 .map(FactualAssertion::standaloneAssertion)
                 .collect(Collectors.joining("\n"));
-        return context.ai().withLlm(
-                properties.deduplicationLlm()
-        ).createObject(
-                """
-                        Your role is to consolidate different factual assertions into a single list,
-                        with no overlap.
-                        Each assertion you return should be clear and stand by itself.
-                        
-                        For example, if the input is:
-                        
-                        - "The sky is blue."
-                        - "The sky is blue and the grass is green."
-                        - "The grass is green."
-                        You should return:
-                        - "The sky is blue."
-                        - "The grass is green."
-                        
-                        If the input is:
-                        - France is larger than Sweden
-                        - The user suggested that France is larger than Sweden
-                        - Check whether France is larger than Sweden
-                        You should return:
-                        - "France is larger than Sweden."
-                        
-                        
-                        Consolidate the following potentially overlapping factual assertions into a single list.
-                        Each assertion should be expressed in at most %d words.
-                        
-                        TEXT TO CONSIDER:
-                        %s
+        return context.ai()
+                .withLlm(properties.deduplicationLlm())
+                .createObject(
                         """
-                        .formatted(properties.reasoningWordCount(), assertionsContent),
-                DistinctFactualAssertions.class
-        );
+                                Your role is to consolidate different factual assertions into a single list,
+                                with no overlap.
+                                Each assertion you return should be clear and stand by itself.
+                                
+                                For example, if the input is:
+                                
+                                - "The sky is blue."
+                                - "The sky is blue and the grass is green."
+                                - "The grass is green."
+                                You should return:
+                                - "The sky is blue."
+                                - "The grass is green."
+                                
+                                If the input is:
+                                - France is larger than Sweden
+                                - The user suggested that France is larger than Sweden
+                                - Check whether France is larger than Sweden
+                                You should return:
+                                - "France is larger than Sweden."
+                                
+                                
+                                Consolidate the following potentially overlapping factual assertions into a single list.
+                                Each assertion should be expressed in at most %d words.
+                                
+                                TEXT TO CONSIDER:
+                                %s
+                                """
+                                .formatted(properties.reasoningWordCount(), assertionsContent),
+                        DistinctFactualAssertions.class
+                );
     }
 
 
