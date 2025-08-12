@@ -23,6 +23,7 @@ import com.embabel.agent.api.common.ActionContext;
 import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.api.common.TransformationActionContext;
 import com.embabel.agent.api.common.workflow.control.ResultList;
+import com.embabel.agent.api.common.workflow.control.ScatterGatherBuilder;
 import com.embabel.agent.api.common.workflow.multimodel.ConsensusBuilder;
 import com.embabel.agent.core.CoreToolGroups;
 import com.embabel.agent.domain.io.UserInput;
@@ -36,7 +37,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -57,14 +57,14 @@ record FactCheck(
         double confidence,
         @JsonPropertyDescription("reasoning for your scoring")
         String reasoning,
+        @JsonPropertyDescription("Source of the fact checks, typically a LLM model")
+        String source,
         List<InternetResource> links
 ) {
 }
 
 record FactChecks(
-        List<FactCheck> checks,
-        @JsonPropertyDescription("Source of the fact checks, typically a LLM model")
-        String source
+        List<FactCheck> checks
 ) {
 }
 
@@ -132,17 +132,18 @@ class FactChecker {
         var llmFactChecks = properties.models().stream()
                 .flatMap(model -> factCheckWithSingleLlm(model, distinctFactualAssertions, context))
                 .toList();
-        return ConsensusBuilder
+        return ScatterGatherBuilder
                 .returning(FactChecks.class)
-                .sourcedFrom(llmFactChecks)
-                .withConsensusBy(this::reconcileFactChecks)
+                .fromElements(FactCheck.class)
+                .generatedBy(llmFactChecks)
+                .consolidatedBy(this::reconcileFactChecks)
                 .asSubProcess(context);
     }
 
     /**
      * Fact-check the distinct factual assertions using a given LLM
      */
-    private Stream<Supplier<FactChecks>> factCheckWithSingleLlm(
+    private Stream<Supplier<FactCheck>> factCheckWithSingleLlm(
             String model,
             DistinctFactualAssertions distinctFactualAssertions,
             OperationContext context) {
@@ -156,16 +157,18 @@ class FactChecker {
                                                 Given the following assertion, check if it is true or false and explain why in %d words
                                                 Express your confidence in your determination as a number between 0 and 1.
                                                 Use web tools so you can cite information to support your conclusion.
+                                                Use '%s' for the source field.
                                                 
                                                 ASSERTION TO CHECK:
                                                 %s
                                                 """.formatted(
                                                 properties.reasoningWordCount(),
+                                                model,
                                                 assertion
                                         ),
                                         FactCheck.class
                                 )).stream()
-                .map(check -> () -> new FactChecks(List.of(check), model));
+                .map(check -> () -> check);
     }
 
     private Stream<Supplier<DistinctFactualAssertions>> factualAssertionExtractors(UserInput userInput, ActionContext actionContext) {
@@ -224,15 +227,15 @@ class FactChecker {
      * Use the best LLM to reconcile the fact checks into a single list.
      */
     private FactChecks reconcileFactChecks(
-            TransformationActionContext<ResultList<FactChecks>, FactChecks> context) {
+            TransformationActionContext<ResultList<FactCheck>, FactChecks> context) {
         var formattedFactChecks = new StringBuilder();
         for (var factCheck : context.getInput().getResults()) {
             formattedFactChecks.append("Source: ").append(factCheck.source()).append("\n");
-            formattedFactChecks.append("- ").append(factCheck.checks().stream()
-                            .map(check ->
-                                    String.format("%s (%B with confidence %.2f)\nReasoning: %s\nLinks:\n%s",
-                                            check.assertion(), check.isTrue(), check.confidence(), check.reasoning(), check.links()))
-                            .collect(Collectors.joining("\n- ")))
+            formattedFactChecks.append("- ").append(
+                            String.format("%s (%B with confidence %.2f from source '%s')\nReasoning: %s\nLinks:\n%s",
+                                    factCheck.assertion(), factCheck.isTrue(),
+                                    factCheck.confidence(), factCheck.source(),
+                                    factCheck.reasoning(), factCheck.links()))
                     .append("\n\n");
         }
         return context.ai()
