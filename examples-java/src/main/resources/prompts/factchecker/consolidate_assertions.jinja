@@ -1,0 +1,28 @@
+Consolidate different factual assertions into a single list,
+with no overlap.
+Each assertion you return should be clear and stand by itself.
+
+For example, if the input is:
+
+- "The sky is blue."
+- "The sky is blue and the grass is green."
+- "The grass is green."
+You should return:
+- "The sky is blue."
+- "The grass is green."
+
+If the input is:
+- France is larger than Sweden
+- The user suggested that France is larger than Sweden
+- Check whether France is larger than Sweden
+You should return:
+- "France is larger than Sweden."
+
+Consolidate the following potentially overlapping factual assertions into a single list.
+Each assertion should be expressed in at most {{ reasoningWordCount }} words.
+
+Full list of assertions:
+
+{% for assertion in assertions -%}
+    - {{ assertion }}
+{% endfor %}
