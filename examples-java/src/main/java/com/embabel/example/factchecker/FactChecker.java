@@ -169,7 +169,7 @@ class FactChecker {
 
     private Stream<Supplier<DistinctFactualAssertions>> factualAssertionExtractors(UserInput userInput, ActionContext actionContext) {
         return properties.models().stream()
-                .map(llm -> () -> extractFactualAssertionsWithModel(userInput, actionContext, llm));
+                .map(model -> () -> extractFactualAssertionsWithModel(userInput, actionContext, model));
     }
 
     /**
@@ -206,7 +206,6 @@ class FactChecker {
                 .flatMap(result -> result.assertions().stream())
                 .distinct()
                 .toList();
-        var assertionsContent = String.join("\n", allAssertions);
         return context.ai()
                 .withLlm(properties.deduplicationLlm())
                 .createObject(
@@ -237,7 +236,7 @@ class FactChecker {
                                 TEXT TO CONSIDER:
                                 %s
                                 """
-                                .formatted(properties.reasoningWordCount(), assertionsContent),
+                                .formatted(properties.reasoningWordCount(), String.join("\n", allAssertions)),
                         DistinctFactualAssertions.class
                 );
     }
@@ -263,13 +262,13 @@ class FactChecker {
                 .withPromptContributor(properties.promptContributor())
                 .createObject(
                         """
-                                Your role is to reconcile different fact checks into a single list.
+                                Your task is to reconcile different fact checks into a single list.
                                 You must decide on the quality of each check and merge useful results.
                                 Your determination should be expressed in at most %d words.
                                 
                                 Your confidence should reflect the mix of confidence levels in the checks.
                                 If the checks disagree,you may perform your own research with the given tools.
-                                However, do NOT do this if the checks are consistent and all with high confidence.
+                                Do NOT do this if the checks are consistent and all with high confidence.
                                 
                                 For each assertion, you should return a consolidated set of links, excluding only
                                 those that are duplicates or from untrusted sources.
