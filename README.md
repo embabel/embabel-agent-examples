@@ -31,6 +31,8 @@ Learn agentic AI development with **Spring Framework** and **Java** or **Kotlin*
 > There may be some minor API incompatilibites and not everything you see here may work in your own project created
 > from one of those templates, unless you upgrade the `embabel-agent.version` property in the POM file, as in this repository.
 
+**English** · [简体中文](./README.zh-CN.md)  
+
 ## 🚀 Quick Start
 
 ### Prerequisites
