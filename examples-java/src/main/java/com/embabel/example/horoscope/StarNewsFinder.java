@@ -17,6 +17,7 @@ package com.embabel.example.horoscope;
 
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
+import com.embabel.agent.config.models.AnthropicModels;
 import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.core.CoreToolGroups;
 import com.embabel.agent.domain.io.UserInput;
@@ -24,7 +25,6 @@ import com.embabel.agent.domain.library.Person;
 import com.embabel.agent.domain.library.PersonImpl;
 import com.embabel.agent.domain.library.RelevantNewsStories;
 import com.embabel.common.ai.model.LlmOptions;
-import com.embabel.common.ai.model.ModelSelectionCriteria;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.stream.Collectors;
@@ -51,12 +51,14 @@ public class StarNewsFinder {
 
     @Action
     public Person extractPerson(UserInput userInput, OperationContext context) {
-        return context.ai().withLlm(OpenAiModels.GPT_41).createObjectIfPossible(
-                """
-                        Create a person from this user input, extracting their name:
-                        %s""".formatted(userInput.getContent()),
-                PersonImpl.class
-        );
+        return context.ai()
+                .withLlm(OpenAiModels.GPT_41)
+                .createObjectIfPossible(
+                        """
+                                Create a person from this user input, extracting their name:
+                                %s""".formatted(userInput.getContent()),
+                        PersonImpl.class
+                );
     }
 
     @Action(cost = 100.0) // Make it costly so it won't be used in a plan unless there's no other path
@@ -75,12 +77,14 @@ public class StarNewsFinder {
 
     @Action
     public StarPerson extractStarPerson(UserInput userInput, OperationContext context) {
-        return context.ai().withLlm(OpenAiModels.GPT_41).createObjectIfPossible(
-                """
-                        Create a person from this user input, extracting their name and star sign:
-                        %s""".formatted(userInput.getContent()),
-                StarPerson.class
-        );
+        return context.ai()
+                .withLlmByRole("best")
+                .createObjectIfPossible(
+                        """
+                                Create a person from this user input, extracting their name and star sign:
+                                %s""".formatted(userInput.getContent()),
+                        StarPerson.class
+                );
     }
 
     @Action
@@ -109,7 +113,9 @@ public class StarNewsFinder {
                 find news stories about training courses.""".formatted(
                 person.name(), person.sign(), horoscope.summary(), storyCount);
 
-        return context.ai().withDefaultLlm().createObject(prompt, RelevantNewsStories.class);
+        return context.ai()
+                .withDefaultLlm().
+                createObject(prompt, RelevantNewsStories.class);
     }
 
     // The @AchievesGoal annotation indicates that completing this action
@@ -127,10 +133,6 @@ public class StarNewsFinder {
             RelevantNewsStories relevantNewsStories,
             Horoscope horoscope,
             OperationContext context) {
-        var llm = LlmOptions.fromCriteria(
-                ModelSelectionCriteria.firstOf(OpenAiModels.GPT_41_MINI)
-        ).withTemperature(0.9);
-
         var newsItems = relevantNewsStories.getItems().stream()
                 .map(item -> "- " + item.getUrl() + ": " + item.getSummary())
                 .collect(Collectors.joining("\n"));
@@ -150,6 +152,10 @@ public class StarNewsFinder {
                 
                 Format it as Markdown with links.""".formatted(
                 person.name(), person.sign(), horoscope.summary(), newsItems);
-        return context.ai().withLlm(llm).createObject(prompt, Writeup.class);
+        return context.ai()
+                .withLlm(LlmOptions
+                        .withFirstAvailableLlmOf(AnthropicModels.CLAUDE_37_SONNET, OpenAiModels.GPT_41_MINI)
+                        .withTemperature(0.9))
+                .createObject(prompt, Writeup.class);
     }
 }
