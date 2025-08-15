@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,9 +51,13 @@ record BookRequest(String topic, String goal, int wordsPerChapter) implements Pr
     }
 }
 
+/**
+ * Can be overridden in application.yml
+ */
+@ConfigurationProperties(prefix = "book-writer")
 class Team {
 
-    static final RoleGoalBackstory RESEARCHER = RoleGoalBackstory
+    RoleGoalBackstory researcher = RoleGoalBackstory
             .withRole("Researcher")
             .andGoal("""
                     Gather comprehensive information about a topic that will be used to create an organized and well-structured book outline.
@@ -63,7 +68,7 @@ class Team {
                     You aim to collect all relevant information so the book outline can be accurate and informative.
                     """);
 
-    static final RoleGoalBackstory OUTLINER = RoleGoalBackstory
+    RoleGoalBackstory outliner = RoleGoalBackstory
             .withRole("Outliner")
             .andGoal("""
                     Based on research, generate a book outline about the given topic.
@@ -75,7 +80,7 @@ class Team {
                     Your goal is to create clear, concise chapter outlines with all key topics and subtopics covered.
                     """);
 
-    static final RoleGoalBackstory WRITER = RoleGoalBackstory
+    RoleGoalBackstory writer = RoleGoalBackstory
             .withRole("Chapter Writer")
             .andGoal("""
                     Write a well-structured chapter for a book based on the provided chapter title, goal, and outline.
@@ -93,18 +98,16 @@ class Team {
  * See <a href="https://github.com/crewAIInc/crewAI-examples/tree/main/flows/write_a_book_with_flows">Write a book with flows</a>
  */
 @Agent(description = "Write a book, first creating an outline, then writing the chapters and combining them")
-public class BookWriter {
+public record BookWriter(
+        @Value("${book-writer.researcher-llm:gpt-4.1-mini}")
+        String researchModel,
+        @Value("${book-writer.writer-llm:gpt-4.1-mini}")
+        String writerModel,
+        @Value("${book-writer.max-concurrency:8}")
+        int maxConcurrency,
+        Team team) {
 
-    @Value("${book-writer.researcher-llm:gpt-4.1-mini}")
-    private String researchModel;
-
-    @Value("${book-writer.writer-llm:gpt-4.1-mini}")
-    private String writerModel;
-
-    @Value("${book-writer.max-concurrency:8}")
-    private int maxConcurrency;
-
-    private final Logger logger = LoggerFactory.getLogger(BookWriter.class);
+    static final Logger logger = LoggerFactory.getLogger(BookWriter.class);
 
     @Action(cost = 100.0)
     BookRequest askForBookRequest(OperationContext context) {
@@ -119,7 +122,7 @@ public class BookWriter {
             OperationContext context) {
         return context.ai()
                 .withLlm(LlmOptions.withModel(researchModel))
-                .withPromptElements(Team.RESEARCHER, bookRequest)
+                .withPromptElements(team.researcher, bookRequest)
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject(
                         """
@@ -137,7 +140,7 @@ public class BookWriter {
             OperationContext context) {
         return context.ai()
                 .withLlm(LlmOptions.withModel(researchModel))
-                .withPromptElements(Team.OUTLINER, bookRequest, researchReport)
+                .withPromptElements(team.outliner, bookRequest, researchReport)
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject(
                         """
@@ -190,7 +193,7 @@ public class BookWriter {
         logger.info("Researching chapter {}...", chapterOutline.title());
         var specificResearch = context.ai()
                 .withLlm(LlmOptions.withModel(researchModel))
-                .withPromptElements(Team.RESEARCHER, bookRequest, bookOutline)
+                .withPromptElements(team.researcher, bookRequest, bookOutline)
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject(
                         """
@@ -206,7 +209,7 @@ public class BookWriter {
         logger.info("Writing chapter {}...", chapterOutline.title());
         return context.ai()
                 .withLlm(LlmOptions.withModel(writerModel))
-                .withPromptElements(bookRequest, Team.WRITER, specificResearch, bookOutline)
+                .withPromptElements(bookRequest, team.writer, specificResearch, bookOutline)
                 .createObject(
                         """
                                 Write a well-structured chapter for the book based on the provided chapter title, goal, and outline.
