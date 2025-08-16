@@ -2,6 +2,7 @@ package com.embabel.example.bookwriter;
 
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
+import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.core.CoreToolGroups;
 import com.embabel.agent.domain.library.ResearchReport;
 import com.embabel.agent.prompt.persona.RoleGoalBackstory;
@@ -10,7 +11,6 @@ import com.embabel.common.ai.prompt.PromptContributor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
@@ -52,45 +52,58 @@ record BookRequest(String topic, String goal, int wordsPerChapter) implements Pr
 }
 
 /**
- * Can be overridden in application.yml
+ * All properties can be overridden in application.yml
  */
-@ConfigurationProperties(prefix = "book-writer")
-class Team {
-
-    RoleGoalBackstory researcher = RoleGoalBackstory
-            .withRole("Researcher")
-            .andGoal("""
-                    Gather comprehensive information about a topic that will be used to create an organized and well-structured book outline.
-                    Consider the author's desired goal for the book.
-                    """)
-            .andBackstory("""
-                    You're a seasoned researcher, known for gathering the best sources and understanding the key elements of any topic.\s
-                    You aim to collect all relevant information so the book outline can be accurate and informative.
-                    """);
-
-    RoleGoalBackstory outliner = RoleGoalBackstory
-            .withRole("Outliner")
-            .andGoal("""
-                    Based on research, generate a book outline about the given topic.
-                    The generated outline should include all chapters in sequential order and provide a title and description for each chapter.
-                    Consider the author's desired goal for the book
-                    """)
-            .andBackstory("""
-                    You are a skilled organizer, great at turning scattered information into a structured format.
-                    Your goal is to create clear, concise chapter outlines with all key topics and subtopics covered.
-                    """);
-
-    RoleGoalBackstory writer = RoleGoalBackstory
-            .withRole("Chapter Writer")
-            .andGoal("""
-                    Write a well-structured chapter for a book based on the provided chapter title, goal, and outline.
-                    """)
-            .andBackstory("""
-                    You are an exceptional writer, known for producing engaging, well-researched, and informative content.
-                    You excel at transforming complex ideas into readable and well-organized chapters.
-                    """);
-
+@ConfigurationProperties("examples.book-writer")
+record BookWriterConfig(
+        LlmOptions researcherLlm,
+        LlmOptions writerLlm,
+        int maxConcurrency,
+        RoleGoalBackstory researcher,
+        RoleGoalBackstory outliner,
+        RoleGoalBackstory writer
+) {
+    public BookWriterConfig {
+        researcherLlm = (researcherLlm != null)
+                ? researcherLlm
+                : LlmOptions.withModel(OpenAiModels.GPT_41_MINI);
+        writerLlm = (writerLlm != null)
+                ? writerLlm
+                : LlmOptions.withModel(OpenAiModels.GPT_41);
+        maxConcurrency = (maxConcurrency == 0) ? 8 : maxConcurrency;
+        researcher = researcher != null ? researcher : RoleGoalBackstory
+                .withRole("Researcher")
+                .andGoal("""
+                        Gather comprehensive information about a topic that will be used to create an organized and well-structured book outline.
+                        Consider the author's desired goal for the book.
+                        """)
+                .andBackstory("""
+                        You're a seasoned researcher, known for gathering the best sources and understanding the key elements of any topic.\s
+                        You aim to collect all relevant information so the book outline can be accurate and informative.
+                        """);
+        outliner = outliner != null ? outliner : RoleGoalBackstory
+                .withRole("Outliner")
+                .andGoal("""
+                        Based on research, generate a book outline about the given topic.
+                        The generated outline should include all chapters in sequential order and provide a title and description for each chapter.
+                        Consider the author's desired goal for the book
+                        """)
+                .andBackstory("""
+                        You are a skilled organizer, great at turning scattered information into a structured format.
+                        Your goal is to create clear, concise chapter outlines with all key topics and subtopics covered.
+                        """);
+        writer = writer != null ? writer : RoleGoalBackstory
+                .withRole("Chapter Writer")
+                .andGoal("""
+                        Write a well-structured chapter for a book based on the provided chapter title, goal, and outline.
+                        """)
+                .andBackstory("""
+                        You are an exceptional writer, known for producing engaging, well-researched, and informative content.
+                        You excel at transforming complex ideas into readable and well-organized chapters.
+                        """);
+    }
 }
+
 
 /**
  * Based on the Crew AI Book Writer example, this agent creates a book by first researching the topic,
@@ -98,16 +111,13 @@ class Team {
  * See <a href="https://github.com/crewAIInc/crewAI-examples/tree/main/flows/write_a_book_with_flows">Write a book with flows</a>
  */
 @Agent(description = "Write a book, first creating an outline, then writing the chapters and combining them")
-public record BookWriter(
-        @Value("${book-writer.researcher-llm:gpt-4.1-mini}")
-        String researchModel,
-        @Value("${book-writer.writer-llm:gpt-4.1-mini}")
-        String writerModel,
-        @Value("${book-writer.max-concurrency:8}")
-        int maxConcurrency,
-        Team team) {
+public record BookWriter(BookWriterConfig config) {
 
     static final Logger logger = LoggerFactory.getLogger(BookWriter.class);
+
+    public BookWriter {
+        logger.info("Initialized with configuration {}", config);
+    }
 
     @Action(cost = 100.0)
     BookRequest askForBookRequest(OperationContext context) {
@@ -121,8 +131,8 @@ public record BookWriter(
             BookRequest bookRequest,
             OperationContext context) {
         return context.ai()
-                .withLlm(LlmOptions.withModel(researchModel))
-                .withPromptElements(team.researcher, bookRequest)
+                .withLlm(config.researcherLlm())
+                .withPromptElements(config.researcher(), bookRequest)
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject(
                         """
@@ -139,8 +149,8 @@ public record BookWriter(
             ResearchReport researchReport,
             OperationContext context) {
         return context.ai()
-                .withLlm(LlmOptions.withModel(researchModel))
-                .withPromptElements(team.outliner, bookRequest, researchReport)
+                .withLlm(config.writerLlm())
+                .withPromptElements(config.outliner(), bookRequest, researchReport)
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject(
                         """
@@ -160,7 +170,7 @@ public record BookWriter(
     ) {
         var chapters = context.parallelMap(
                 bookOutline.chapterOutlines(),
-                maxConcurrency,
+                config.maxConcurrency(),
                 chapterOutline -> writeChapter(
                         bookRequest,
                         bookOutline,
@@ -192,8 +202,8 @@ public record BookWriter(
             OperationContext context) {
         logger.info("Researching chapter {}...", chapterOutline.title());
         var specificResearch = context.ai()
-                .withLlm(LlmOptions.withModel(researchModel))
-                .withPromptElements(team.researcher, bookRequest, bookOutline)
+                .withLlm(config.researcherLlm())
+                .withPromptElements(config.researcher(), bookRequest, bookOutline)
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject(
                         """
@@ -208,8 +218,8 @@ public record BookWriter(
                         ResearchReport.class);
         logger.info("Writing chapter {}...", chapterOutline.title());
         return context.ai()
-                .withLlm(LlmOptions.withModel(writerModel))
-                .withPromptElements(bookRequest, team.writer, specificResearch, bookOutline)
+                .withLlm(config.writerLlm())
+                .withPromptElements(bookRequest, config.writer(), specificResearch, bookOutline)
                 .createObject(
                         """
                                 Write a well-structured chapter for the book based on the provided chapter title, goal, and outline.

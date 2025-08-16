@@ -15,40 +15,42 @@
  */
 package com.embabel.example;
 
+import com.embabel.agent.config.annotation.EnableAgentShell;
+import com.embabel.agent.config.annotation.EnableAgents;
 import com.embabel.agent.config.annotation.LoggingThemes;
 import com.embabel.agent.config.annotation.McpServers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import com.embabel.agent.config.annotation.EnableAgentShell;
-import com.embabel.agent.config.annotation.EnableAgents;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
  * Spring Boot application that provides an interactive command-line shell for Embabel agents
  * with Star Wars themed logging and Docker Desktop integration.
- * 
+ *
  * <p>This application runs in interactive shell mode, allowing developers to test and interact
  * with agents through a REPL-like interface. It combines the development-friendly shell
  * environment with fun Star Wars themed logging messages and Docker container capabilities.
- * 
+ *
+ * @author Embabel Team
  * @see EnableAgentShell
  * @see EnableAgents
  * @since 1.0
- * @author Embabel Team
  */
 @SpringBootApplication
+@EnableConfigurationProperties
 @EnableAgentShell
 @EnableAgents(
-    loggingTheme = LoggingThemes.STAR_WARS,
-    mcpServers = {McpServers.DOCKER_DESKTOP}
+        loggingTheme = LoggingThemes.STAR_WARS,
+        mcpServers = {McpServers.DOCKER_DESKTOP}
 )
 public class AgentShellMcpClientApplication {
-    
+
     /**
      * Application entry point.
-     * 
+     *
      * <p>Starts the Spring Boot application with an interactive shell interface,
      * Star Wars themed logging, and Docker Desktop integration.
-     * 
+     *
      * @param args command line arguments passed to the application
      */
     public static void main(String[] args) {

@@ -18,7 +18,6 @@ package com.embabel.example.wikipedia;
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.core.CoreToolGroups;
-import com.embabel.common.ai.model.BuildableLlmOptions;
 import com.embabel.common.ai.model.LlmOptions;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -41,13 +40,13 @@ record ResearchReport(String subject, String summary) {
 public class WikiAgent {
 
     private final int wordCount;
-    private final BuildableLlmOptions llm;
+    private final LlmOptions llm;
 
     public WikiAgent(
             @Value("${wiki.wordcount:200}") int wordCount,
             @Value("${wiki.llm:gpt-4.1-nano}") String model) {
         this.wordCount = wordCount;
-        this.llm = LlmOptions.fromModel(model);
+        this.llm = LlmOptions.withModel(model);
     }
 
     @Action
