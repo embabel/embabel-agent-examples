@@ -5,6 +5,7 @@ import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.core.CoreToolGroups;
 import com.embabel.agent.domain.library.ResearchReport;
 import com.embabel.agent.prompt.persona.RoleGoalBackstory;
+import com.embabel.agent.tools.file.FileTools;
 import com.embabel.common.ai.model.LlmOptions;
 import com.embabel.common.ai.prompt.PromptContributor;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,13 @@ record Chapter(String title, String content) {
 
 record Book(String title,
             List<Chapter> chapters) {
+
+    public String text() {
+        return "# " + title() + "\n\n" +
+                chapters().stream()
+                        .map(chapter -> "## " + chapter.title() + "\n" + chapter.content())
+                        .collect(Collectors.joining("\n\n"));
+    }
 }
 
 record BookRequest(String topic, String goal, int wordsPerChapter) implements PromptContributor {
@@ -60,8 +70,15 @@ record BookWriterConfig(
         int maxConcurrency,
         RoleGoalBackstory researcher,
         RoleGoalBackstory outliner,
-        RoleGoalBackstory writer
+        RoleGoalBackstory writer,
+        String outputDirectory
 ) {
+
+    public Path saveContent(Book book) {
+        var dir = outputDirectory != null ? outputDirectory : System.getProperty("user.dir");
+        var fileName = book.title().replace(" ", "_").toLowerCase() + ".md";
+        return FileTools.readWrite(dir).createFile("books" + File.separator + fileName, book.text(), true);
+    }
 }
 
 
@@ -147,11 +164,8 @@ public record BookWriter(BookWriterConfig config) {
     )
     @Action
     Book publishBook(Book book) {
-        var text = book.title().toUpperCase() + "\n\n" +
-                book.chapters().stream()
-                        .map(chapter -> chapter.title().toUpperCase() + "\n" + chapter.content())
-                        .collect(Collectors.joining("\n\n"));
-        System.out.println(text);
+        var path = config.saveContent(book);
+        logger.info("Book {} written and saved to {}", book.title(), path);
         return book;
     }
 
@@ -179,7 +193,7 @@ public record BookWriter(BookWriterConfig config) {
         logger.info("Writing chapter {}...", chapterOutline.title());
         return context.ai()
                 .withLlm(config.writerLlm())
-                .withPromptElements(bookRequest, config.writer(), specificResearch, bookOutline)
+                .withPromptElements(bookRequest, config.writer(), bookOutline, specificResearch)
                 .createObject(
                         """
                                 Write a well-structured chapter for the book based on the provided chapter title, goal, and outline.
