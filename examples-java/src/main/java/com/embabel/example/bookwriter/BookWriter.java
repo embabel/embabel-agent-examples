@@ -36,11 +36,12 @@ record BookOutline(String title,
 record Chapter(String title, String content) {
 }
 
-record Book(String title,
+record Book(BookRequest request,
+            String title,
             List<Chapter> chapters) {
 
     public String text() {
-        return "# " + title() + "\n\n" +
+        return "# " + title() + "\n" + request.goal() + "\n\n" +
                 chapters().stream()
                         .map(chapter -> "## " + chapter.title() + "\n" + chapter.content())
                         .collect(Collectors.joining("\n\n"));
@@ -155,7 +156,7 @@ public record BookWriter(BookWriterConfig config) {
                         context
                 )
         );
-        return new Book(bookOutline.title(), chapters);
+        return new Book(bookRequest, bookOutline.title(), chapters);
     }
 
     @AchievesGoal(
