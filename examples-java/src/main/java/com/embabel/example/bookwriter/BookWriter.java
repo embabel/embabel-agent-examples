@@ -2,7 +2,6 @@ package com.embabel.example.bookwriter;
 
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
-import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.core.CoreToolGroups;
 import com.embabel.agent.domain.library.ResearchReport;
 import com.embabel.agent.prompt.persona.RoleGoalBackstory;
@@ -63,45 +62,6 @@ record BookWriterConfig(
         RoleGoalBackstory outliner,
         RoleGoalBackstory writer
 ) {
-    public BookWriterConfig {
-        researcherLlm = (researcherLlm != null)
-                ? researcherLlm
-                : LlmOptions.withModel(OpenAiModels.GPT_41_MINI);
-        writerLlm = (writerLlm != null)
-                ? writerLlm
-                : LlmOptions.withModel(OpenAiModels.GPT_41);
-        maxConcurrency = (maxConcurrency == 0) ? 8 : maxConcurrency;
-        researcher = researcher != null ? researcher : RoleGoalBackstory
-                .withRole("Researcher")
-                .andGoal("""
-                        Gather comprehensive information about a topic that will be used to create an organized and well-structured book outline.
-                        Consider the author's desired goal for the book.
-                        """)
-                .andBackstory("""
-                        You're a seasoned researcher, known for gathering the best sources and understanding the key elements of any topic.\s
-                        You aim to collect all relevant information so the book outline can be accurate and informative.
-                        """);
-        outliner = outliner != null ? outliner : RoleGoalBackstory
-                .withRole("Outliner")
-                .andGoal("""
-                        Based on research, generate a book outline about the given topic.
-                        The generated outline should include all chapters in sequential order and provide a title and description for each chapter.
-                        Consider the author's desired goal for the book
-                        """)
-                .andBackstory("""
-                        You are a skilled organizer, great at turning scattered information into a structured format.
-                        Your goal is to create clear, concise chapter outlines with all key topics and subtopics covered.
-                        """);
-        writer = writer != null ? writer : RoleGoalBackstory
-                .withRole("Chapter Writer")
-                .andGoal("""
-                        Write a well-structured chapter for a book based on the provided chapter title, goal, and outline.
-                        """)
-                .andBackstory("""
-                        You are an exceptional writer, known for producing engaging, well-researched, and informative content.
-                        You excel at transforming complex ideas into readable and well-organized chapters.
-                        """);
-    }
 }
 
 
