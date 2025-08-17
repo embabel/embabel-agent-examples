@@ -1,4 +1,4 @@
-package com.embabel.example.bookwriter;
+package com.embabel.example.crew.bookwriter;
 
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
