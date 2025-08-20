@@ -57,7 +57,7 @@ record SupportAgent(CustomerRepository customerRepository) {
                                 Reply using the customer's name, "%s".
                                 Currencies are in $.
                                 
-                                There query: [%s]
+                                Their query: [%s]
                                 """.formatted(customer.name(), supportInput.query()),
                         SupportOutput.class);
     }
