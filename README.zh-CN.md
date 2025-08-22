@@ -1,3 +1,7 @@
+# 🤖 Embabel Agent 示例
+
+<img align="left" src="https://github.com/embabel/embabel-agent/blob/main/embabel-agent-api/images/315px-Meister_der_Weltenchronik_001.jpg?raw=true" width="180">
+
 ![Build](https://github.com/embabel/embabel-agent-examples/actions/workflows/maven.yml/badge.svg)
 
 [//]: # ([![Quality Gate Status]&#40;https://sonarcloud.io/api/project_badges/measure?project=embabel_embabel-agent&metric=alert_status&token=d275d89d09961c114b8317a4796f84faf509691c&#41;]&#40;https://sonarcloud.io/summary/new_code?id=embabel_embabel-agent&#41;)
@@ -17,19 +21,17 @@
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJIDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)
 
-<img align="left" src="https://github.com/embabel/embabel-agent/blob/main/embabel-agent-api/images/315px-Meister_der_Weltenchronik_001.jpg?raw=true" width="180">
 
 &nbsp;&nbsp;&nbsp;&nbsp;
-
-&nbsp;&nbsp;&nbsp;&nbsp;
-
-# 🤖 Embabel Agent 示例
 
 通过 **Spring Framework** 和 **Java** 或 **Kotlin** 学习智能体 AI 开发。这些示例展示了如何构建能够规划、执行工作流、使用工具并与人类互动的智能体。
 
+**简体中文** · [English](./README.md)  
+
+&nbsp;
+
 > 本仓库使用最新的 Embabel 快照来展示当前的最佳实践，而 [Java](https://github.com/embabel/java-agent-template) 和 [Kotlin](https://github.com/embabel/kotlin-agent-template) 模板仓库则使用最新的里程碑版本以获得更好的稳定性。可能存在一些轻微的 API 不兼容性，您在这些模板中看到的并非所有内容都能在您自己的项目中正常工作，除非您在 POM 文件中升级 `embabel-agent.version` 属性，如本仓库所示。
 
-**简体中文** · [English](./README.md)  
 
 
 ## 🚀 快速开始
@@ -40,10 +42,11 @@
 - **Maven 3.9+**（可选 - 项目包含 Maven 包装器）
 
 ### 1. 克隆并构建
+> 请确认您的 Maven 配置可以访问 `repo.embabel.com` 上的 Maven 私服。
 ```bash
 git clone https://github.com/embabel/embabel-agent-examples.git
 cd embabel-agent-examples
-./mvnw clean install    # Unix/Linux/macOS
+./mvnw clean install    # Unix/Linux/macOS 
 mvnw.cmd clean install  # Windows
 ```
 
