@@ -1,3 +1,8 @@
+# 🤖 Embabel Agent Examples
+
+<img align="left" src="https://github.com/embabel/embabel-agent/blob/main/embabel-agent-api/images/315px-Meister_der_Weltenchronik_001.jpg?raw=true" width="180">
+
+
 ![Build](https://github.com/embabel/embabel-agent-examples/actions/workflows/maven.yml/badge.svg)
 
 [//]: # ([![Quality Gate Status]&#40;https://sonarcloud.io/api/project_badges/measure?project=embabel_embabel-agent&metric=alert_status&token=d275d89d09961c114b8317a4796f84faf509691c&#41;]&#40;https://sonarcloud.io/summary/new_code?id=embabel_embabel-agent&#41;)
@@ -17,21 +22,20 @@
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJIDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)
 
-<img align="left" src="https://github.com/embabel/embabel-agent/blob/main/embabel-agent-api/images/315px-Meister_der_Weltenchronik_001.jpg?raw=true" width="180">
-
 &nbsp;&nbsp;&nbsp;&nbsp;
-
-&nbsp;&nbsp;&nbsp;&nbsp;
-
-# 🤖 Embabel Agent Examples
 
 Learn agentic AI development with **Spring Framework** and **Java** or **Kotlin**. These examples demonstrate building intelligent agents that can plan, execute workflows, use tools, and interact with humans.
+
+**English** · [简体中文](./README.zh-CN.md)  
+
+
+&nbsp;
+
 
 > This repository uses the latest Embabel snapshots to illustrate current best practice, whereas the [Java](https://github.com/embabel/java-agent-template) and [Kotlin](https://github.com/embabel/kotlin-agent-template) template repositories s use the latest milestone release for greater stability.
 > There may be some minor API incompatilibites and not everything you see here may work in your own project created
 > from one of those templates, unless you upgrade the `embabel-agent.version` property in the POM file, as in this repository.
 
-**English** · [简体中文](./README.zh-CN.md)  
 
 ## 🚀 Quick Start
 
