@@ -24,14 +24,6 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
-Learn agentic AI development with **Spring Framework** and **Java** or **Kotlin**. These examples demonstrate building intelligent agents that can plan, execute workflows, use tools, and interact with humans.
-
-**English** · [简体中文](./README.zh-CN.md)  
-
-
-&nbsp;
-
-=======
 **English** · [简体中文](./README.zh-CN.md)
 
 Learn agentic AI development with **Spring Framework** and **Java** or **Kotlin**. These examples demonstrate building
