@@ -25,22 +25,30 @@
 
 # 🤖 Embabel Agent Examples
 
-Learn agentic AI development with **Spring Framework** and **Java** or **Kotlin**. These examples demonstrate building intelligent agents that can plan, execute workflows, use tools, and interact with humans.
+Learn agentic AI development with **Spring Framework** and **Java** or **Kotlin**. These examples demonstrate building
+intelligent agents that can plan, execute workflows, use tools, and interact with humans.
 
-> This repository uses the latest Embabel snapshots to illustrate current best practice, whereas the [Java](https://github.com/embabel/java-agent-template) and [Kotlin](https://github.com/embabel/kotlin-agent-template) template repositories s use the latest milestone release for greater stability.
+> This repository uses the latest Embabel snapshots to illustrate current best practice, whereas
+> the [Java](https://github.com/embabel/java-agent-template)
+> and [Kotlin](https://github.com/embabel/kotlin-agent-template)
+> template repositories s use the latest milestone release for greater stability.
 > There may be some minor API incompatilibites and not everything you see here may work in your own project created
-> from one of those templates, unless you upgrade the `embabel-agent.version` property in the POM file, as in this repository.
+> from one of those templates, unless you upgrade the `embabel-agent.version` property in the POM file, as in this
+> repository.
 
-**English** · [简体中文](./README.zh-CN.md)  
+**English** · [简体中文](./README.zh-CN.md)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - **Java 21+**
-- **API Key** (at least one): [OpenAI](https://platform.openai.com/api-keys) or [Anthropic](https://www.anthropic.com/api)
+- **API Key** (at least one): [OpenAI](https://platform.openai.com/api-keys)
+  or [Anthropic](https://www.anthropic.com/api)
 - **Maven 3.9+** (optional - project includes Maven wrapper)
 
 ### 1. Clone & Build
+
 ```bash
 git clone https://github.com/embabel/embabel-agent-examples.git
 cd embabel-agent-examples
@@ -49,6 +57,7 @@ mvnw.cmd clean install  # Windows
 ```
 
 ### 2. Set API Keys
+
 ```bash
 # Required (choose one or both)
 export OPENAI_API_KEY="your_openai_key"
@@ -59,6 +68,7 @@ export ANTHROPIC_API_KEY="your_anthropic_key"
 ### 3. Run Examples
 
 #### **Kotlin Examples**
+
 ```bash
 cd scripts/kotlin
 ./shell.sh                    # Unix/Linux/macOS - Basic features
@@ -69,6 +79,7 @@ shell.cmd --docker-tools      # Windows - With Docker integration
 ```
 
 #### **Java Examples**
+
 ```bash
 cd scripts/java
 ./shell.sh                    # Unix/Linux/macOS - Basic features
@@ -94,9 +105,11 @@ uvx --from git+https://github.com/embabel/project-creator.git project-creator
 
 Choose Java or Kotlin and specify your project name and package name and you'll have an agent running in under a minute,
 if you already have an `OPENAI_API_KEY` and have Maven installed.
+
 ## 🆕 **Spring Boot Integration Architecture**
 
 ### **Three Application Modes**
+
 The Embabel Agent framework provides three distinct application modes through dedicated starter classes:
 
 ```kotlin
@@ -127,12 +140,12 @@ class AgentMcpServerApplication
 @SpringBootApplication
 @EnableAgentShell
 @EnableAgents(
-    loggingTheme = LoggingThemes.STAR_WARS,
-    mcpServers = {McpServers.DOCKER_DESKTOP}
+        loggingTheme = LoggingThemes.STAR_WARS,
+        mcpServers = {McpServers.DOCKER_DESKTOP}
 )
 public class AgentShellApplication
 
-@SpringBootApplication  
+@SpringBootApplication
 @EnableAgentMcpServer
 @EnableAgents(mcpServers = {McpServers.DOCKER_DESKTOP})
 public class AgentMcpApplication
@@ -141,6 +154,7 @@ public class AgentMcpApplication
 ### **Annotation Guide:**
 
 #### **`@EnableAgentShell`**
+
 - ✅ Interactive command-line interface
 - ✅ Agent discovery and registration
 - ✅ Human-in-the-loop capabilities
@@ -148,6 +162,7 @@ public class AgentMcpApplication
 - ✅ Development-friendly error handling
 
 #### **`@EnableAgentMcpServer`**
+
 - ✅ MCP protocol server implementation
 - ✅ Tool registration and discovery
 - ✅ JSON-RPC communication via SSE (Server-Sent Events)
@@ -155,12 +170,13 @@ public class AgentMcpApplication
 - ✅ Security and sandboxing
 
 #### **`@EnableAgents`**
+
 - 🎨 **loggingTheme**: Customize your agent's logging personality
-  - `"starwars"` - May the Force be with your logs!
-  - `"severance"` - Welcome to Lumon Industries (default)
+    - `"starwars"` - May the Force be with your logs!
+    - `"severance"` - Welcome to Lumon Industries (default)
 - 🐳 **mcpServers**: Enable MCP client integrations
-  - `"docker-desktop"` - Docker Desktop AI capabilities
-  - Custom clients can be added
+    - `"docker-desktop"` - Docker Desktop AI capabilities
+    - Custom clients can be added
 
 ---
 
@@ -181,12 +197,51 @@ When the gateway has come up you can kill it and start the Embabel server.
 
 ## 📚 Examples by Learning Level
 
+### 🏆 **Beginner: InjectedComponent**
+
+> **Available in:** Java | **Concept:** Just a Little AI
+
+Demonstrates how you can inject any Spring component with an Embabel `OperationContext`
+and use it to call LLMs with the rich Embabel API.
+
+```java
+
+@Component
+public record InjectedComponent(
+        OperationContext operationContext
+) {
+
+    public record Joke(String leadup, String punchline) {
+    }
+
+    public String tellJokeAbout(String topic) {
+        return operationContext.ai()
+                .withLlm(LlmOptions.withDefaultLlm().withTemperature(.8))
+                .generateText("Tell me a joke about " + topic);
+    }
+
+    public Joke createJokeObjectAbout(String topic1, String topic2, String voice) {
+        return operationContext.ai()
+                .withLlm(LlmOptions.withDefaultLlm().withTemperature(.8))
+                .createObject("""
+                                Tell me a joke about %s and %s.
+                                The voice of the joke should be %s.
+                                The joke should have a leadup and a punchline.
+                                """.formatted(topic1, topic2, voice),
+                        Joke.class);
+    }
+
+}
+```
+
 ### 🌟 **Beginner: Horoscope News Agent**
+
 > **Available in:** Java & Kotlin | **Concept:** Basic Agent Workflow
 
 A fun introduction to agent development that finds personalized news based on someone's star sign.
 
 **What It Teaches:**
+
 - 📋 **Action-based workflows** with `@Action` annotations
 - 🔍 **Data extraction** from user input using LLMs
 - 🌐 **Web tool integration** for finding news stories
@@ -194,6 +249,7 @@ A fun introduction to agent development that finds personalized news based on so
 - 🎯 **Goal achievement** with `@AchievesGoal`
 
 **How It Works:**
+
 1. Extract person's name from user input
 2. Get their star sign (via form if needed)
 3. Retrieve daily horoscope
@@ -211,20 +267,22 @@ x "Find horoscope news for Alice who is a Gemini"
 `x` is short for `execute`, which triggers the agent to run its workflow.
 
 **Code Comparison:**
+
 - **Kotlin:** `examples-kotlin/src/main/kotlin/com/embabel/example/horoscope/StarNewsFinder.kt`
 - **Java:** `examples-java/src/main/java/com/embabel/example/horoscope/StarNewsFinder.java`
 
 **Key Patterns:**
+
 ```kotlin
 @Agent(description = "Find news based on a person's star sign")
 class StarNewsFinder {
-    
+
     @Action
     fun extractPerson(userInput: UserInput): Person?
-    
+
     @Action(toolGroups = [CoreToolGroups.WEB])
     fun findNewsStories(person: StarPerson, horoscope: Horoscope): RelevantNewsStories
-    
+
     @AchievesGoal(description = "Create an amusing writeup")
     @Action
     fun starNewsWriteup(/* params */): Writeup
@@ -233,14 +291,14 @@ class StarNewsFinder {
 
 ---
 
-
-
 ### 🔬 **Expert: Multi-LLM Research Agent**
-> **Available in:** Kotlin | **Concept:** Self-Improving AI Workflows
+
+> **Available in:** Java, Kotlin | **Concept:** Self-Improving AI Workflows
 
 A sophisticated research agent using multiple AI models with self-critique capabilities.
 
 **What It Teaches:**
+
 - 🧠 **Multi-model consensus** (GPT-4 + Claude working together)
 - 🔍 **Self-improvement loops** with critique and retry
 - ⚙️ **Configuration-driven behavior** with Spring Boot properties
@@ -248,6 +306,7 @@ A sophisticated research agent using multiple AI models with self-critique capab
 - 📝 **Quality control** through automated review
 
 **Architecture:**
+
 ```kotlin
 @ConfigurationProperties(prefix = "embabel.examples.researcher")
 data class ResearcherProperties(
@@ -258,11 +317,12 @@ data class ResearcherProperties(
 ```
 
 **Self-Improvement Pattern:**
+
 ```kotlin
 @Action(outputBinding = "gpt4Report")
 fun researchWithGpt4(/* params */): SingleLlmReport
 
-@Action(outputBinding = "claudeReport") 
+@Action(outputBinding = "claudeReport")
 fun researchWithClaude(/* params */): SingleLlmReport
 
 @Action(outputBinding = "mergedReport")
@@ -276,6 +336,7 @@ fun acceptReport(report: ResearchReport, critique: Critique): ResearchReport
 ```
 
 **Try It:**
+
 ```bash
 "Research the latest developments in renewable energy adoption"
 ```
@@ -285,11 +346,13 @@ fun acceptReport(report: ResearchReport, critique: Critique): ResearchReport
 ---
 
 ### ✅ **Expert: Fact-Checking Agent (DSL Style)**
+
 > **Available in:** Kotlin | **Concept:** Functional Agent Construction
 
 A fact-verification agent built using Embabel's functional DSL approach instead of annotations.
 
 **What It Teaches:**
+
 - 🔧 **Functional DSL construction** for agents
 - 🔍 **Parallel fact verification** across multiple claims
 - 📊 **Confidence scoring** and source trust evaluation
@@ -297,26 +360,28 @@ A fact-verification agent built using Embabel's functional DSL approach instead 
 - ⚡ **Functional programming patterns** in agent design
 
 **DSL Construction:**
+
 ```kotlin
-fun factCheckerAgent(llms: List<LlmOptions>, properties: FactCheckerProperties) = 
-agent(name = "FactChecker", description = "Check content for factual accuracy") {
-    
-    flow {
-        aggregate<UserInput, FactualAssertions, RationalizedFactualAssertions>(
-            transforms = llms.map { llm ->
-                { context -> /* extract assertions with this LLM */ }
-            },
-            merge = { list, context -> /* rationalize overlapping claims */ }
-        )
+fun factCheckerAgent(llms: List<LlmOptions>, properties: FactCheckerProperties) =
+    agent(name = "FactChecker", description = "Check content for factual accuracy") {
+
+        flow {
+            aggregate<UserInput, FactualAssertions, RationalizedFactualAssertions>(
+                transforms = llms.map { llm ->
+                    { context -> /* extract assertions with this LLM */ }
+                },
+                merge = { list, context -> /* rationalize overlapping claims */ }
+            )
+        }
+
+        transformation<RationalizedFactualAssertions, FactCheck> {
+            /* parallel fact-checking */
+        }
     }
-    
-    transformation<RationalizedFactualAssertions, FactCheck> { 
-        /* parallel fact-checking */
-    }
-}
 ```
 
 **Domain Model:**
+
 ```kotlin
 data class FactualAssertion(
     val claim: String,
@@ -332,6 +397,7 @@ data class AssertionCheck(
 ```
 
 **Try It:**
+
 ```bash
 "Check these facts: The Earth is flat. Paris is the capital of France."
 ```
@@ -343,6 +409,7 @@ data class AssertionCheck(
 ## 🛠️ Core Concepts You'll Learn
 
 ### **Spring Framework Integration**
+
 - **Multiple Application Classes:** Dedicated starters for different modes
 - **Maven Profiles:** `enable-shell`, `enable-shell-mcp-client`, `enable-agent-mcp-server`
 - **Dependency Injection:** Constructor-based injection with agents as Spring beans
@@ -351,6 +418,7 @@ data class AssertionCheck(
 - **Repository Pattern:** Spring Data integration for domain entities
 
 ### **Modern Spring Boot Patterns**
+
 - **Multi-Annotation Architecture:** Combining multiple `@Enable*` annotations
 - **Profile-Based Execution:** Maven profiles control which application class runs
 - **Auto-Configuration Classes:** Understanding Spring Boot's auto-configuration
@@ -358,6 +426,7 @@ data class AssertionCheck(
 - **Theme-Based Customization:** Dynamic behavior based on configuration
 
 ### **Modern Kotlin Features**
+
 - **Data Classes:** Rich domain models with computed properties
 - **Type Aliases:** Domain-specific types (`typealias OneThroughTen = Int`)
 - **Extension Functions:** Enhanced functionality for existing types
@@ -366,6 +435,7 @@ data class AssertionCheck(
 - **Coroutines:** Parallel execution with structured concurrency
 
 ### **Agent Design Patterns**
+
 - **Workflow Orchestration:** Multi-step processes with `@Action` chains
 - **Blackboard Pattern:** Shared workspace for data between actions
 - **Human-in-the-Loop:** User confirmations and form submissions
@@ -384,13 +454,18 @@ in separate repositories.
 See:
 
 - [Coding Agent](https://www.github.com/embabel/coding-agent): An open source coding agent
-- [Flicker](https://www.github.com/embabel/flicker): A movie recommendation engine that takes into account the user's tastes and what's available to them in their country on the streaming services they subscribe to. Uses external APIs and PostgreSQL via JPA. Illustrates a complex workflow where recommendations are generated until enough available movies have been found.
+- [Flicker](https://www.github.com/embabel/flicker): A movie recommendation engine that takes into account the user's
+  tastes and what's available to them in their country on the streaming services they subscribe to. Uses external APIs
+  and PostgreSQL via JPA. Illustrates a complex workflow where recommendations are generated until enough available
+  movies have been found.
 - [Decker](https://www.github.com/embabel/decker): An agent to build presentations using Embabel
-- [Tripper](https://www.github.com/embabel/tripper): Travel planning agent. Uses mapping APIs to find routes and places of interest, and generates a travel itinerary. Performs research on points of interest in parallel.
+- [Tripper](https://www.github.com/embabel/tripper): Travel planning agent. Uses mapping APIs to find routes and places
+  of interest, and generates a travel itinerary. Performs research on points of interest in parallel.
 
 ## 🔧 Running Specific Examples
 
 ### **Interactive Shell Mode** (Default)
+
 ```bash
 cd scripts/kotlin && ./shell.sh          # Basic features
 cd scripts/kotlin && shell.cmd           # Basic features (Windows)
@@ -402,6 +477,7 @@ cd scripts/java && shell.cmd             # Basic features (Windows)
 Uses Maven profile: `enable-shell`
 
 ### **Shell with MCP Client Support**
+
 ```bash
 cd scripts/kotlin && ./shell.sh --docker-tools     # Advanced Docker integration
 cd scripts/kotlin && shell.cmd --docker-tools      # Advanced Docker integration (Windows)
@@ -413,6 +489,7 @@ cd scripts/java && shell.cmd --docker-tools        # Advanced Docker integration
 Uses Maven profile: `enable-shell-mcp-client`
 
 ### **MCP Server Mode**
+
 ```bash
 cd scripts/kotlin && ./mcp_server.sh
 cd scripts/kotlin && mcp_server.cmd      # Windows
@@ -457,7 +534,8 @@ Claude Desktop to invoke them like this:
 
 
 
-The [MCP Inspector](https://github.com/modelcontextprotocol/inspector) is a helpful tool for interacting with your Embabel
+The [MCP Inspector](https://github.com/modelcontextprotocol/inspector) is a helpful tool for interacting with your
+Embabel
 SSE server, manually invoking tools and checking the exposed prompts and resources.
 
 Start the MCP Inspector with:
@@ -466,8 +544,8 @@ Start the MCP Inspector with:
 npx @modelcontextprotocol/inspector
 ```
 
-
 ### **Manual Execution**
+
 ```bash
 # Kotlin shell mode
 cd examples-kotlin
@@ -487,6 +565,7 @@ mvn -P enable-shell spring-boot:run
 ```
 
 ### **Testing**
+
 ```bash
 # Run all tests
 ./mvnw test             # Unix/Linux/macOS
@@ -502,7 +581,9 @@ cd examples-java && ../mvnw test
 ## 🌐 **MCP (Model Context Protocol) Support**
 
 ### **What is MCP?**
-MCP (Model Context Protocol) is an open protocol that enables AI assistants and applications to securely connect to data sources and tools. Embabel supports MCP in two ways:
+
+MCP (Model Context Protocol) is an open protocol that enables AI assistants and applications to securely connect to data
+sources and tools. Embabel supports MCP in two ways:
 
 1. **MCP Server Mode**: Your agents become tools that can be called by MCP clients
 2. **MCP Client Support**: Your agents can call external MCP servers (like Docker Desktop)
@@ -520,6 +601,7 @@ cd scripts/java && ./mcp_server.sh
 ```
 
 Your agents become available as tools:
+
 - **StarNewsFinder** - `find_horoscope_news`
 - **Researcher** - `research_topic`
 - **FactChecker** - `check_facts`
@@ -535,11 +617,13 @@ cd scripts/java && ./shell.sh --docker-tools
 ```
 
 This allows your agents to:
+
 - Execute commands in Docker containers
 - Access containerized services
 - Integrate with other MCP-compatible tools
 
 ### **Benefits of MCP**
+
 - **🔄 Tool Interoperability** - Agents can use and be used as tools
 - **🎯 Domain Expertise** - Specialized agents for specific tasks
 - **🛠️ Tool Composition** - Combine multiple tools in workflows
@@ -551,6 +635,7 @@ This allows your agents to:
 ## 🎯 **Creating Your Own Agent Application**
 
 ### **Basic Shell Application**
+
 ```kotlin
 @SpringBootApplication
 @EnableAgentShell
@@ -563,6 +648,7 @@ fun main(args: Array<String>) {
 ```
 
 ### **Shell with Theme and MCP Client**
+
 ```kotlin
 @SpringBootApplication
 @EnableAgentShell
@@ -577,7 +663,8 @@ fun main(args: Array<String>) {
 }
 ```
 
-### **MCP Server Application**  
+### **MCP Server Application**
+
 ```kotlin
 @SpringBootApplication
 @EnableAgentMcpServer
@@ -594,22 +681,26 @@ fun main(args: Array<String>) {
 ## 🎯 Getting Started Recommendations
 
 ### **New to Agents?**
+
 1. Start with **Horoscope News Agent** (Java or Kotlin)
 2. Compare the Java vs Kotlin implementations
 3. Experiment with different prompts and see how the agent plans different workflows
 4. Try different logging themes to make development more fun!
 
 ### **Spring Developer?**
+
 1. Look at the configuration classes and repository integration
 2. Study the domain model design and service composition
 3. Explore the different application modes and Maven profiles
 4. See how themes and MCP clients are configured
 
 ### **Kotlin Enthusiast?**
+
 1. Progress to **Researcher** for multi-model patterns
 2. Explore **Fact Checker** for functional DSL approaches
 
 ### **AI/ML Developer?**
+
 1. Study prompt engineering techniques in any example
 2. Examine the **Researcher** for multi-model consensus patterns
 3. Look at **Fact Checker** for confidence scoring and source evaluation
