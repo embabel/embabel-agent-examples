@@ -24,13 +24,18 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
-通过 **Spring Framework** 和 **Java** 或 **Kotlin** 学习智能体 AI 开发。这些示例展示了如何构建能够规划、执行工作流、使用工具并与人类互动的智能体。
+<br/>
 
-**简体中文** · [English](./README.md)  
+[English](./README.md) · **简体中文**  
 
-&nbsp;
+通过 **Spring Framework** 和 **Java** 或 **Kotlin** 学习智能体 AI 开发。
+这些示例展示了如何构建能够规划、执行工作流、使用工具并与人类互动的智能体。
 
-> 本仓库使用最新的 Embabel 快照来展示当前的最佳实践，而 [Java](https://github.com/embabel/java-agent-template) 和 [Kotlin](https://github.com/embabel/kotlin-agent-template) 模板仓库则使用最新的里程碑版本以获得更好的稳定性。可能存在一些轻微的 API 不兼容性，您在这些模板中看到的并非所有内容都能在您自己的项目中正常工作，除非您在 POM 文件中升级 `embabel-agent.version` 属性，如本仓库所示。
+> 本仓库使用最新的 Embabel 快照来展示当前的最佳实践，
+> 而 [Java](https://github.com/embabel/java-agent-template) 和 
+> [Kotlin](https://github.com/embabel/kotlin-agent-template) 模板仓库则使用最新的里程碑版本以获得更好的稳定性。
+> 可能存在一些轻微的 API 不兼容性，您在这些模板中看到的并非所有内容都能在您自己的项目中正常工作，
+> 除非您在 POM 文件中升级 `embabel-agent.version` 属性，如本仓库所示。
 
 
 
@@ -38,7 +43,8 @@
 
 ### 前提条件
 - **Java 21+**
-- **API 密钥**（任意一个）：[OpenAI](https://platform.openai.com/api-keys) 或 [Anthropic](https://www.anthropic.com/api)
+- **API 密钥**（任意一个）：[OpenAI](https://platform.openai.com/api-keys) 
+或 [Anthropic](https://www.anthropic.com/api)
 - **Maven 3.9+**（可选 - 项目包含 Maven 包装器）
 
 ### 1. 克隆并构建
