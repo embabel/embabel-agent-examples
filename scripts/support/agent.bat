@@ -1,10 +1,10 @@
 @echo off
 setlocal
 
-set SCRIPT_DIR=%~dp0
-set ENV_SCRIPT=%SCRIPT_DIR%check_env.bat
+set "SCRIPT_DIR=%~dp0"
+set "ENV_SCRIPT=%SCRIPT_DIR%check_env.bat"
 
-call %SCRIPT_DIR%\check_env.bat
+call "%SCRIPT_DIR%check_env.bat"
 
 if errorlevel 1 (
     echo Environment check failed. Exiting...
@@ -23,12 +23,12 @@ if not defined MAVEN_PROFILE (
     exit /b 1
 )
 
-set POM_FILE=%AGENT_APPLICATION%\pom.xml
+set "POM_FILE=%AGENT_APPLICATION%\pom.xml"
 
 REM Display what we're running
 echo Starting application with profile: %MAVEN_PROFILE%
 echo Application path: %AGENT_APPLICATION%
 
-cmd /c ..\..\mvnw -U -P %MAVEN_PROFILE% -f %POM_FILE% -Dmaven.test.skip=true clean spring-boot:run
+cmd /c "..\..\mvnw -U -P %MAVEN_PROFILE% -f "%POM_FILE%" -Dmaven.test.skip=true clean spring-boot:run"
 
 endlocal
