@@ -15,13 +15,15 @@
  */
 package com.embabel.example.injection;
 
+import com.embabel.example.injection.customer.ActivitySummarizer;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 @ShellComponent
 public record JokeShellCommands(
-        InjectedComponent injectedComponent
+        InjectedComponent injectedComponent,
+        ActivitySummarizer activitySummarizer
 ) {
 
     @ShellMethod("Tell a joke")
@@ -40,6 +42,16 @@ public record JokeShellCommands(
     ) {
         var joke = injectedComponent.createJokeObjectAbout(topic1, topic2, voice);
         return joke.toString();
+    }
+
+    @ShellMethod("Analyze travel report")
+    public String travelReport(
+    ) {
+        var summary = activitySummarizer.summarizeActivity(1L);
+        if (summary == null) {
+            return "No customer found";
+        }
+        return summary.toString();
     }
 
 
