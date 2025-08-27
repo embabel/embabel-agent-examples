@@ -69,10 +69,9 @@ public record ActivitySummarizer(
                 .generateText("""
                         Your job is to help staff of Antechinus Travel understand their customers.
                         You will be given a report of customer activity over a period of time.
-                        You should summarize the activity in a way that draws our staff member's
+                        Summarize the activity in a way that draws our staff member's
                         attention to important details and also includes the customer's name.
-                        
-                        Summarize the following customer activity in a friendly way in no more than %s words.
+                        Use no more than %s words.
                         We consider customers that spend more than %f to be high spenders.
                         Customers that take more than %f trips per year are frequent travelers.
                         If the customer is a high spender, include a note about this in the summary.
