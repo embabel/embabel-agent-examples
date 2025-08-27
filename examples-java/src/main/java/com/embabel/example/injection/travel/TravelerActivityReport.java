@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.embabel.example.injection.customer;
+package com.embabel.example.injection.travel;
 
-import java.time.Instant;
-
-public record Trip(
-        String from,
-        String to,
-        Instant departure,
-        Instant arrival,
-        float amount
+public record TravelerActivityReport(
+        String summary,
+        TravellerActivity activity
 ) {
 }

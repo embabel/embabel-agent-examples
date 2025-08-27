@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.embabel.example.injection.customer;
+package com.embabel.example.injection.travel;
 
 import org.springframework.stereotype.Service;
 
@@ -23,19 +23,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Dummy ReportService implementation that generates realistic travel records
+ * A real implementation would probably be transactional.
+ * This can be accomplished with the Spring @Transactional annotation on the class or method.
+ */
 @Service
-public class DummyReportService implements ReportService {
+public class DummyTravelActivityReportingService implements TravelActivityReportingService {
 
     private static final Random random = new Random();
 
-    // 6 travelers: 3 male, 3 female, including 1 Chinese and 1 Indian name
     private static final String[] TRAVELER_NAMES = {
-            "James Mitchell",      // Male - British
-            "Sarah Thompson",      // Female - Canadian
-            "Wei Chen",           // Male - Chinese
-            "Emma van der Berg",  // Female - Dutch
-            "Rajesh Patel",       // Male - Indian
-            "Claire Dubois"       // Female - French
+            "James Mitchell",
+            "Sarah Thompson",
+            "Wei Chen",
+            "Emma van der Berg",
+            "Rajesh Patel",
+            "Claire Dubois"
     };
 
     // Major cities in Australia, Canada, France, Netherlands, and UK
@@ -67,7 +71,7 @@ public class DummyReportService implements ReportService {
             "Australia", "Canada", "France", "Netherlands", "UK"
     };
 
-    public static CustomerActivity generateRealisticRecord() {
+    public static TravellerActivity generateRealisticRecord() {
         String name = TRAVELER_NAMES[random.nextInt(TRAVELER_NAMES.length)];
 
         // Generate time period (last 6 months for more realistic travel frequency)
@@ -86,7 +90,7 @@ public class DummyReportService implements ReportService {
             currentTime = trip.arrival().plus(14 + random.nextInt(30), ChronoUnit.DAYS);
         }
 
-        return new CustomerActivity(name, from, to, trips);
+        return new TravellerActivity(name, from, to, trips);
     }
 
     private static Trip generateRealisticTrip(Instant earliestStart, Instant latestEnd) {
@@ -165,8 +169,8 @@ public class DummyReportService implements ReportService {
     }
 
     // Generate all 6 travelers
-    public static List<CustomerActivity> generateAllTravelers() {
-        List<CustomerActivity> allTravelers = new ArrayList<>();
+    public static List<TravellerActivity> generateAllTravelers() {
+        List<TravellerActivity> allTravelers = new ArrayList<>();
 
         for (String travelerName : TRAVELER_NAMES) {
             // Generate time period (last 6 months)
@@ -185,7 +189,7 @@ public class DummyReportService implements ReportService {
                 currentTime = trip.arrival().plus(14 + random.nextInt(30), ChronoUnit.DAYS);
             }
 
-            allTravelers.add(new CustomerActivity(travelerName, from, to, trips));
+            allTravelers.add(new TravellerActivity(travelerName, from, to, trips));
         }
 
         return allTravelers;
@@ -193,12 +197,12 @@ public class DummyReportService implements ReportService {
 
     // Test method to demonstrate all travelers
     public static void main(String[] args) {
-        List<CustomerActivity> allTravelers = generateAllTravelers();
+        List<TravellerActivity> allTravelers = generateAllTravelers();
 
         System.out.println("=== REALISTIC TRAVEL RECORDS ===\n");
 
         for (int customerIndex = 0; customerIndex < allTravelers.size(); customerIndex++) {
-            CustomerActivity customer = allTravelers.get(customerIndex);
+            TravellerActivity customer = allTravelers.get(customerIndex);
 
             System.out.println("Customer " + (customerIndex + 1) + ": " + customer.name());
             System.out.println("Period: " + customer.from() + " to " + customer.to());
@@ -219,14 +223,14 @@ public class DummyReportService implements ReportService {
     }
 
     @Override
-    public CustomerActivity report(Long customerId) {
+    public TravellerActivity report(Long customerId) {
         // In a real implementation, you'd use customerId to get specific customer
         // For demo purposes, cycle through the 6 travelers based on ID
         if (customerId == null) {
             return generateRealisticRecord();
         }
 
-        List<CustomerActivity> allTravelers = generateAllTravelers();
+        List<TravellerActivity> allTravelers = generateAllTravelers();
         int index = (int) (customerId % 6);
         return allTravelers.get(index);
     }

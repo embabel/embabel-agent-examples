@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.embabel.example.injection.customer;
+package com.embabel.example.injection.travel;
 
 import org.springframework.ai.tool.annotation.Tool;
 
@@ -23,12 +23,13 @@ import java.util.List;
 
 /**
  * Record of customer activity over a period of time.
+ * We add methods exposed to be exposed the LLM as tools.
  *
  * @param from
  * @param to
  * @param trips
  */
-public record CustomerActivity(
+public record TravellerActivity(
         String name,
         Instant from,
         Instant to,
@@ -60,5 +61,16 @@ public record CustomerActivity(
     @Tool(description = "Get the distinct destinations visited in the period")
     public List<String> destinations() {
         return trips.stream().map(Trip::to).distinct().toList();
+    }
+
+    /**
+     * At this rate, how many trips would be taken in a year?
+     */
+    @Tool(description = "Trips per year")
+    public float tripsPerYear() {
+        long days = periodDays();
+        return days == 0 ?
+                trips.size()
+                : (trips.size() * 365f) / days;
     }
 }

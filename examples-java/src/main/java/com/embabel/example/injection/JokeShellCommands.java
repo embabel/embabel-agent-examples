@@ -15,7 +15,7 @@
  */
 package com.embabel.example.injection;
 
-import com.embabel.example.injection.customer.ActivitySummarizer;
+import com.embabel.example.injection.travel.ActivitySummarizer;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
