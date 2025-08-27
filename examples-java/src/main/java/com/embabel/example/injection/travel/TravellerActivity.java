@@ -37,7 +37,7 @@ public record TravellerActivity(
 ) {
 
     @Tool
-    public float totalSpent() {
+    public float totalSpend() {
         return trips.stream().map(Trip::amount).reduce(0f, Float::sum);
     }
 
@@ -45,7 +45,7 @@ public record TravellerActivity(
     public float averageSpend() {
         return trips.isEmpty() ?
                 0f :
-                totalSpent() / trips.size();
+                totalSpend() / trips.size();
     }
 
     @Tool(description = "Get the number of trips taken in the period")
