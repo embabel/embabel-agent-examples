@@ -15,11 +15,11 @@
  */
 package com.embabel.example
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
 import com.embabel.agent.config.annotation.EnableAgents
 import com.embabel.agent.config.annotation.LoggingThemes
 import com.embabel.agent.config.annotation.McpServers
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
 /**
  * Spring Boot application that runs Embabel agents in interactive shell mode.
@@ -42,7 +42,7 @@ import com.embabel.agent.config.annotation.McpServers
     loggingTheme = LoggingThemes.STAR_WARS,
     mcpServers = [McpServers.DOCKER, McpServers.DOCKER_DESKTOP],
 )
-class AgentShellApplication
+class KotlinAgentShellApplication
 
 /**
  * Application entry point that bootstraps the Spring Boot application.
@@ -53,5 +53,5 @@ class AgentShellApplication
  * @param args Command line arguments passed to the application
  */
 fun main(args: Array<String>) {
-    runApplication<AgentShellApplication>(*args)
+    runApplication<KotlinAgentShellApplication>(*args)
 }

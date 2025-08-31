@@ -22,6 +22,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
+
 /**
  * Spring Boot application that provides an interactive command-line shell for Embabel agents
  * with Star Wars themed logging and Docker Desktop integration.
@@ -37,10 +38,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties
 @EnableAgents(
-        loggingTheme = LoggingThemes.STAR_WARS,
+        loggingTheme = LoggingThemes.SEVERANCE,
         mcpServers = {McpServers.DOCKER_DESKTOP}
 )
-public class AgentShellMcpClientApplication {
+public class JavaAgentShellApplication {
 
     /**
      * Application entry point.
@@ -51,6 +52,6 @@ public class AgentShellMcpClientApplication {
      * @param args command line arguments passed to the application
      */
     public static void main(String[] args) {
-        SpringApplication.run(AgentShellMcpClientApplication.class, args);
+        SpringApplication.run(JavaAgentShellApplication.class, args);
     }
 }

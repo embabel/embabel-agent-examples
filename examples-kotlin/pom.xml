@@ -13,10 +13,6 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>com.embabel.agent</groupId>
-            <artifactId>embabel-agent-starter</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.embabel.example</groupId>
@@ -42,7 +38,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.embabel.example.AgentShellApplicationKt</mainClass>
+                    <mainClass>com.embabel.example.KotlinAgentShellApplicationKt</mainClass>
                 </configuration>
                 <version>${spring-boot.version}</version>
             </plugin>
@@ -58,7 +54,7 @@
         <profile>
             <id>enable-shell</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <dependencies>
                 <dependency>
@@ -72,12 +68,12 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.embabel.example.AgentShellApplicationKt</mainClass>
+                            <mainClass>com.embabel.example.KotlinAgentShellApplicationKt</mainClass>
                         </configuration>
                         <version>${spring-boot.version}</version>
                     </plugin>
                 </plugins>
-            </build>           
+            </build>
         </profile>
         <profile>
             <id>enable-shell-mcp-client</id>
@@ -96,12 +92,12 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.embabel.example.AgentShellMcpClientApplicationKt</mainClass>
+                            <mainClass>com.embabel.example.KotlinAgentShellMcpClientApplicationKt</mainClass>
                         </configuration>
                         <version>${spring-boot.version}</version>
                     </plugin>
                 </plugins>
-            </build>           
+            </build>
         </profile>
         <profile>
             <id>enable-agent-mcp-server</id>
@@ -120,12 +116,12 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.embabel.example.AgentMcpServerApplicationKt</mainClass>
+                            <mainClass>com.embabel.example.KotlinAgentMcpServerApplicationKt</mainClass>
                         </configuration>
                         <version>${spring-boot.version}</version>
                     </plugin>
                 </plugins>
-            </build>           
+            </build>
         </profile>
     </profiles>
 </project>

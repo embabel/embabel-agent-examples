@@ -11,6 +11,10 @@
     <artifactId>example-agent-java</artifactId>
     <name>Embabel Agent Java Examples</name>
     <description>Java Examples for Embabel Agentic Flows</description>
+    <properties>
+        <spring-shell-standard.version>3.4.0</spring-shell-standard.version>
+    </properties>
+
 
     <dependencies>
 
@@ -18,6 +22,12 @@
             <groupId>com.embabel.example</groupId>
             <artifactId>examples-common</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.shell</groupId>
+            <artifactId>spring-shell-standard</artifactId>
+            <version>${spring-shell-standard.version}</version>
         </dependency>
 
         <!-- Test Dependencies -->
@@ -57,7 +67,7 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.embabel.example.AgentShellApplication</mainClass>
+                            <mainClass>com.embabel.example.JavaAgentShellApplication</mainClass>
                         </configuration>
                         <version>${spring-boot.version}</version>
                     </plugin>
@@ -81,7 +91,7 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.embabel.example.AgentShellMcpClientApplication</mainClass>
+                            <mainClass>com.embabel.example.JavaAgentShellMcpClientApplication</mainClass>
                         </configuration>
                         <version>${spring-boot.version}</version>
                     </plugin>
@@ -105,7 +115,7 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.embabel.example.AgentMcpServerApplication</mainClass>
+                            <mainClass>com.embabel.example.JavaMcpServerApplication</mainClass>
                         </configuration>
                         <version>${spring-boot.version}</version>
                     </plugin>

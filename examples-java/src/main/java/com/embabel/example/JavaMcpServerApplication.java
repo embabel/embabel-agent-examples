@@ -15,38 +15,37 @@
  */
 package com.embabel.example;
 
+import com.embabel.agent.config.annotation.EnableAgents;
 import com.embabel.agent.config.annotation.McpServers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import com.embabel.agent.config.annotation.EnableAgentMcpServer;
-import com.embabel.agent.config.annotation.EnableAgents;
 
 /**
  * Spring Boot application that runs Embabel agents as an MCP (Model Context Protocol) server.
- * 
+ *
  * <p>This application exposes your agents as MCP-compatible tools that can be consumed by
  * AI assistants like Claude Desktop, development environments with MCP support, or other
  * MCP-compliant clients. It also enables Docker Desktop integration for containerized
  * tool execution.
- * 
- * @since 1.0
+ *
  * @author Embabel Team
+ * @since 1.0
  */
 @SpringBootApplication
 @EnableAgents(
-    mcpServers = {McpServers.DOCKER_DESKTOP}
+        mcpServers = {McpServers.DOCKER_DESKTOP}
 )
-public class AgentMcpServerApplication {
-    
+public class JavaMcpServerApplication {
+
     /**
      * Application entry point.
-     * 
+     *
      * <p>Starts the Spring Boot application with MCP server capabilities and
      * Docker Desktop integration enabled.
-     * 
+     *
      * @param args command line arguments passed to the application
      */
     public static void main(String[] args) {
-        SpringApplication.run(AgentMcpServerApplication.class, args);
+        SpringApplication.run(JavaMcpServerApplication.class, args);
     }
 }
