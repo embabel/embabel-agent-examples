@@ -15,7 +15,6 @@
  */
 package com.embabel.example;
 
-import com.embabel.agent.config.annotation.EnableAgentShell;
 import com.embabel.agent.config.annotation.EnableAgents;
 import com.embabel.agent.config.annotation.LoggingThemes;
 import com.embabel.agent.config.annotation.McpServers;
@@ -33,13 +32,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * environment with fun Star Wars themed logging messages and Docker container capabilities.
  *
  * @author Embabel Team
- * @see EnableAgentShell
  * @see EnableAgents
  * @since 1.0
  */
 @SpringBootApplication
 @EnableConfigurationProperties
-@EnableAgentShell
 @EnableAgents(
         loggingTheme = LoggingThemes.SEVERANCE,
         mcpServers = {McpServers.DOCKER_DESKTOP}

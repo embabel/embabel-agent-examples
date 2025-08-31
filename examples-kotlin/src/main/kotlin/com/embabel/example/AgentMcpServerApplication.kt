@@ -17,10 +17,8 @@ package com.embabel.example
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import com.embabel.agent.config.annotation.EnableAgentMcpServer
 import com.embabel.agent.config.annotation.EnableAgents
 import com.embabel.agent.config.annotation.McpServers
-import io.modelcontextprotocol.server.McpServer
 
 /**
  * Spring Boot application that runs Embabel agents as an MCP (Model Context Protocol) server.
@@ -29,10 +27,8 @@ import io.modelcontextprotocol.server.McpServer
  * AI assistants like Claude Desktop, IDEs, or other MCP clients. The server
  * implements the JSON-RPC based MCP protocol for tool discovery and execution.
  *
- * @see EnableAgentMcpServer
  */
 @SpringBootApplication
-@EnableAgentMcpServer
 @EnableAgents(
     mcpServers = [McpServers.DOCKER_DESKTOP, McpServers.DOCKER],
 )

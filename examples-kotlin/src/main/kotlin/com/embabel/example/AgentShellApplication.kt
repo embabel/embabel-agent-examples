@@ -17,7 +17,6 @@ package com.embabel.example
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import com.embabel.agent.config.annotation.EnableAgentShell
 import com.embabel.agent.config.annotation.EnableAgents
 import com.embabel.agent.config.annotation.LoggingThemes
 import com.embabel.agent.config.annotation.McpServers
@@ -36,11 +35,9 @@ import com.embabel.agent.config.annotation.McpServers
  * shell:> help
  * ```
  *
- * @see EnableAgentShell
  * @see EnableAgents
  */
 @SpringBootApplication
-@EnableAgentShell
 @EnableAgents(
     loggingTheme = LoggingThemes.STAR_WARS,
     mcpServers = [McpServers.DOCKER, McpServers.DOCKER_DESKTOP],

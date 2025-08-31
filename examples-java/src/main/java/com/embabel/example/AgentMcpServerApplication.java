@@ -29,13 +29,10 @@ import com.embabel.agent.config.annotation.EnableAgents;
  * MCP-compliant clients. It also enables Docker Desktop integration for containerized
  * tool execution.
  * 
- * @see EnableAgentMcpServer
- * @see EnableAgents
  * @since 1.0
  * @author Embabel Team
  */
 @SpringBootApplication
-@EnableAgentMcpServer
 @EnableAgents(
     mcpServers = {McpServers.DOCKER_DESKTOP}
 )
