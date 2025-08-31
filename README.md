@@ -20,7 +20,7 @@
 ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 ![SonarQube](https://img.shields.io/badge/SonarQube-black?style=for-the-badge&logo=sonarqube&logoColor=4E9BCD)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![IntelliJ IDEA](https://img.shields.io/badge/IntelliJIDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)
+![IntelliJ IDEA](https://img.shields.io/badge/IntelliJIDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)Ena
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
@@ -108,52 +108,17 @@ if you already have an `OPENAI_API_KEY` and have Maven installed.
 
 ## 🆕 **Spring Boot Integration Architecture**
 
-### **Three Application Modes**
+### **Embabel Agent Starter Guide:**
 
-The Embabel Agent framework provides three distinct application modes through dedicated starter classes:
+#### **`embabel-agent-starter`**
 
-```kotlin
-// 1. Interactive Shell Mode with Star Wars themed logging
-@SpringBootApplication
-@EnableAgentShell
-@EnableAgents(loggingTheme = LoggingThemes.STAR_WARS)
-class AgentShellApplication
+- ✅ Application decides on startup mode (console, web application, etc)
+- ✅ Agent discovery and registration
+- ✅ Agent Platform beans are available via Dependency Injection mechanism for Application to use as needed
+- ✅ Progress tracking and logging
+- ✅ Development-friendly error handling
 
-// 2. Shell Mode with MCP Client Support (Docker Desktop integration)
-@SpringBootApplication
-@EnableAgentShell
-@EnableAgents(
-    loggingTheme = LoggingThemes.SEVERANCE,
-    mcpServers = [McpServers.DOCKER_DESKTOP]
-)
-class AgentShellMcpClientApplication
-
-// 3. MCP Server Mode  
-@SpringBootApplication
-@EnableAgentMcpServer
-@EnableAgents(mcpServers = [McpServers.DOCKER_DESKTOP])
-class AgentMcpServerApplication
-```
-
-```java
-// Java versions
-@SpringBootApplication
-@EnableAgentShell
-@EnableAgents(
-        loggingTheme = LoggingThemes.STAR_WARS,
-        mcpServers = {McpServers.DOCKER_DESKTOP}
-)
-public class AgentShellApplication
-
-@SpringBootApplication
-@EnableAgentMcpServer
-@EnableAgents(mcpServers = {McpServers.DOCKER_DESKTOP})
-public class AgentMcpApplication
-```
-
-### **Annotation Guide:**
-
-#### **`@EnableAgentShell`**
+#### **`embabel-agent-starter-shell`**
 
 - ✅ Interactive command-line interface
 - ✅ Agent discovery and registration
@@ -161,13 +126,76 @@ public class AgentMcpApplication
 - ✅ Progress tracking and logging
 - ✅ Development-friendly error handling
 
-#### **`@EnableAgentMcpServer`**
+#### **`embabel-agent-starter-mcpserver`**
 
 - ✅ MCP protocol server implementation
 - ✅ Tool registration and discovery
 - ✅ JSON-RPC communication via SSE (Server-Sent Events)
 - ✅ Integration with MCP-compatible clients
 - ✅ Security and sandboxing
+
+### **Three Application Modes**
+
+The Embabel Agent framework provides three distinct application modes, each optimized for different use cases:
+
+1. Interactive Shell Mode with Star Wars themed logging
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-shell</artifactId>
+</dependency>
+```
+
+```kotlin
+@SpringBootApplication
+@EnableAgents(loggingTheme = LoggingThemes.STAR_WARS)
+class AgentShellApplication
+```
+
+2. Shell Mode with MCP Client Support (Docker Desktop integration)
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-shell</artifactId>
+</dependency>
+```
+```kotlin
+@SpringBootApplication
+@EnableAgents(
+    loggingTheme = LoggingThemes.SEVERANCE,
+    mcpServers = [McpServers.DOCKER_DESKTOP]
+)
+class AgentShellMcpClientApplication
+```
+
+3. MCP Server Mode
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-mcpserver</artifactId>
+</dependency>
+```
+```kotlin
+@SpringBootApplication
+@EnableAgents(mcpServers = [McpServers.DOCKER_DESKTOP])
+class AgentMcpServerApplication
+```
+
+```java
+// Java versions
+@SpringBootApplication
+@EnableAgents(
+        loggingTheme = LoggingThemes.STAR_WARS,
+        mcpServers = {McpServers.DOCKER_DESKTOP}
+)
+public class AgentShellApplication
+
+@SpringBootApplication
+@EnableAgents(mcpServers = {McpServers.DOCKER_DESKTOP})
+public class AgentMcpApplication
+```
+
+### **Annotation Guide:**
 
 #### **`@EnableAgents`**
 
