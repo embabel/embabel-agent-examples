@@ -30,6 +30,6 @@ if "%MAVEN_PROFILE%"=="enable-shell" (
     echo.
 )
 
-call "%~dp0agent.bat"
+call %~dp0..\support\agent.bat
 
 endlocal
