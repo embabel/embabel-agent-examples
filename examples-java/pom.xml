@@ -11,22 +11,8 @@
     <artifactId>example-agent-java</artifactId>
     <name>Embabel Agent Java Examples</name>
     <description>Java Examples for Embabel Agentic Flows</description>
-    <properties>
-        <spring-shell-standard.version>3.4.0</spring-shell-standard.version>
-    </properties>
 
-    
     <dependencies>
-        <dependency>
-            <groupId>com.embabel.agent</groupId>
-            <artifactId>embabel-agent-starter</artifactId>
-        </dependency>
-
-        <dependency>
-           <groupId>org.springframework.shell</groupId>
-           <artifactId>spring-shell-standard</artifactId>
-           <version>${spring-shell-standard.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>com.embabel.example</groupId>
@@ -44,7 +30,7 @@
 
     <build>
         <plugins>
-      
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -53,11 +39,11 @@
         </plugins>
     </build>
 
-   <profiles>
+    <profiles>
         <profile>
             <id>enable-shell</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <dependencies>
                 <dependency>
@@ -76,7 +62,7 @@
                         <version>${spring-boot.version}</version>
                     </plugin>
                 </plugins>
-            </build>           
+            </build>
         </profile>
         <profile>
             <id>enable-shell-mcp-client</id>
@@ -100,7 +86,7 @@
                         <version>${spring-boot.version}</version>
                     </plugin>
                 </plugins>
-            </build>           
+            </build>
         </profile>
         <profile>
             <id>enable-agent-mcp-server</id>
@@ -124,7 +110,7 @@
                         <version>${spring-boot.version}</version>
                     </plugin>
                 </plugins>
-            </build>           
+            </build>
         </profile>
     </profiles>
 
