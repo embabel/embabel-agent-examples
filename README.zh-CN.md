@@ -96,34 +96,86 @@ uvx --from git+https://github.com/embabel/project-creator.git project-creator
 
 ## 🆕 **Spring Boot 集成架构**
 
+### **Embabel Agent Starter 指南：**
+
+#### **`embabel-agent-starter`**
+
+- ✅ 应用程序自定义启动模式（控制台、Web应用程序等）
+- ✅ 智能体的发现与注册
+- ✅ 在智能体平台中Bean可通过依赖注入机制供应用程序按需使用
+- ✅ 进度跟踪和日志记录
+- ✅ 开发者友好的错误处理
+
+#### **`embabel-agent-starter-shell`**
+
+- ✅ 交互式命令行界面
+- ✅ 智能体的发现与注册
+- ✅ 人机交互能力
+- ✅ 进度跟踪和日志记录
+- ✅ 开发者友好的错误处理
+
+#### **`embabel-agent-starter-mcpserver`**
+
+- ✅ MCP协议服务器端实现
+- ✅ 工具的注册与发现
+- ✅ 通过SSE协议（服务器发送事件）进行JSON-RPC通信
+- ✅ 与MCP兼容的客户端集成
+- ✅ 安全性与沙箱化
+
+
 ### **三种应用模式**
-Embabel Agent框架通过专门的启动类提供三种不同的应用模式：
+
+Embabel Agent框架提供三种不同的应用模式，每种模式都针对不同的用例进行了优化：
+
+1. 交互式Shell模式（带星球大战主题日志）
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-shell</artifactId>
+</dependency>
+```
+
 ```kotlin
-// 1. 交互式 Shell 模式，带有星球大战主题的日志
 @SpringBootApplication
-@EnableAgentShell
 @EnableAgents(loggingTheme = LoggingThemes.STAR_WARS)
 class AgentShellApplication
+```
 
-// 2. 带有 MCP 客户端支持的 Shell 模式（Docker Desktop 集成）
+2. Shell模式（支持MCP客户端，Docker Desktop集成）
+
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-shell</artifactId>
+</dependency>
+```
+
+```kotlin
 @SpringBootApplication
-@EnableAgentShell
 @EnableAgents(
-    loggingTheme = LoggingThemes.SEVERANCE,
-    mcpServers = [McpServers.DOCKER_DESKTOP]
+   loggingTheme = LoggingThemes.SEVERANCE,
+   mcpServers = [McpServers.DOCKER_DESKTOP]
 )
 class AgentShellMcpClientApplication
+```
 
-// 3. MCP 服务器模式  
+3. MCP服务器模式
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-mcpserver</artifactId>
+</dependency>
+```
+
+```kotlin
 @SpringBootApplication
-@EnableAgentMcpServer
 @EnableAgents(mcpServers = [McpServers.DOCKER_DESKTOP])
 class AgentMcpServerApplication
 ```
+
 ```java
 // Java 版本
 @SpringBootApplication
-@EnableAgentShell
 @EnableAgents(
     loggingTheme = LoggingThemes.STAR_WARS,
     mcpServers = {McpServers.DOCKER_DESKTOP}
@@ -131,25 +183,11 @@ class AgentMcpServerApplication
 public class AgentShellApplication;
 
 @SpringBootApplication  
-@EnableAgentMcpServer
 @EnableAgents(mcpServers = {McpServers.DOCKER_DESKTOP})
 public class AgentMcpApplication;
 ```
 
 ### **注解指南：**
-#### **`@EnableAgentShell`**
-- ✅ 交互式命令行界面
-- ✅ 智能体的发现和注册
-- ✅ 人机协作能力
-- ✅ 进度跟踪和日志记录
-- ✅ 开发友好的错误处理
-
-#### **`@EnableAgentMcpServer`**
-- ✅ MCP 协议服务器实现
-- ✅ 工具注册和发现
-- ✅ 通过 SSE（服务器推送事件）的 JSON-RPC 通信
-- ✅ 与兼容 MCP 的客户端集成
-- ✅ 安全性和沙箱
 
 #### **`@EnableAgents`**
 - 🎨 **loggingTheme**：自定义智能体的日志个性
