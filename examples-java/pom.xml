@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.embabel.example</groupId>
         <artifactId>example-agent-parent</artifactId>
-        <version>0.1.2-SNAPSHOT</version>
+        <version>0.1.3-SNAPSHOT</version>
     </parent>
     <groupId>com.embabel.example.java</groupId>
     <artifactId>example-agent-java</artifactId>
