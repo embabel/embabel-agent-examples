@@ -49,24 +49,26 @@ data class Critique(
 
 
 @ConfigurationProperties(prefix = "embabel.examples.researcher")
-data class ResearcherProperties(
+class ResearcherProperties(
     val responseFormat: ResponseFormat = ResponseFormat.MARKDOWN,
     val maxWordCount: Int = 300,
     val claudeModelName: String = AnthropicModels.CLAUDE_35_HAIKU,
     val openAiModelName: String = OpenAiModels.GPT_41_MINI,
     val criticModeName: String = OpenAiModels.GPT_41,
     val mergeModelName: String = OpenAiModels.GPT_41_MINI,
-    override val name: String = "Sherlock",
-    override val persona: String = "A resourceful researcher agent that can perform deep web research on a topic. Nothing escapes Sherlock",
-    override val voice: String = "Your voice is dry and in the style of Sherlock Holmes. Occasionally you address the user as Watson",
-    override val objective: String = "To clarify all points the user has brought up",
-) : Persona, PromptContributorConsumer {
+    personaName: String = "Sherlock",
+    personaDescription: String = "A resourceful researcher agent that can perform deep web research on a topic. Nothing escapes Sherlock",
+    personaVoice: String = "Your voice is dry and in the style of Sherlock Holmes. Occasionally you address the user as Watson",
+    personaObjective: String = "To clarify all points the user has brought up",
+) : PromptContributorConsumer {
+    // Create a Persona instance rather than extending it
+    val persona = Persona(personaName, personaDescription, personaVoice, personaObjective)
+
     override val promptContributors: List<PromptContributor>
         get() = listOf(
             responseFormat,
-            this,
+            persona,
         )
-
 }
 
 enum class Category {
