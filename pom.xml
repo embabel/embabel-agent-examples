@@ -19,18 +19,6 @@
         <module>examples-common</module>
     </modules>
 
-   <dependencies>
-       <dependency>
-            <groupId>com.embabel.agent</groupId>
-            <artifactId>embabel-agent-starter-openai</artifactId>
-       </dependency>
-
-       <dependency>
-            <groupId>com.embabel.agent</groupId>
-            <artifactId>embabel-agent-starter-anthropic</artifactId>
-       </dependency>
-   </dependencies>
-
     <repositories>
         <repository>
             <id>embabel-releases</id>
