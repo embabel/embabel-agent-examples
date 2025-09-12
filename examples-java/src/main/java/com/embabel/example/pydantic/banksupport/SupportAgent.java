@@ -23,8 +23,11 @@ import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.config.models.OpenAiModels;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.Repository;
 import org.springframework.lang.Nullable;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 
 record Customer(Long id, String name, float balance, float pendingAmount) {
 
@@ -34,7 +37,7 @@ record Customer(Long id, String name, float balance, float pendingAmount) {
     }
 }
 
-interface CustomerRepository extends Repository<Customer, Long> {
+interface CustomerRepository /*extends Repository<Customer, Long> */ {
 
     @Nullable
     Customer findById(Long id);
@@ -51,12 +54,22 @@ record SupportOutput(
         @JsonPropertyDescription("Risk level of query") int risk) {
 }
 
-@Agent(description = "Customer support agent")
-record SupportAgent(CustomerRepository customerRepository) {
+interface SupportAgentSpec {
 
+    SupportOutput supportCustomer(SupportInput supportInput, OperationContext context);
+}
+
+@Transactional
+@Agent(description = "Customer support agent")
+class SupportAgent/*(InMemoryCustomerRepository customerRepository)*/ implements SupportAgentSpec {
+
+    @Autowired
+    CustomerRepository customerRepository;
+
+    @Transactional
     @AchievesGoal(description = "Help bank customer with their query")
     @Action
-    SupportOutput supportCustomer(SupportInput supportInput, OperationContext context) {
+    public SupportOutput supportCustomer(SupportInput supportInput, OperationContext context) {
         var customer = customerRepository.findById(supportInput.customerId());
         if (customer == null) {
             return new SupportOutput("Customer not found with this id", false, 0);
@@ -71,7 +84,7 @@ record SupportAgent(CustomerRepository customerRepository) {
                                 In some cases, you may need to block their card. In this case, explain why.
                                 Reply using the customer's name, "%s".
                                 Currencies are in $.
-                                
+                                                                
                                 Their query: [%s]
                                 """.formatted(customer.name(), supportInput.query()),
                         SupportOutput.class);
