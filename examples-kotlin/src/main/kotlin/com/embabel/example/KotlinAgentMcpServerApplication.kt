@@ -18,6 +18,7 @@ package com.embabel.example
 import com.embabel.agent.config.annotation.EnableAgents
 import com.embabel.agent.config.annotation.McpServers
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 
 /**
@@ -29,10 +30,13 @@ import org.springframework.boot.runApplication
  *
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan(
+    basePackages = ["com.embabel.example"]
+)
 @EnableAgents(
     mcpServers = [McpServers.DOCKER_DESKTOP, McpServers.DOCKER],
 )
-class JavaAgentMcpServerApplication
+class KotlinAgentMcpServerApplication
 
 /**
  * Application entry point that starts the MCP server.
@@ -43,5 +47,5 @@ class JavaAgentMcpServerApplication
  * @param args Command line arguments passed to the application
  */
 fun main(args: Array<String>) {
-    runApplication<JavaAgentMcpServerApplication>(*args)
+    runApplication<KotlinAgentMcpServerApplication>(*args)
 }

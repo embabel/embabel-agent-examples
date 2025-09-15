@@ -20,7 +20,7 @@ import com.embabel.agent.config.annotation.LoggingThemes;
 import com.embabel.agent.config.annotation.McpServers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * Spring Boot application that provides an interactive command-line shell for Embabel agents
@@ -35,7 +35,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * @since 1.0
  */
 @SpringBootApplication
-@EnableConfigurationProperties
+@ConfigurationPropertiesScan(
+        basePackages = {
+                "com.embabel.example"
+        }
+)
 @EnableAgents(
         loggingTheme = LoggingThemes.STAR_WARS,
         mcpServers = {McpServers.DOCKER_DESKTOP}
