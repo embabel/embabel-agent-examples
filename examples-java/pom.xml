@@ -24,14 +24,10 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Ollama is always included as an option for local model hosting -->
         <dependency>
             <groupId>com.embabel.agent</groupId>
-            <artifactId>embabel-agent-starter-openai</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.embabel.agent</groupId>
-            <artifactId>embabel-agent-starter-anthropic</artifactId>
+            <artifactId>embabel-agent-starter-ollama</artifactId>
         </dependency>
 
         <dependency>
@@ -60,6 +56,34 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>openai-models</id>
+            <activation>
+                <property>
+                    <name>env.OPENAI_API_KEY</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-openai</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>anthropic-models</id>
+            <activation>
+                <property>
+                    <name>env.ANTHROPIC_API_KEY</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-anthropic</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <id>enable-shell</id>
             <activation>
