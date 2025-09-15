@@ -19,6 +19,7 @@ import com.embabel.agent.config.annotation.EnableAgents
 import com.embabel.agent.config.annotation.LoggingThemes
 import com.embabel.agent.config.annotation.McpServers
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 
 /**
@@ -38,6 +39,9 @@ import org.springframework.boot.runApplication
  * @see EnableAgents
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan(
+    basePackages = ["com.embabel.example"]
+)
 @EnableAgents(
     loggingTheme = LoggingThemes.STAR_WARS,
     mcpServers = [McpServers.DOCKER, McpServers.DOCKER_DESKTOP],

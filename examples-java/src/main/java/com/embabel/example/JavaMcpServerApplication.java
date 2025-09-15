@@ -19,6 +19,7 @@ import com.embabel.agent.config.annotation.EnableAgents;
 import com.embabel.agent.config.annotation.McpServers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * Spring Boot application that runs Embabel agents as an MCP (Model Context Protocol) server.
@@ -32,6 +33,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 1.0
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan(
+        basePackages = {
+                "com.embabel.example"
+        }
+)
 @EnableAgents(
         mcpServers = {McpServers.DOCKER_DESKTOP}
 )
