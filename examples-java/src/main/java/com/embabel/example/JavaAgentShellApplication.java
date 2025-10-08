@@ -42,8 +42,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
         }
 )
 @EnableAgents(
-        loggingTheme = LoggingThemes.SEVERANCE,
-        mcpServers = {McpServers.DOCKER_DESKTOP}
+        loggingTheme = LoggingThemes.SEVERANCE
 )
 public class JavaAgentShellApplication {
 
