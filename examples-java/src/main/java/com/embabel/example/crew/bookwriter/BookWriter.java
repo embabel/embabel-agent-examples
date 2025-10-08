@@ -92,7 +92,10 @@ record BookWriterConfig(
 
     public Path saveContent(Book book) {
         var dir = outputDirectory != null ? outputDirectory : System.getProperty("user.dir");
-        var fileName = book.title().replace(" ", "_").toLowerCase() + ".md";
+        var fileName = book.title()
+                .replaceAll("[<>:\"|*?/\\\\]", "_")
+                .replace(" ", "_")
+                .toLowerCase() + ".md";
         return FileTools.readWrite(dir).createFile("books" + File.separator + fileName, book.text(), true);
     }
 }
