@@ -17,7 +17,6 @@
 
 
     <dependencies>
-
         <dependency>
             <groupId>com.embabel.example</groupId>
             <artifactId>examples-common</artifactId>
@@ -84,11 +83,25 @@
                 </dependency>
             </dependencies>
         </profile>
+         <profile>
+            <id>bedrock-models</id>
+            <activation>
+                <property>
+                    <name>env.ENABLE_BEDROCK</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-bedrock</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <id>docker-models</id>
             <activation>
                 <property>
-                    <name>env.DOCKER_MODELS_AVAILABLE</name>
+                    <name>env.ENABLE_DOCKER_MODELS</name>
                 </property>
             </activation>
             <dependencies>
