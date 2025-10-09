@@ -16,7 +16,7 @@
 package com.embabel.example.horoscope;
 
 import com.embabel.agent.api.annotation.*;
-import com.embabel.agent.api.common.OperationContext;
+import com.embabel.agent.api.common.Ai;
 import com.embabel.agent.config.models.AnthropicModels;
 import com.embabel.agent.config.models.OpenAiModels;
 import com.embabel.agent.core.CoreToolGroups;
@@ -50,8 +50,8 @@ public class StarNewsFinder {
     }
 
     @Action
-    public Person extractPerson(UserInput userInput, OperationContext context) {
-        return context.ai()
+    public Person extractPerson(UserInput userInput, Ai ai) {
+        return ai
                 .withLlm(OpenAiModels.GPT_41)
                 .createObjectIfPossible(
                         """
@@ -76,8 +76,8 @@ public class StarNewsFinder {
     }
 
     @Action
-    public StarPerson extractStarPerson(UserInput userInput, OperationContext context) {
-        return context.ai()
+    public StarPerson extractStarPerson(UserInput userInput, Ai ai) {
+        return ai
                 .withLlmByRole("best")
                 .createObjectIfPossible(
                         """
@@ -94,7 +94,10 @@ public class StarNewsFinder {
 
     // toolGroups specifies tools that are required for this action to run
     @Action(toolGroups = {CoreToolGroups.WEB})
-    public RelevantNewsStories findNewsStories(StarPerson person, Horoscope horoscope, OperationContext context) {
+    public RelevantNewsStories findNewsStories(
+            StarPerson person,
+            Horoscope horoscope,
+            Ai ai) {
         var prompt = """
                 %s is an astrology believer with the sign %s.
                 Their horoscope for today is:
@@ -113,7 +116,7 @@ public class StarNewsFinder {
                 find news stories about training courses.""".formatted(
                 person.name(), person.sign(), horoscope.summary(), storyCount);
 
-        return context.ai()
+        return ai
                 .withDefaultLlm().
                 createObject(prompt, RelevantNewsStories.class);
     }
@@ -132,7 +135,7 @@ public class StarNewsFinder {
             StarPerson person,
             RelevantNewsStories relevantNewsStories,
             Horoscope horoscope,
-            OperationContext context) {
+            Ai ai) {
         var newsItems = relevantNewsStories.getItems().stream()
                 .map(item -> "- " + item.getUrl() + ": " + item.getSummary())
                 .collect(Collectors.joining("\n"));
@@ -152,7 +155,7 @@ public class StarNewsFinder {
                 
                 Format it as Markdown with links.""".formatted(
                 person.name(), person.sign(), horoscope.summary(), newsItems);
-        return context.ai()
+        return ai
                 .withLlm(LlmOptions
                         .withFirstAvailableLlmOf(AnthropicModels.CLAUDE_37_SONNET, OpenAiModels.GPT_41_MINI)
                         .withTemperature(0.9))
