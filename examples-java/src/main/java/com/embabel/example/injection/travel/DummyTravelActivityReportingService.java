@@ -195,33 +195,6 @@ public class DummyTravelActivityReportingService implements TravelActivityReport
         return allTravelers;
     }
 
-    // Test method to demonstrate all travelers
-    public static void main(String[] args) {
-        List<TravellerActivity> allTravelers = generateAllTravelers();
-
-        System.out.println("=== REALISTIC TRAVEL RECORDS ===\n");
-
-        for (int customerIndex = 0; customerIndex < allTravelers.size(); customerIndex++) {
-            TravellerActivity customer = allTravelers.get(customerIndex);
-
-            System.out.println("Customer " + (customerIndex + 1) + ": " + customer.name());
-            System.out.println("Period: " + customer.from() + " to " + customer.to());
-            System.out.println("Trips:");
-
-            float totalSpent = 0;
-            for (int i = 0; i < customer.trips().size(); i++) {
-                Trip trip = customer.trips().get(i);
-                System.out.printf("  %d. %s → %s%n", i + 1, trip.from(), trip.to());
-                System.out.printf("     %s to %s%n", trip.departure(), trip.arrival());
-                System.out.printf("     Amount: $%.2f%n", trip.amount());
-                totalSpent += trip.amount();
-            }
-
-            System.out.printf("Total Spent: $%.2f%n", totalSpent);
-            System.out.println("─".repeat(50));
-        }
-    }
-
     @Override
     public TravellerActivity report(Long customerId) {
         // In a real implementation, you'd use customerId to get specific customer
