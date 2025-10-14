@@ -76,7 +76,7 @@ class StarNewsFinderTest {
                 context = context
             )
 
-            val prompt = context.llmInvocations.first().prompt
+            val prompt = context.llmInvocations.first().messages.first().content
             val toolGroups = context.llmInvocations.first().interaction.toolGroups
 
             assertTrue(prompt.contains(starPerson.name))

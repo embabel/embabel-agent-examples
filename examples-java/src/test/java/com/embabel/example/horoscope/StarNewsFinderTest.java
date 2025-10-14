@@ -55,9 +55,9 @@ public class StarNewsFinderTest {
             RelevantNewsStories relevantNewsStories = new RelevantNewsStories(Arrays.asList(cockatoos, emus));
             Horoscope horoscope = new Horoscope("This is a good day for you");
 
-            starNewsFinder.writeup(starPerson, relevantNewsStories, horoscope, context);
+            starNewsFinder.writeup(starPerson, relevantNewsStories, horoscope, context.ai());
 
-            var prompt = context.getLlmInvocations().getFirst().getPrompt();
+            var prompt = context.getLlmInvocations().getFirst().getMessages().getFirst().getContent();
             var toolGroups = context.getLlmInvocations().getFirst().getInteraction().getToolGroups();
 
 
