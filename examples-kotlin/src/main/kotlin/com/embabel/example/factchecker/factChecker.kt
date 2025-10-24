@@ -19,7 +19,7 @@ import com.embabel.agent.api.common.createObject
 import com.embabel.agent.api.dsl.agent
 import com.embabel.agent.api.dsl.aggregate
 import com.embabel.agent.api.dsl.parallelMap
-import com.embabel.agent.config.models.AnthropicModels
+import com.embabel.agent.api.models.AnthropicModels
 import com.embabel.agent.core.Agent
 import com.embabel.agent.core.CoreToolGroups
 import com.embabel.agent.domain.io.UserInput
