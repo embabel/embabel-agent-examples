@@ -21,7 +21,7 @@ import com.embabel.agent.api.annotation.Agent;
 import com.embabel.agent.api.common.ActionContext;
 import com.embabel.agent.api.common.workflow.loop.RepeatUntilAcceptableBuilder;
 import com.embabel.agent.api.common.workflow.loop.TextFeedback;
-import com.embabel.agent.config.models.OpenAiModels;
+import com.embabel.agent.api.models.OpenAiModels;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.common.ai.model.LlmOptions;
 

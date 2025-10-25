@@ -20,7 +20,7 @@ import com.embabel.agent.api.annotation.AchievesGoal;
 import com.embabel.agent.api.annotation.Action;
 import com.embabel.agent.api.annotation.Agent;
 import com.embabel.agent.api.common.OperationContext;
-import com.embabel.agent.config.models.OpenAiModels;
+import com.embabel.agent.api.models.OpenAiModels;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.data.repository.Repository;

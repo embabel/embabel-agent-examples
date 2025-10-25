@@ -19,7 +19,7 @@ import com.embabel.agent.api.annotation.*
 import com.embabel.agent.api.common.OperationContext
 import com.embabel.agent.api.common.createObject
 import com.embabel.agent.api.common.createObjectIfPossible
-import com.embabel.agent.config.models.OpenAiModels
+import com.embabel.agent.api.models.OpenAiModels
 import com.embabel.agent.core.CoreToolGroups
 import com.embabel.agent.domain.io.UserInput
 import com.embabel.agent.domain.library.HasContent

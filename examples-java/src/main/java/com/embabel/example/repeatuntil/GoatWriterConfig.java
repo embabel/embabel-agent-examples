@@ -17,7 +17,8 @@ package com.embabel.example.repeatuntil;
 
 import com.embabel.agent.api.common.workflow.loop.RepeatUntilAcceptableBuilder;
 import com.embabel.agent.api.common.workflow.loop.TextFeedback;
-import com.embabel.agent.config.models.OpenAiModels;
+
+import com.embabel.agent.api.models.OpenAiModels;
 import com.embabel.agent.core.Agent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
