@@ -42,5 +42,9 @@ fi
 echo "Starting application with profile: $MAVEN_PROFILE"
 echo "Application path: $AGENT_APPLICATION"
 
+if [ -n "$SPRING_PROFILES_ACTIVE" ]; then
+    echo "Spring profiles: $SPRING_PROFILES_ACTIVE"
+fi
+
 # Run Maven Spring Boot application
-$SCRIPT_DIR/../../mvnw -U -P "$MAVEN_PROFILE" -f "$POM_FILE" -Dmaven.test.skip=true clean spring-boot:run
+$SCRIPT_DIR/../../mvnw -U -P "$MAVEN_PROFILE" -f "$POM_FILE" -Dmaven.test.skip=true -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE clean spring-boot:run

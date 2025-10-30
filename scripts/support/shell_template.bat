@@ -9,11 +9,19 @@ if not defined AGENT_APPLICATION (
 REM Default: Docker tools enabled (reversed from original logic)
 set MAVEN_PROFILE=enable-shell-mcp-client
 
-REM Check for --no-docker-tools parameter to disable tools
+REM Default: No observability profile
+set SPRING_PROFILES_ACTIVE=
+
+REM Check for optional parameters
 :parse_args
 if "%~1"=="" goto end_parse
 if "%~1"=="--no-docker-tools" (
     set MAVEN_PROFILE=enable-shell
+    shift
+    goto parse_args
+)
+if "%~1"=="--observability" (
+    set SPRING_PROFILES_ACTIVE=observability
     shift
     goto parse_args
 )
@@ -34,6 +42,13 @@ REM Display feature availability warning when tools are disabled
 if "%MAVEN_PROFILE%"=="enable-shell" (
     powershell -Command "Write-Host 'WARNING: Only Basic Agent features will be available' -ForegroundColor Red"
     powershell -Command "Write-Host 'Docker tools have been disabled. Remove --no-docker-tools to enable advanced features' -ForegroundColor Yellow"
+    echo.
+)
+
+REM Display observability status
+if defined SPRING_PROFILES_ACTIVE (
+    powershell -Command "Write-Host 'INFO: Observability profile is enabled' -ForegroundColor Magenta"
+    powershell -Command "Write-Host 'Make sure to run docker compose up to start Zipkin trace collector' -ForegroundColor Cyan"
     echo.
 )
 
