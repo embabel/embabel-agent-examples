@@ -514,6 +514,24 @@ cd scripts/java && shell.cmd --docker-tools        # Advanced Docker integration
 
 Uses Maven profile: `enable-shell-mcp-client`
 
+### **With Observability (Zipkin Tracing)**
+
+Enable distributed tracing with Zipkin by adding the `--observability` flag:
+
+```bash
+cd scripts/kotlin && ./shell.sh --observability    # Enable observability
+cd scripts/kotlin && shell.cmd --observability     # Enable observability (Windows)
+# or
+cd scripts/java && ./shell.sh --observability      # Enable observability
+cd scripts/java && shell.cmd --observability       # Enable observability (Windows)
+```
+
+Make sure to run `docker compose up` in the project root to start Zipkin trace collector:
+
+```bash
+docker compose up
+```
+
 ### **MCP Server Mode**
 
 ```bash

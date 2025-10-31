@@ -29,6 +29,11 @@ REM Display what we're running
 echo Starting application with profile: %MAVEN_PROFILE%
 echo Application path: %AGENT_APPLICATION%
 
-cmd /c "..\..\mvnw -U -P %MAVEN_PROFILE% -f "%POM_FILE%" -Dmaven.test.skip=true clean spring-boot:run"
+if defined SPRING_PROFILES_ACTIVE (
+    echo Spring profiles: %SPRING_PROFILES_ACTIVE%
+)
+
+REM Run Maven Spring Boot application
+call ..\..\mvnw -U -P %MAVEN_PROFILE% -f "%POM_FILE%" -Dmaven.test.skip=true -Dspring.profiles.active=%SPRING_PROFILES_ACTIVE% clean spring-boot:run
 
 endlocal
