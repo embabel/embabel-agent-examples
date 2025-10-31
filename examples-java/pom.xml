@@ -112,7 +112,7 @@
             </dependencies>
         </profile>
         <profile>
-            <id>enable-shell</id>
+            <id>enable-shell-mcp-client</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -136,7 +136,7 @@
             </build>
         </profile>
         <profile>
-            <id>enable-shell-mcp-client</id>
+            <id>enable-shell</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
@@ -152,7 +152,7 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.embabel.example.JavaAgentShellMcpClientApplication</mainClass>
+                            <mainClass>com.embabel.example.JavaAgentSimpleShellApplication</mainClass>
                         </configuration>
                         <version>${spring-boot.version}</version>
                     </plugin>
