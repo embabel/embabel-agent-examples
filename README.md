@@ -531,6 +531,7 @@ Make sure to run `docker compose up` in the project root to start Zipkin trace c
 ```bash
 docker compose up
 ```
+You should be able to access Zipkin Console: http://127.0.0.1:9411/zipkin/
 
 ### **MCP Server Mode**
 
