@@ -48,8 +48,8 @@ class ReviseStoryUntilSatisfied {
                 .withMaxIterations(7)
                 .withScoreThreshold(.8)
                 .repeating(context -> {
-                    var lastFeedback = context.getInput().lastFeedback();
-                    var feedback = lastFeedback != null ? "Consider the following feedback: " + lastFeedback.getFeedback() : "";
+                    var lastAttempt = context.lastAttempt();
+                    var feedback = lastAttempt != null ? "Consider the following feedback: " + lastAttempt.getFeedback() : "";
                     return writerPromptRunner.createObject(
                             """
                                     Write a creative story inspired by the user input: %s
@@ -68,7 +68,7 @@ class ReviseStoryUntilSatisfied {
                                         
                                         User input: %s
                                         """.formatted(
-                                        context.getInput().resultToEvaluate(),
+                                        context.getResultToEvaluate(),
                                         userInput.getContent()),
                                 TextFeedback.class)
                 )
