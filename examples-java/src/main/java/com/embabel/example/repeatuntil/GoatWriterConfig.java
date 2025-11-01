@@ -38,8 +38,8 @@ public class GoatWriterConfig {
                 .returning(Goat.class)
                 .withMaxIterations(3)
                 .repeating(context -> {
-                    var lastFeedback = context.getInput().lastFeedback();
-                    var feedback = lastFeedback != null ? "Feedback: " + lastFeedback.getFeedback() : "";
+                    var lastAttempt = context.lastAttempt();
+                    var feedback = lastAttempt != null ? "Feedback: " + lastAttempt.getFeedback() : "";
                     return context.ai()
                             .withLlm(OpenAiModels.GPT_5_NANO)
                             .createObject(
@@ -59,7 +59,7 @@ public class GoatWriterConfig {
                                         %s
                                         
                                         Provide feedback of no more than 40 words on a scale from 0 to 1, where 1 is excellent and 0 is poor.
-                                        """.formatted(context.getInput().resultToEvaluate()),
+                                        """.formatted(context.getResultToEvaluate()),
                                 TextFeedback.class))
                 .buildAgent("GoatWriter",
                         "Write a description of a goat");
