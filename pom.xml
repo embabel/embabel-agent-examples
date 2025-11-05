@@ -3,21 +3,41 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.embabel.agent</groupId>
-        <artifactId>embabel-agent-parent</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <groupId>com.embabel.build</groupId>
+        <artifactId>embabel-build-parent</artifactId>
+        <version>0.1.6-SNAPSHOT</version>
     </parent>
     <groupId>com.embabel.example</groupId>
     <artifactId>example-agent-parent</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Embabel Example Agent Parent</name>
     <description>Example Agentic Flows</description>
+
+    <properties>
+        <embabel-agent.version>0.2.0-SNAPSHOT</embabel-agent.version>
+    </properties>
 
     <modules>
         <module>examples-kotlin</module>
         <module>examples-java</module>
         <module>examples-common</module>
     </modules>
+
+
+    <!-- Embabel Common BOM -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Embabel Agent BOM -->
+            <dependency>
+                <groupId>com.embabel.agent</groupId>
+                <artifactId>embabel-agent-dependencies</artifactId>
+                <version>${embabel-agent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- ================ Observability ================ -->
