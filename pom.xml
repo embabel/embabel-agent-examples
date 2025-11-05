@@ -16,6 +16,7 @@
 
     <properties>
         <embabel-agent.version>0.2.0-SNAPSHOT</embabel-agent.version>
+        <mockk.version>1.13.3</mockk.version>
     </properties>
 
     <modules>
@@ -56,6 +57,19 @@
             <artifactId>zipkin-reporter-brave</artifactId>
         </dependency>
         <!-- ================ Observability ================ -->
+
+        <!-- Unit Test Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk-jvm</artifactId>
+            <version>${mockk.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
