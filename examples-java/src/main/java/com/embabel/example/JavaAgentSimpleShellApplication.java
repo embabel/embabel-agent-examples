@@ -20,6 +20,7 @@ import com.embabel.agent.config.annotation.LoggingThemes;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * Spring Boot application that provides an interactive command-line shell for Embabel agents
@@ -39,6 +40,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
  * @since 1.0
  */
 @SpringBootApplication
+@EnableAsync
 @ConfigurationPropertiesScan(
         basePackages = {
                 "com.embabel.example"

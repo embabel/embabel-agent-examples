@@ -26,6 +26,7 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.Repository;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,7 @@ interface SupportAgentSpec {
     SupportOutput supportCustomer(SupportInput supportInput, OperationContext context);
 }
 
+@EnableAsync
 @Transactional
 @Agent(description = "Customer support agent")
 class SupportAgent/*(InMemoryCustomerRepository customerRepository)*/ implements SupportAgentSpec {

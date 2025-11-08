@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -79,6 +80,7 @@ record BookRequest(String topic, String goal, int wordsPerChapter) implements Pr
 /**
  * All properties can be overridden in application.yml
  */
+@EnableAsync
 @ConfigurationProperties("examples.book-writer")
 record BookWriterConfig(
         LlmOptions researcherLlm,
