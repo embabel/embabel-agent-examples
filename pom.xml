@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.embabel.build</groupId>
         <artifactId>embabel-build-parent</artifactId>
-        <version>0.1.6-SNAPSHOT</version>
+        <version>0.1.6</version>
     </parent>
     <groupId>com.embabel.example</groupId>
     <artifactId>example-agent-parent</artifactId>
@@ -15,7 +15,7 @@
     <description>Example Agentic Flows</description>
 
     <properties>
-        <embabel-agent.version>0.2.0-SNAPSHOT</embabel-agent.version>
+        <embabel-agent.version>0.2.0</embabel-agent.version>
         <mockk.version>1.13.3</mockk.version>
     </properties>
 
