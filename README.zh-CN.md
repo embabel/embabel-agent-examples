@@ -424,6 +424,25 @@ cd scripts/java && shell.cmd --docker-tools        # 高级 Docker 集成
 ```
 使用 Maven 配置文件：`enable-shell-mcp-client`
 
+### **可观测性 (Zipkin 追踪)**
+
+通过添加 `--observability` 标志来启用 Zipkin 分布式追踪：
+
+```bash
+cd scripts/kotlin && ./shell.sh --observability    # 启用可观测性
+cd scripts/kotlin && shell.cmd --observability     # 启用可观测性 (Windows)
+# 或者
+cd scripts/java && ./shell.sh --observability      # 启用可观测性
+cd scripts/java && shell.cmd --observability       # 启用可观测性 (Windows)
+```
+
+请确保在本项目根目录运行 `docker compose up` 来启动 Zipkin 分布式追踪收集器:
+
+```bash
+docker compose up
+```
+启动后您应该能访问到 Zipkin 控制台：http://127.0.0.1:9411/zipkin/
+
 ### **MCP 服务器模式**
 ```bash
 cd scripts/kotlin && ./mcp_server.sh
