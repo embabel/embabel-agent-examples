@@ -17,7 +17,7 @@ package com.embabel.example.horoscope;
 
 import com.embabel.agent.domain.library.NewsStory;
 import com.embabel.agent.domain.library.RelevantNewsStories;
-import com.embabel.agent.testing.unit.FakeOperationContext;
+import com.embabel.agent.test.unit.FakeOperationContext;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

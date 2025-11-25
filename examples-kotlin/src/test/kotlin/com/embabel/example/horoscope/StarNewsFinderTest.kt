@@ -17,11 +17,7 @@ package com.embabel.example.horoscope
 
 import com.embabel.agent.domain.library.NewsStory
 import com.embabel.agent.domain.library.RelevantNewsStories
-import com.embabel.agent.testing.unit.FakeOperationContext
-import com.embabel.agent.testing.unit.UnitTestUtils
-import com.embabel.example.horoscope.Horoscope
-import com.embabel.example.horoscope.StarNewsFinder
-import com.embabel.example.horoscope.StarPerson
+import com.embabel.agent.test.unit.FakeOperationContext
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
