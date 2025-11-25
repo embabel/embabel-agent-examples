@@ -23,7 +23,6 @@ import com.embabel.agent.api.models.OpenAiModels
 import com.embabel.agent.core.CoreToolGroups
 import com.embabel.agent.domain.io.UserInput
 import com.embabel.agent.domain.library.ResearchReport
-import com.embabel.agent.prompt.PromptUtils
 import com.embabel.agent.prompt.ResponseFormat
 import com.embabel.agent.prompt.persona.Persona
 import com.embabel.common.ai.model.LlmOptions
@@ -31,6 +30,7 @@ import com.embabel.common.ai.model.ModelProvider.Companion.CHEAPEST_ROLE
 import com.embabel.common.ai.prompt.PromptContributor
 import com.embabel.common.ai.prompt.PromptContributorConsumer
 import com.embabel.common.core.types.Timestamped
+import com.embabel.example.common.prompt.PromptUtils
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.time.Instant
