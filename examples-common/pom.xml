@@ -18,6 +18,12 @@
             <artifactId>embabel-agent-api</artifactId>
         </dependency>
 
+        <!-- Domain Types used in Tests and Examples-->
+        <dependency>
+            <groupId>com.embabel.agent</groupId>
+            <artifactId>embabel-agent-test-domain</artifactId>
+        </dependency>
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>com.embabel.agent</groupId>
