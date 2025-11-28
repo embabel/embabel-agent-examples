@@ -15,9 +15,10 @@
  */
 package com.embabel.example.pydantic.banksupport;
 
-import com.embabel.agent.api.common.autonomy.AgentInvocation;
+import com.embabel.agent.api.invocation.AgentInvocation;
 import com.embabel.agent.core.AgentPlatform;
 import com.embabel.agent.core.ProcessOptions;
+import com.embabel.agent.core.Verbosity;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -36,11 +37,10 @@ public record SupportAgentShellCommands(
         System.out.println("Support input: " + supportInput);
         var invocation = AgentInvocation
                 .builder(agentPlatform)
-                .options(ProcessOptions.builder().verbosity(v -> v.showPrompts(true)).build())
+                .options(ProcessOptions.DEFAULT.withVerbosity(Verbosity.DEFAULT.withShowPrompts(true)))
                 .build(SupportOutput.class);
         var result = invocation.invoke(supportInput);
         return result.toString();
     }
-
 
 }
