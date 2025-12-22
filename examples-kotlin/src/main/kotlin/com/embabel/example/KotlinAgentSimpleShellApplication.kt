@@ -15,7 +15,6 @@
  */
 package com.embabel.example
 
-import com.embabel.agent.config.annotation.EnableAgents
 import com.embabel.agent.config.annotation.LoggingThemes
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
@@ -34,15 +33,10 @@ import org.springframework.boot.runApplication
  * shell:> chat
  * shell:> help
  * ```
- *
- * @see EnableAgents
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan(
     basePackages = ["com.embabel.example"]
-)
-@EnableAgents(
-    loggingTheme = LoggingThemes.SEVERANCE,
 )
 class KotlinAgentShellMcpClientApplication
 
@@ -55,5 +49,11 @@ class KotlinAgentShellMcpClientApplication
  * @param args Command line arguments passed to the application
  */
 fun main(args: Array<String>) {
-    runApplication<KotlinAgentShellMcpClientApplication>(*args)
+    runApplication<KotlinAgentShellMcpClientApplication>(*args) {
+        setDefaultProperties(
+            mapOf(
+                "embabel.agent.logging.personality" to LoggingThemes.SEVERANCE,
+            )
+        )
+    }
 }

@@ -15,12 +15,13 @@
  */
 package com.embabel.example;
 
-import com.embabel.agent.config.annotation.EnableAgents;
 import com.embabel.agent.config.annotation.LoggingThemes;
-import com.embabel.agent.config.annotation.McpServers;
+import com.embabel.example.common.support.McpServers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+
+import java.util.Map;
 
 
 /**
@@ -32,7 +33,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
  * environment with fun Star Wars themed logging messages and Docker container capabilities.
  *
  * @author Embabel Team
- * @see EnableAgents
  * @since 1.0
  */
 @SpringBootApplication
@@ -40,10 +40,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
         basePackages = {
                 "com.embabel.example"
         }
-)
-@EnableAgents(
-        loggingTheme = LoggingThemes.STAR_WARS,
-        mcpServers = {McpServers.DOCKER_DESKTOP}
 )
 public class JavaAgentShellApplication {
 
@@ -56,6 +52,12 @@ public class JavaAgentShellApplication {
      * @param args command line arguments passed to the application
      */
     public static void main(String[] args) {
-        SpringApplication.run(JavaAgentShellApplication.class, args);
+        SpringApplication app = new SpringApplication(JavaAgentShellApplication.class);
+        app.setAdditionalProfiles(McpServers.DOCKER_DESKTOP);
+        app.setDefaultProperties(Map.of(
+                "embabel.agent.logging.personality", LoggingThemes.STAR_WARS
+        ));
+        app.run(args);
     }
+
 }

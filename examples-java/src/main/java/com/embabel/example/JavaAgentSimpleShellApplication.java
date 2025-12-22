@@ -15,11 +15,12 @@
  */
 package com.embabel.example;
 
-import com.embabel.agent.config.annotation.EnableAgents;
 import com.embabel.agent.config.annotation.LoggingThemes;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+
+import java.util.Map;
 
 /**
  * Spring Boot application that provides an interactive command-line shell for Embabel agents
@@ -35,7 +36,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
  * with agents through a REPL-like interface.
  *
  * @author Embabel Team
- * @see EnableAgents
  * @since 1.0
  */
 @SpringBootApplication
@@ -43,9 +43,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
         basePackages = {
                 "com.embabel.example"
         }
-)
-@EnableAgents(
-        loggingTheme = LoggingThemes.SEVERANCE
 )
 public class JavaAgentSimpleShellApplication {
 
@@ -58,6 +55,10 @@ public class JavaAgentSimpleShellApplication {
      * @param args command line arguments passed to the application
      */
     public static void main(String[] args) {
-        SpringApplication.run(JavaAgentSimpleShellApplication.class, args);
+        SpringApplication app = new SpringApplication(JavaAgentShellApplication.class);
+        app.setDefaultProperties(Map.of(
+                "embabel.agent.logging.personality", LoggingThemes.SEVERANCE
+        ));
+        app.run(args);
     }
 }
