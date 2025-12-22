@@ -15,8 +15,7 @@
  */
 package com.embabel.example;
 
-import com.embabel.agent.config.annotation.EnableAgents;
-import com.embabel.agent.config.annotation.McpServers;
+import com.embabel.example.common.support.McpServers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -38,9 +37,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
                 "com.embabel.example"
         }
 )
-@EnableAgents(
-        mcpServers = {McpServers.DOCKER_DESKTOP}
-)
 public class JavaMcpServerApplication {
 
     /**
@@ -52,6 +48,8 @@ public class JavaMcpServerApplication {
      * @param args command line arguments passed to the application
      */
     public static void main(String[] args) {
-        SpringApplication.run(JavaMcpServerApplication.class, args);
+        SpringApplication app = new SpringApplication(JavaAgentShellApplication.class);
+        app.setAdditionalProfiles(McpServers.DOCKER_DESKTOP);
+        app.run(args);
     }
 }

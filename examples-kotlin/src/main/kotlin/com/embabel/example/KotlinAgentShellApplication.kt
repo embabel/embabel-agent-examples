@@ -15,9 +15,8 @@
  */
 package com.embabel.example
 
-import com.embabel.agent.config.annotation.EnableAgents
 import com.embabel.agent.config.annotation.LoggingThemes
-import com.embabel.agent.config.annotation.McpServers
+import com.embabel.example.common.support.McpServers
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
@@ -36,15 +35,10 @@ import org.springframework.boot.runApplication
  * shell:> help
  * ```
  *
- * @see EnableAgents
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan(
     basePackages = ["com.embabel.example"]
-)
-@EnableAgents(
-    loggingTheme = LoggingThemes.STAR_WARS,
-    mcpServers = [McpServers.DOCKER_DESKTOP, McpServers.DOCKER],
 )
 class KotlinAgentShellApplication
 
@@ -57,5 +51,12 @@ class KotlinAgentShellApplication
  * @param args Command line arguments passed to the application
  */
 fun main(args: Array<String>) {
-    runApplication<KotlinAgentShellApplication>(*args)
+    runApplication<KotlinAgentShellApplication>(*args) {
+        setAdditionalProfiles(McpServers.DOCKER, McpServers.DOCKER_DESKTOP)
+        setDefaultProperties(
+            mapOf(
+                "embabel.agent.logging.personality" to LoggingThemes.STAR_WARS,
+            )
+        )
+    }
 }
