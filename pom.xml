@@ -5,17 +5,17 @@
     <parent>
         <groupId>com.embabel.build</groupId>
         <artifactId>embabel-build-parent</artifactId>
-        <version>0.1.8-SNAPSHOT</version>
+        <version>0.1.8</version>
     </parent>
     <groupId>com.embabel.example</groupId>
     <artifactId>example-agent-parent</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Embabel Example Agent Parent</name>
     <description>Example Agentic Flows</description>
 
     <properties>
-        <embabel-agent.version>0.3.1-SNAPSHOT</embabel-agent.version>
+        <embabel-agent.version>0.3.2-SNAPSHOT</embabel-agent.version>
         <mockk.version>1.13.3</mockk.version>
     </properties>
 
