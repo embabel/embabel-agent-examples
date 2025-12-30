@@ -15,7 +15,7 @@
  */
 package com.embabel.example.injection.travel;
 
-import org.springframework.ai.tool.annotation.Tool;
+import com.embabel.agent.api.annotation.LlmTool;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -36,29 +36,29 @@ public record TravellerActivity(
         List<Trip> trips
 ) {
 
-    @Tool
+    @LlmTool
     public float totalSpend() {
         return trips.stream().map(Trip::amount).reduce(0f, Float::sum);
     }
 
-    @Tool
+    @LlmTool
     public float averageSpend() {
         return trips.isEmpty() ?
                 0f :
                 totalSpend() / trips.size();
     }
 
-    @Tool(description = "Get the number of trips taken in the period")
+    @LlmTool(description = "Get the number of trips taken in the period")
     public int tripCount() {
         return trips.size();
     }
 
-    @Tool(description = "Get the number of days in the period")
+    @LlmTool(description = "Get the number of days in the period")
     public long periodDays() {
         return Duration.between(from, to).toDays();
     }
 
-    @Tool(description = "Get the distinct destinations visited in the period")
+    @LlmTool(description = "Get the distinct destinations visited in the period")
     public List<String> destinations() {
         return trips.stream().map(Trip::to).distinct().toList();
     }
@@ -66,7 +66,7 @@ public record TravellerActivity(
     /**
      * At this rate, how many trips would be taken in a year?
      */
-    @Tool(description = "Trips per year")
+    @LlmTool(description = "Trips per year")
     public float tripsPerYear() {
         long days = periodDays();
         return days == 0 ?
