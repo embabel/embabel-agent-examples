@@ -52,7 +52,7 @@ class KotlinAgentShellApplication
  */
 fun main(args: Array<String>) {
     runApplication<KotlinAgentShellApplication>(*args) {
-        setAdditionalProfiles(McpServers.DOCKER, McpServers.DOCKER_DESKTOP)
+        setAdditionalProfiles(McpServers.DOCKER)
         setDefaultProperties(
             mapOf(
                 "embabel.agent.logging.personality" to LoggingThemes.STAR_WARS,
