@@ -71,22 +71,22 @@ export ANTHROPIC_API_KEY="your_anthropic_key"
 
 ```bash
 cd scripts/kotlin
-./shell.sh                    # Unix/Linux/macOS - Basic features
-shell.cmd                     # Windows - Basic features
+./shell.sh                    # Unix/Linux/macOS - With Docker tools (default)
+shell.cmd                     # Windows - With Docker tools (default)
 
-./shell.sh --docker-tools     # Unix/Linux/macOS - With Docker integration
-shell.cmd --docker-tools      # Windows - With Docker integration
+./shell.sh --no-docker-tools  # Unix/Linux/macOS - Basic features only
+shell.cmd --no-docker-tools   # Windows - Basic features only
 ```
 
 #### **Java Examples**
 
 ```bash
 cd scripts/java
-./shell.sh                    # Unix/Linux/macOS - Basic features
-shell.cmd                     # Windows - Basic features
+./shell.sh                    # Unix/Linux/macOS - With Docker tools (default)
+shell.cmd                     # Windows - With Docker tools (default)
 
-./shell.sh --docker-tools     # Unix/Linux/macOS - With Docker integration
-shell.cmd --docker-tools      # Windows - With Docker integration
+./shell.sh --no-docker-tools  # Unix/Linux/macOS - Basic features only
+shell.cmd --no-docker-tools   # Windows - Basic features only
 ```
 
 ---
@@ -134,77 +134,96 @@ if you already have an `OPENAI_API_KEY` and have Maven installed.
 - ✅ Integration with MCP-compatible clients
 - ✅ Security and sandboxing
 
-### **Three Application Modes**
+### **Application Examples**
 
-The Embabel Agent framework provides three distinct application modes, each optimized for different use cases:
-
-1. Interactive Shell Mode with Star Wars themed logging
-```xml
-<dependency>
-    <groupId>com.embabel.agent</groupId>
-    <artifactId>embabel-agent-starter-shell</artifactId>
-</dependency>
-```
+#### Shell Mode with Logging Theme
 
 ```kotlin
 @SpringBootApplication
-@EnableAgents(loggingTheme = LoggingThemes.STAR_WARS)
-class AgentShellApplication
-```
+@ConfigurationPropertiesScan(basePackages = ["com.embabel.example"])
+class KotlinAgentShellApplication
 
-2. Shell Mode with MCP Client Support (Docker Desktop integration)
-```xml
-<dependency>
-    <groupId>com.embabel.agent</groupId>
-    <artifactId>embabel-agent-starter-shell</artifactId>
-</dependency>
-```
-```kotlin
-@SpringBootApplication
-@EnableAgents(
-    loggingTheme = LoggingThemes.SEVERANCE,
-    mcpServers = [McpServers.DOCKER_DESKTOP]
-)
-class AgentShellMcpClientApplication
-```
-
-3. MCP Server Mode
-```xml
-<dependency>
-    <groupId>com.embabel.agent</groupId>
-    <artifactId>embabel-agent-starter-mcpserver</artifactId>
-</dependency>
-```
-```kotlin
-@SpringBootApplication
-@EnableAgents(mcpServers = [McpServers.DOCKER_DESKTOP])
-class AgentMcpServerApplication
+fun main(args: Array<String>) {
+    runApplication<KotlinAgentShellApplication>(*args) {
+        setDefaultProperties(
+            mapOf("embabel.agent.logging.personality" to LoggingThemes.STAR_WARS)
+        )
+    }
+}
 ```
 
 ```java
-// Java versions
+// Java version
 @SpringBootApplication
-@EnableAgents(
-        loggingTheme = LoggingThemes.STAR_WARS,
-        mcpServers = {McpServers.DOCKER_DESKTOP}
-)
-public class AgentShellApplication
-
-@SpringBootApplication
-@EnableAgents(mcpServers = {McpServers.DOCKER_DESKTOP})
-public class AgentMcpApplication
+@ConfigurationPropertiesScan(basePackages = {"com.embabel.example"})
+public class JavaAgentShellApplication {
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(JavaAgentShellApplication.class);
+        app.setDefaultProperties(Map.of(
+            "embabel.agent.logging.personality", LoggingThemes.STAR_WARS
+        ));
+        app.run(args);
+    }
+}
 ```
 
-### **Annotation Guide:**
+#### Shell Mode with MCP Client Support (Docker Tools)
 
-#### **`@EnableAgents`**
+```kotlin
+@SpringBootApplication
+@ConfigurationPropertiesScan(basePackages = ["com.embabel.example"])
+class KotlinAgentShellApplication
 
-- 🎨 **loggingTheme**: Customize your agent's logging personality
-    - `"starwars"` - May the Force be with your logs!
-    - `"severance"` - Welcome to Lumon Industries (default)
-- 🐳 **mcpServers**: Enable MCP client integrations
-    - `"docker-desktop"` - Docker Desktop AI capabilities
-    - Custom clients can be added
+fun main(args: Array<String>) {
+    runApplication<KotlinAgentShellApplication>(*args) {
+        setAdditionalProfiles(McpServers.DOCKER)  // Activates application-docker-ce.yml
+        setDefaultProperties(
+            mapOf("embabel.agent.logging.personality" to LoggingThemes.SEVERANCE)
+        )
+    }
+}
+```
+
+#### MCP Server Mode
+
+```kotlin
+@SpringBootApplication
+@ConfigurationPropertiesScan(basePackages = ["com.embabel.example"])
+class KotlinAgentMcpServerApplication
+
+fun main(args: Array<String>) {
+    runApplication<KotlinAgentMcpServerApplication>(*args) {
+        setAdditionalProfiles(McpServers.DOCKER, McpServers.DOCKER_DESKTOP)
+    }
+}
+```
+
+### **Configuration Guide**
+
+#### Logging Personality
+
+Set via the `embabel.agent.logging.personality` property:
+
+- `"starwars"` - May the Force be with your logs!
+- `"severance"` - Welcome to Lumon Industries (default)
+
+#### MCP Client Integration
+
+Configure via Spring profiles that define Spring AI MCP client connections in `application-{profile}.yml`:
+
+```yaml
+# application-docker-ce.yml
+spring:
+  ai:
+    mcp:
+      client:
+        type: SYNC
+        stdio:
+          connections:
+            docker-mcp:
+              command: docker
+              args: [mcp, gateway, run]
+```
 
 ---
 
@@ -304,10 +323,10 @@ x "Find horoscope news for Alice who is a Gemini"
 class StarNewsFinder {
 
     @Action
-    fun extractPerson(userInput: UserInput): Person?
+    fun extractPerson(userInput: UserInput, context: OperationContext): Person?
 
     @Action(toolGroups = [CoreToolGroups.WEB])
-    fun findNewsStories(person: StarPerson, horoscope: Horoscope): RelevantNewsStories
+    fun findNewsStories(person: StarPerson, horoscope: Horoscope, context: OperationContext): RelevantNewsStories
 
     @AchievesGoal(description = "Create an amusing writeup")
     @Action
@@ -436,7 +455,8 @@ data class AssertionCheck(
 
 ### **Spring Framework Integration**
 
-- **Multiple Application Classes:** Dedicated starters for different modes
+- **Auto-Configuration:** Starters handle all configuration automatically
+- **Profile-Based Configuration:** MCP clients configured via Spring profiles
 - **Maven Profiles:** `enable-shell`, `enable-shell-mcp-client`, `enable-agent-mcp-server`
 - **Dependency Injection:** Constructor-based injection with agents as Spring beans
 - **Configuration Properties:** Type-safe configuration with `@ConfigurationProperties`
@@ -445,11 +465,12 @@ data class AssertionCheck(
 
 ### **Modern Spring Boot Patterns**
 
-- **Multi-Annotation Architecture:** Combining multiple `@Enable*` annotations
+- **Auto-Configuration:** Starters handle all configuration automatically
+- **Profile-Based Configuration:** MCP clients configured via Spring profiles
 - **Profile-Based Execution:** Maven profiles control which application class runs
 - **Auto-Configuration Classes:** Understanding Spring Boot's auto-configuration
 - **Conditional Configuration:** Mode-specific bean loading
-- **Theme-Based Customization:** Dynamic behavior based on configuration
+- **Theme-Based Customization:** Dynamic behavior based on properties
 
 ### **Modern Kotlin Features**
 
@@ -493,26 +514,26 @@ See:
 ### **Interactive Shell Mode** (Default)
 
 ```bash
-cd scripts/kotlin && ./shell.sh          # Basic features
-cd scripts/kotlin && shell.cmd           # Basic features (Windows)
+cd scripts/kotlin && ./shell.sh          # With Docker tools (default)
+cd scripts/kotlin && shell.cmd           # With Docker tools (Windows)
 # or
-cd scripts/java && ./shell.sh            # Basic features
-cd scripts/java && shell.cmd             # Basic features (Windows)
-```
-
-Uses Maven profile: `enable-shell`
-
-### **Shell with MCP Client Support**
-
-```bash
-cd scripts/kotlin && ./shell.sh --docker-tools     # Advanced Docker integration
-cd scripts/kotlin && shell.cmd --docker-tools      # Advanced Docker integration (Windows)
-# or
-cd scripts/java && ./shell.sh --docker-tools       # Advanced Docker integration
-cd scripts/java && shell.cmd --docker-tools        # Advanced Docker integration (Windows)
+cd scripts/java && ./shell.sh            # With Docker tools (default)
+cd scripts/java && shell.cmd             # With Docker tools (Windows)
 ```
 
 Uses Maven profile: `enable-shell-mcp-client`
+
+### **Shell Without Docker Tools**
+
+```bash
+cd scripts/kotlin && ./shell.sh --no-docker-tools     # Basic features only
+cd scripts/kotlin && shell.cmd --no-docker-tools      # Basic features (Windows)
+# or
+cd scripts/java && ./shell.sh --no-docker-tools       # Basic features only
+cd scripts/java && shell.cmd --no-docker-tools        # Basic features (Windows)
+```
+
+Uses Maven profile: `enable-shell`
 
 ### **With Observability (Zipkin Tracing)**
 
@@ -592,13 +613,13 @@ npx @modelcontextprotocol/inspector
 ### **Manual Execution**
 
 ```bash
-# Kotlin shell mode
-cd examples-kotlin
-mvn -P enable-shell spring-boot:run
-
-# Kotlin shell with MCP client
+# Kotlin shell mode with MCP client (default)
 cd examples-kotlin
 mvn -P enable-shell-mcp-client spring-boot:run
+
+# Kotlin shell mode without MCP client
+cd examples-kotlin
+mvn -P enable-shell spring-boot:run
 
 # Kotlin MCP server mode
 cd examples-kotlin  
@@ -606,7 +627,7 @@ mvn -P enable-agent-mcp-server spring-boot:run
 
 # Java equivalents use the same pattern
 cd examples-java
-mvn -P enable-shell spring-boot:run
+mvn -P enable-shell-mcp-client spring-boot:run
 ```
 
 ### **Testing**
@@ -653,15 +674,15 @@ Your agents become available as tools:
 
 ### **MCP Client Support**
 
-Enable your agents to use external MCP tools by using the `--docker-tools` parameter:
+Docker tools are enabled by default. To disable:
 
 ```bash
-# Enable Docker Desktop MCP integration
-cd scripts/kotlin && ./shell.sh --docker-tools
-cd scripts/java && ./shell.sh --docker-tools
+# Disable Docker MCP integration
+cd scripts/kotlin && ./shell.sh --no-docker-tools
+cd scripts/java && ./shell.sh --no-docker-tools
 ```
 
-This allows your agents to:
+With Docker tools enabled, your agents can:
 
 - Execute commands in Docker containers
 - Access containerized services
@@ -683,8 +704,6 @@ This allows your agents to:
 
 ```kotlin
 @SpringBootApplication
-@EnableAgentShell
-@EnableAgents
 class MyAgentApplication
 
 fun main(args: Array<String>) {
@@ -692,19 +711,28 @@ fun main(args: Array<String>) {
 }
 ```
 
+Add the shell starter to your `pom.xml`:
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-shell</artifactId>
+</dependency>
+```
+
 ### **Shell with Theme and MCP Client**
 
 ```kotlin
 @SpringBootApplication
-@EnableAgentShell
-@EnableAgents(
-    loggingTheme = LoggingThemes.STAR_WARS,
-    mcpServers = [McpServers.DOCKER_DESKTOP]
-)
+@ConfigurationPropertiesScan(basePackages = ["com.example"])
 class MyThemedAgentApplication
 
 fun main(args: Array<String>) {
-    runApplication<MyThemedAgentApplication>(*args)
+    runApplication<MyThemedAgentApplication>(*args) {
+        setAdditionalProfiles("docker-ce")  // Enable MCP client via profile
+        setDefaultProperties(
+            mapOf("embabel.agent.logging.personality" to LoggingThemes.STAR_WARS)
+        )
+    }
 }
 ```
 
@@ -712,13 +740,19 @@ fun main(args: Array<String>) {
 
 ```kotlin
 @SpringBootApplication
-@EnableAgentMcpServer
-@EnableAgents
 class MyMcpServerApplication
 
 fun main(args: Array<String>) {
     runApplication<MyMcpServerApplication>(*args)
 }
+```
+
+Add the MCP server starter to your `pom.xml`:
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-mcpserver</artifactId>
+</dependency>
 ```
 
 ---
@@ -737,7 +771,7 @@ fun main(args: Array<String>) {
 1. Look at the configuration classes and repository integration
 2. Study the domain model design and service composition
 3. Explore the different application modes and Maven profiles
-4. See how themes and MCP clients are configured
+4. See how profiles and properties configure MCP clients
 
 ### **Kotlin Enthusiast?**
 
@@ -773,27 +807,28 @@ Look at the log output in the event of failure as it may contain hints as to the
 embabel-agent-examples/
 ├── examples-kotlin/                 # 🏆 Kotlin implementations
 │   ├── src/main/kotlin/com/embabel/example/
-│   │   ├── AgentShellApplication.kt         # Basic shell mode
-│   │   ├── AgentShellMcpClientApplication.kt # Shell + MCP client
-│   │   ├── AgentMcpServerApplication.kt     # MCP server mode  
+│   │   ├── KotlinAgentShellApplication.kt       # Shell + MCP client (default)
+│   │   ├── KotlinAgentSimpleShellApplication.kt # Shell without MCP
+│   │   ├── KotlinAgentMcpServerApplication.kt   # MCP server mode  
 │   │   ├── horoscope/              # 🌟 Beginner: Star news agent
 │   ├── pom.xml                     # Maven profiles for each mode
 │   └── README.md                   # 📖 Kotlin-specific documentation
 │
 ├── examples-java/                   # ☕ Java implementations  
 │   ├── src/main/java/com/embabel/example/
-│   │   ├── AgentShellApplication.java  # Shell mode with themes
-│   │   ├── AgentMcpApplication.java    # MCP server mode
+│   │   ├── JavaAgentShellApplication.java       # Shell with themes
+│   │   ├── JavaAgentSimpleShellApplication.java # Shell without MCP
+│   │   ├── JavaMcpServerApplication.java        # MCP server mode
 │   │   └── horoscope/              # 🌟 Beginner: Star news agent
 │   └── README.md                   # 📖 Java-specific documentation
 │
 ├── examples-common/                 # 🔧 Shared services & utilities
 ├── scripts/                        # 🚀 Quick-start scripts
 │   ├── kotlin/
-│   │   ├── shell.sh               # Launch shell (with --docker-tools option)
+│   │   ├── shell.sh               # Launch shell (--no-docker-tools to disable)
 │   │   └── mcp_server.sh          # Launch MCP server
 │   ├── java/
-│   │   ├── shell.sh               # Launch shell (with --docker-tools option)
+│   │   ├── shell.sh               # Launch shell (--no-docker-tools to disable)
 │   │   └── mcp_server.sh          # Launch MCP server
 │   ├── support/                   # Shared script utilities
 │   └── README.md                  # 📖 Scripts documentation
