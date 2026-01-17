@@ -92,8 +92,7 @@ public class StarNewsFinder {
         return new Horoscope(horoscopeService.dailyHoroscope(starPerson.sign()));
     }
 
-    // toolGroups specifies tools that are required for this action to run
-    @Action(toolGroups = {CoreToolGroups.WEB})
+    @Action
     public RelevantNewsStories findNewsStories(
             StarPerson person,
             Horoscope horoscope,
@@ -117,8 +116,10 @@ public class StarNewsFinder {
                 person.name(), person.sign(), horoscope.summary(), storyCount);
 
         return ai
-                .withDefaultLlm().
-                createObject(prompt, RelevantNewsStories.class);
+                .withDefaultLlm()
+                .withId("find_news_stories")
+                .withToolGroup(CoreToolGroups.WEB)
+                .createObject(prompt, RelevantNewsStories.class);
     }
 
     // The @AchievesGoal annotation indicates that completing this action

@@ -15,7 +15,11 @@
  */
 package com.embabel.example.horoscope
 
-import com.embabel.agent.api.annotation.*
+import com.embabel.agent.api.annotation.AchievesGoal
+import com.embabel.agent.api.annotation.Action
+import com.embabel.agent.api.annotation.Agent
+import com.embabel.agent.api.annotation.Export
+import com.embabel.agent.api.annotation.fromForm
 import com.embabel.agent.api.common.OperationContext
 import com.embabel.agent.api.common.createObject
 import com.embabel.agent.api.common.createObjectIfPossible
@@ -203,15 +207,19 @@ class StarNewsFinder(
      * @param horoscope The person's daily horoscope
      * @return A collection of relevant news stories with summaries and URLs
      */
-    // toolGroups specifies tools that are required for this action to run
-    @Action(toolGroups = [CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION])
+    @Action
     internal fun findNewsStories(
         person: StarPerson,
         horoscope: Horoscope,
         context: OperationContext
     ): RelevantNewsStories =
-        context.ai().withLlm(model).createObject(
-            """
+        context
+            .ai()
+            .withLlm(model)
+            .withId("StarNewsFinder.FindNewsStories")
+            .withToolGroup(CoreToolGroups.WEB)
+            .createObject(
+                """
             ${person.name} is an astrology believer with the sign ${person.sign}.
             Their horoscope for today is:
                 <horoscope>${horoscope.summary}</horoscope>
@@ -228,7 +236,7 @@ class StarNewsFinder(
             - If the horoscope says that they may want to work on their career,
             find news stories about training courses.
             """.trimIndent()
-        )
+            )
 
     /**
      * Creates a personalized writeup combining the horoscope and relevant news stories.
