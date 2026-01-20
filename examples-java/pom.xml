@@ -231,7 +231,6 @@
                     <artifactId>embabel-agent-starter-bedrock</artifactId>
                 </dependency>
             </dependencies>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
