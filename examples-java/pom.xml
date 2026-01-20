@@ -183,6 +183,63 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>enable-agent-a2a-server</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-a2a</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>com.embabel.example.JavaA2AServerApplication</mainClass>
+                        </configuration>
+                        <version>${spring-boot.version}</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>enable-agent-a2a-server-uber</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-a2a</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>com.embabel.example.JavaA2AServerApplication</mainClass>
+                            <optimizedLaunch>true</optimizedLaunch>
+                            <layout>JAR</layout>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>repackage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <version>${spring-boot.version}</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
 </project>
