@@ -221,11 +221,10 @@
                     <groupId>com.embabel.agent</groupId>
                     <artifactId>embabel-agent-starter-openai</artifactId>
                 </dependency>
-                 <dependency>
+                <dependency>
                     <groupId>com.embabel.agent</groupId>
                     <artifactId>embabel-agent-starter-anthropic</artifactId>
-                 </dependency>
-                 <dependencies>
+                </dependency
                 <dependency>
                     <groupId>com.embabel.agent</groupId>
                     <artifactId>embabel-agent-starter-bedrock</artifactId>
