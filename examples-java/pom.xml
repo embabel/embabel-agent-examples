@@ -225,6 +225,12 @@
                     <groupId>com.embabel.agent</groupId>
                     <artifactId>embabel-agent-starter-anthropic</artifactId>
                  </dependency>
+                 <dependencies>
+                <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-bedrock</artifactId>
+                </dependency>
+            </dependencies>
             </dependencies>
             <build>
                 <plugins>
