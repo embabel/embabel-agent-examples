@@ -37,7 +37,7 @@ import java.util.Map;
                 "com.embabel.example"
         }
 )
-public class JavaA2ACotainerApplication {
+public class JavaA2AContainerApplication {
 
     /**
      * Application entry point.
