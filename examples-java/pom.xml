@@ -217,6 +217,14 @@
                     <groupId>com.embabel.agent</groupId>
                     <artifactId>embabel-agent-starter-a2a</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-openai</artifactId>
+                </dependency>
+                 <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-anthropic</artifactId>
+                 </dependency>
             </dependencies>
             <build>
                 <plugins>
