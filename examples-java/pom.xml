@@ -224,7 +224,7 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>com.embabel.example.JavaA2AServerApplication</mainClass>
+                            <mainClass>com.embabel.example.JavaA2AContainerApplication</mainClass>
                             <optimizedLaunch>true</optimizedLaunch>
                             <layout>JAR</layout>
                         </configuration>
