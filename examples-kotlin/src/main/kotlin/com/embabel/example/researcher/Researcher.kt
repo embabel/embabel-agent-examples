@@ -147,7 +147,6 @@ class Researcher(
         post = [REPORT_SATISFACTORY],
         canRerun = true,
         outputBinding = "gpt4Report",
-        toolGroups = [CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION]
     )
     fun researchWithGpt4(
         userInput: UserInput,
@@ -176,7 +175,6 @@ class Researcher(
         post = [REPORT_SATISFACTORY],
         canRerun = true,
         outputBinding = "gpt4Report",
-        toolGroups = [CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION]
     )
     fun redoResearchWithGpt4(
         userInput: UserInput,
@@ -204,7 +202,6 @@ class Researcher(
         post = [REPORT_SATISFACTORY],
         outputBinding = "claudeReport",
         canRerun = true,
-        toolGroups = [CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION]
     )
     fun researchWithClaude(
         userInput: UserInput,
@@ -233,7 +230,6 @@ class Researcher(
         post = [REPORT_SATISFACTORY],
         outputBinding = "claudeReport",
         canRerun = true,
-        toolGroups = [CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION]
     )
     fun redoResearchWithClaude(
         userInput: UserInput,
@@ -296,23 +292,23 @@ class Researcher(
     ): ResearchReport = context.promptRunner(
         llm = llm,
         promptContributors = properties.promptContributors,
-    ).create(
+    ).withToolGroup(CoreToolGroups.WEB).withToolGroup(CoreToolGroups.BROWSER_AUTOMATION).create(
         """
-        Use the web and browser tools to answer the given question.
+    Use the web and browser tools to answer the given question.
 
-        You must try to find the answer on the web, and be definite, not vague.
+    You must try to find the answer on the web, and be definite, not vague.
 
-        Write a detailed report in at most ${properties.maxWordCount} words.
-        If you can answer the question more briefly, do so.
-        Including a number of links that are relevant to the topic.
+    Write a detailed report in at most ${properties.maxWordCount} words.
+    If you can answer the question more briefly, do so.
+    Including a number of links that are relevant to the topic.
 
-        Example:
-        ${PromptUtils.jsonExampleOf<ResearchReport>()}
+    Example:
+    ${PromptUtils.jsonExampleOf<ResearchReport>()}
 
-        Question:
-        <${userInput.content}>
+    Question:
+    <${userInput.content}>
 
-        ${
+    ${
             critique?.reasoning?.let {
                 "Critique of previous answer:\n<$it>"
             }
@@ -338,17 +334,17 @@ class Researcher(
     ): ResearchReport = context.promptRunner(
         llm = llm,
         promptContributors = properties.promptContributors,
-    ).create(
+    ).withToolGroup(CoreToolGroups.WEB).withToolGroup(CoreToolGroups.BROWSER_AUTOMATION).create(
         """
-        Use the web and browser tools to perform deep research on the given topic.
+    Use the web and browser tools to perform deep research on the given topic.
 
-        Write a detailed report in ${properties.maxWordCount} words,
-        including a number of links that are relevant to the topic.
+    Write a detailed report in ${properties.maxWordCount} words,
+    including a number of links that are relevant to the topic.
 
-        Topic:
-        <${userInput.content}>
+    Topic:
+    <${userInput.content}>
 
-         ${
+     ${
             critique?.reasoning?.let {
                 "Critique of previous answer:\n<$it>"
             }
