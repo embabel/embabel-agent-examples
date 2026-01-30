@@ -20,7 +20,7 @@ import com.embabel.agent.api.annotation.Action;
 import com.embabel.agent.api.annotation.Agent;
 import com.embabel.agent.api.annotation.WaitFor;
 import com.embabel.agent.api.common.OperationContext;
-import com.embabel.agent.api.common.Subagent;
+import com.embabel.agent.api.tool.Subagent;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.common.ai.model.LlmOptions;
 import com.embabel.example.horoscope.StarNewsFinder;
@@ -51,9 +51,9 @@ class Subagents {
     InterestingFacts findInterestingFacts(TargetPerson person, OperationContext operationContext) {
         return operationContext.promptRunner()
                 .withLlm(LlmOptions.withAutoLlm())
-                .withSubagents(
-                        new Subagent(StarNewsFinder.class, StarPerson.class),
-                        new Subagent("GoatWriter", UserInput.class))
+                .withTools(
+                        Subagent.ofClass(StarNewsFinder.class).consuming(StarPerson.class),
+                        Subagent.byName("GoatWriter").consuming(UserInput.class))
                 .createObject("""
                                 The person has a strong interest in astrology and goats.
                                 Find 5 facts that will interest them, and return them as a list.
