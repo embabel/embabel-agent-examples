@@ -17,7 +17,9 @@ package com.embabel.example.handoff;
 
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
+import com.embabel.agent.api.tool.Subagent;
 import com.embabel.agent.domain.io.UserInput;
+import com.embabel.example.horoscope.StarNewsFinder;
 import com.embabel.example.horoscope.StarPerson;
 import com.embabel.example.horoscope.Writeup;
 
@@ -44,7 +46,7 @@ public class Handoff {
     AdventureLog chooseAdventure(Choice choice, OperationContext operationContext) {
         return operationContext.ai()
                 .withAutoLlm()
-                .withHandoffs(StarPerson.class, Writeup.class)
+                .withTool(Subagent.ofClass(StarNewsFinder.class).consuming(StarPerson.class))
                 .createObject("""
                         Based on the user's input, decide what to do. You might do something related to a horoscope or some fact checking.
                         What they said: %s
