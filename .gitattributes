@@ -1,0 +1,2 @@
+# Shell scripts - auto convert CRLF to LF on checkout (for Linux)
+*.sh text eol=lf
