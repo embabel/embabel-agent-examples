@@ -14,13 +14,16 @@ spring:
               command: npx
               args:
                 - -y
-                - "@modelcontextprotocol/server-brave-search"
+                - "@brave/brave-search-mcp-server"
+                - --disabled-tools
+                - brave_summarizer
               env:
                 BRAVE_API_KEY: ${BRAVE_API_KEY}
             fetch-mcp:
-              command: uvx
+              command: npx
               args:
-                - mcp-server-fetch
+                - -y
+                - "@tokenizin/mcp-npx-fetch"
             puppeteer-mcp:
               command: npx
               args:
