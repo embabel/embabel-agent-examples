@@ -15,6 +15,8 @@
  */
 package com.embabel.example;
 
+import com.embabel.common.util.WinUtils;
+import com.embabel.example.common.support.McpServers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -48,6 +50,11 @@ public class JavaA2AContainerApplication {
      */
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(JavaA2AServerApplication.class);
+        if (WinUtils.IS_OS_WINDOWS()) {
+            app.setAdditionalProfiles(McpServers.NPX_WINDOWS);
+        } else {
+            app.setAdditionalProfiles(McpServers.NPX_LINUX);
+        }
         app.run(args);
     }
 

@@ -1,0 +1,59 @@
+spring:
+  ai:
+    mcp:
+      client:
+        enabled: true
+        name: embabel
+        version: 1.0.0
+        request-timeout: 30s
+        type: SYNC
+
+        stdio:
+          connections:
+            brave-search-mcp:
+              command: cmd
+              args:
+                - /c
+                - npx
+                - -y
+                - "@modelcontextprotocol/server-brave-search"
+              env:
+                BRAVE_API_KEY: ${BRAVE_API_KEY}
+            fetch-mcp:
+              command: cmd
+              args:
+                - /c
+                - uvx
+                - mcp-server-fetch
+            puppeteer-mcp:
+              command: cmd
+              args:
+                - /c
+                - npx
+                - -y
+                - "@modelcontextprotocol/server-puppeteer"
+            wikipedia-mcp:
+              command: cmd
+              args:
+                - /c
+                - npx
+                - -y
+                - "wikipedia-mcp"
+            github-mcp:
+              command: cmd
+              args:
+                - /c
+                - npx
+                - -y
+                - "@modelcontextprotocol/server-github"
+              env:
+                GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
+            google-maps-mcp:
+              command: cmd
+              args:
+                - /c
+                - npx
+                - -y
+                - "@modelcontextprotocol/server-google-maps"
+              env:
+                GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
