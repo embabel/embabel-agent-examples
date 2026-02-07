@@ -19,8 +19,4 @@ object McpServers {
     const val DOCKER: String = "docker-ce"
 
     const val DOCKER_DESKTOP: String = "docker-desktop"
-
-    const val NPX_WINDOWS: String = "npx-windows"
-
-    const val NPX_LINUX: String = "npx-linux"
 }
