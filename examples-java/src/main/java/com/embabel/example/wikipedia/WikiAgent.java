@@ -18,6 +18,7 @@ package com.embabel.example.wikipedia;
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.core.CoreToolGroups;
+import com.embabel.agent.core.hitl.WaitFor;
 import com.embabel.common.ai.model.LlmOptions;
 import org.springframework.beans.factory.annotation.Value;
 

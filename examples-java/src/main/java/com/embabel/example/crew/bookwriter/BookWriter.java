@@ -18,6 +18,7 @@ package com.embabel.example.crew.bookwriter;
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.core.CoreToolGroups;
+import com.embabel.agent.core.hitl.WaitFor;
 import com.embabel.agent.domain.library.ResearchReport;
 import com.embabel.agent.prompt.persona.RoleGoalBackstory;
 import com.embabel.agent.tools.file.FileTools;

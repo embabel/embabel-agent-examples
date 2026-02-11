@@ -18,6 +18,7 @@ package com.embabel.example.handoff;
 import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.api.tool.Subagent;
+import com.embabel.agent.core.hitl.WaitFor;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.example.horoscope.StarNewsFinder;
 import com.embabel.example.horoscope.StarPerson;
