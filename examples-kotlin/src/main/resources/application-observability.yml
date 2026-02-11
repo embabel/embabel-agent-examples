@@ -1,5 +1,9 @@
+# Observability configuration for Embabel to see GOAP and Spring AI traces in your observability platform
+embabel:
+  observability:
+    enabled: true
+    service-name: embabel-agent-examples-kotlin
 # Observability configuration for Spring AI with tracing and logging
-# This is a concern of the application, not the library and will be removed in future versions
 spring:
   ai:
     chat:
