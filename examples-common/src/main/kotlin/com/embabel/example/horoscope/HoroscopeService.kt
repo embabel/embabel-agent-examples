@@ -27,12 +27,12 @@ fun interface HoroscopeService {
 class HoroscopeAppApiHoroscopeService : HoroscopeService {
 
     private val restClient = RestClient.builder()
-        .baseUrl("https://horoscope-app-api.vercel.app")
+        .baseUrl("https://api.api-ninjas.com")
         .build()
 
     override fun dailyHoroscope(sign: String): String {
         val response = restClient.get()
-            .uri("/api/v1/get-horoscope/daily?sign={sign}", sign.lowercase())
+            .uri("/v1/horoscope?zodiac={sign}", sign.lowercase())
             .retrieve()
             .body(HoroscopeResponse::class.java)
 
