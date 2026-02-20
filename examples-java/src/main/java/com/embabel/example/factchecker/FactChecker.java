@@ -35,6 +35,7 @@ import com.google.common.base.Supplier;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -149,7 +150,7 @@ class FactChecker {
             OperationContext context) {
         return context.parallelMap(distinctFactualAssertions.assertions(), properties.maxConcurrency(), assertion ->
                         context.ai()
-                                .withLlm(model)
+                                .withLlm(LlmOptions.withModel(model).withTimeout(Duration.ofMinutes(3)))
                                 .withPromptContributor(properties.promptContributor())
                                 .withTools(CoreToolGroups.WEB)
                                 .createObject(
@@ -239,7 +240,7 @@ class FactChecker {
                     .append("\n\n");
         }
         return context.ai()
-                .withLlm(properties.deduplicationLlm())
+                .withLlm(properties.deduplicationLlm().withTimeout(Duration.ofMinutes(3)))
                 .withTools(CoreToolGroups.WEB)
                 .withPromptContributor(properties.promptContributor())
                 .createObject(
