@@ -61,7 +61,7 @@ public class StarNewsFinderTest {
             var toolGroups = context.getLlmInvocations().getFirst().getInteraction().getToolGroups();
 
 
-            assertTrue(!prompt.contains(starPerson.getName()));
+            assertTrue(prompt.contains(starPerson.getName()));
             assertTrue(prompt.contains(starPerson.sign()));
             assertTrue(prompt.contains(cockatoos.getSummary()));
             assertTrue(prompt.contains(emus.getSummary()));
