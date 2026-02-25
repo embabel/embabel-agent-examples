@@ -1,25 +1,19 @@
 # This workflow will build a Java / Kotlin project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
 # documentation.
-
 name: Build
-
 on:
   repository_dispatch:
     types: [agent-snapshots-deployed]
   push:
   pull_request:
     types: [ opened, synchronize, reopened ]
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
@@ -37,3 +31,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -U -B test verify
+
+  notify:
+    needs: [build]
+    if: failure() && github.ref == 'refs/heads/main'
+    uses: embabel/embabel-build/.github/workflows/discord-notify.yml@main
+    secrets: inherit
