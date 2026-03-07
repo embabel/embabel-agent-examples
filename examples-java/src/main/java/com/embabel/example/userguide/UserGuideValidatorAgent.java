@@ -59,8 +59,8 @@ public class UserGuideValidatorAgent {
 
     public UserGuideValidatorAgent(
             @Value("${user-guide-validator.max-sections:10}") int maxSections,
-            @Value("${user-guide-validator.scanner-llm:claude-haiku-4-5}") String scannerModel,
-            @Value("${user-guide-validator.validator-llm:claude-sonnet-4-5}") String validatorModel) {
+            @Value("${user-guide-validator.scanner-llm:gpt-4.1}") String scannerModel,
+            @Value("${user-guide-validator.validator-llm:gpt-4.1}") String validatorModel) {
         this.maxSections = maxSections;
         // Disable extended thinking on both models: thinking tokens are stripped by
         // SuppressThinkingConverter, which leaves an empty body that Jackson cannot
