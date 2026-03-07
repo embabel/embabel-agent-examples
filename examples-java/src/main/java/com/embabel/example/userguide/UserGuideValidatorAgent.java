@@ -209,13 +209,21 @@ public class UserGuideValidatorAgent {
                         - title      : section title from the list above
                         - anchor     : anchor fragment exactly as shown above
                         - summary    : one paragraph on what the section covers and why relevant
-                        - hasContent : true (all listed sections are known to have content)
+                        - hasContent : always set to true (this field is overridden by the caller)
                         Order from most to least relevant.
                         Only include sections that genuinely cover the topic.
                         """.formatted(GUIDE_URL, KNOWN_SECTIONS, maxSections, query.topic()),
                         GuideSections.class);
-        // Override structureValid with a Java check — no LLM or network call needed.
-        return new GuideSections(raw.sections(), checkStructureValid());
+        // Override both hasContent and structureValid from Java-owned static data —
+        // the LLM cannot know which sections are empty, and we never want it guessing.
+        var corrected = raw.sections().stream()
+                .map(s -> new GuideSection(
+                        s.title(),
+                        s.anchor(),
+                        s.summary(),
+                        !EMPTY_SECTIONS.contains(s.anchor())))
+                .toList();
+        return new GuideSections(corrected, checkStructureValid());
     }
 
     // ------------------------------------------------------------------
@@ -269,6 +277,17 @@ public class UserGuideValidatorAgent {
             );
         }
         var section = sections.sections().getFirst();
+        if (!section.hasContent()) {
+            // The section exists in the ToC but has no content yet — the LLM would hallucinate
+            // a PASS based on training knowledge rather than what the page actually contains.
+            return new ValidationReport(
+                    section.title(),
+                    false,
+                    "FAIL — \"" + section.title() + "\" exists in the guide at: "
+                            + GUIDE_URL + "#" + section.anchor()
+                            + " — but the section has no content yet and cannot be validated."
+            );
+        }
         return context.ai()
                 .withLlm(validatorLlm.withTemperature(0.2))
                 .createObject(
