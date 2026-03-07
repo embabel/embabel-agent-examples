@@ -32,7 +32,9 @@ public record UserGuideQuery(
         String topic,
         boolean checkOnly
 ) {
-    /** Convenience constructor — full validation, the common case. */
+    /**
+     * Convenience constructor — full validation, the common case.
+     */
     public UserGuideQuery(String topic) {
         this(topic, false);
     }
