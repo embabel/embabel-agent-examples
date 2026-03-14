@@ -44,4 +44,5 @@ jobs:
     uses: embabel/embabel-build/.github/workflows/notify-recovery.yml@main
     with:
       branch: main
+      caller_run_id: ${{ github.run_id }}
     secrets: inherit
