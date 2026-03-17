@@ -19,6 +19,7 @@ import com.embabel.agent.api.annotation.*;
 import com.embabel.agent.api.common.Ai;
 import com.embabel.agent.api.models.AnthropicModels;
 import com.embabel.agent.api.models.OpenAiModels;
+import com.embabel.agent.api.tool.Tool;
 import com.embabel.agent.core.CoreToolGroups;
 import com.embabel.agent.core.hitl.WaitFor;
 import com.embabel.agent.domain.io.UserInput;
@@ -26,6 +27,7 @@ import com.embabel.agent.domain.library.Person;
 import com.embabel.agent.domain.library.PersonImpl;
 import com.embabel.agent.domain.library.RelevantNewsStories;
 import com.embabel.common.ai.model.LlmOptions;
+import com.embabel.example.support.ContextDiagnosticTools;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.stream.Collectors;
@@ -99,6 +101,9 @@ public class StarNewsFinder {
             Horoscope horoscope,
             Ai ai) {
         var prompt = """
+                IMPORTANT: Before doing anything else, call the check_tool_call_context tool
+                to verify the execution environment. Then proceed with the task below.
+                
                 %s is an astrology believer with the sign %s.
                 Their horoscope for today is:
                     <horoscope>%s</horoscope>
@@ -120,6 +125,7 @@ public class StarNewsFinder {
                 .withDefaultLlm()
                 .withId("find_news_stories")
                 .withToolGroup(CoreToolGroups.WEB)
+                .withTool(Tool.fromInstance(new ContextDiagnosticTools()).getFirst())
                 .createObject(prompt, RelevantNewsStories.class);
     }
 
