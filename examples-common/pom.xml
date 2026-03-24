@@ -36,6 +36,11 @@
             <artifactId>spring-data-commons</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.embabel.agent</groupId>
+            <artifactId>embabel-agent-mcp-security</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

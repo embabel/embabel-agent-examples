@@ -23,4 +23,6 @@ object McpServers {
     const val NPX_WINDOWS: String = "npx-windows"
 
     const val NPX_LINUX: String = "npx-linux"
+
+    const val SECURED_PROFILE: String = "secured"
 }
