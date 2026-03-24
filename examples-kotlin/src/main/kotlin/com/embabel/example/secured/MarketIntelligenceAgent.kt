@@ -23,104 +23,7 @@ import com.embabel.agent.api.common.OperationContext
 import com.embabel.agent.api.common.createObject
 import com.embabel.agent.core.CoreToolGroups
 import com.embabel.agent.domain.io.UserInput
-import com.embabel.agent.domain.library.HasContent
 import com.embabel.agent.mcpserver.security.SecureAgentTool
-import com.fasterxml.jackson.annotation.JsonClassDescription
-import com.fasterxml.jackson.annotation.JsonPropertyDescription
-
-/**
- * The subject of a market analysis request, capturing the entity or sector
- * to be analysed and the geographic scope of the report.
- */
-@JsonClassDescription("Subject of market analysis")
-data class AnalysisSubject(
-    @get:JsonPropertyDescription("Company name, sector, or market segment to analyse")
-    val subject: String,
-    @get:JsonPropertyDescription("Geographic region of focus, e.g. US, EU, APAC, or Global")
-    val region: String = "Global",
-)
-
-/**
- * A single observation about a competitor or comparable entity identified
- * during the competitive landscape analysis.
- */
-@JsonClassDescription("Key player in the competitive landscape")
-data class CompetitorInsight(
-    @get:JsonPropertyDescription("Name of the competitor or comparable entity")
-    val name: String,
-    @get:JsonPropertyDescription("Notable recent development or positioning")
-    val insight: String,
-)
-
-/**
- * Container for a list of [CompetitorInsight] items.
- *
- * Wraps `List<CompetitorInsight>` as a named type to avoid generic type erasure
- * during LLM-driven JSON deserialisation.
- */
-@JsonClassDescription("A list of competitor insights")
-data class CompetitorInsightList(
-    val items: List<CompetitorInsight>,
-)
-
-/**
- * A single entry in a SWOT analysis, classifying an observation as a
- * Strength, Weakness, Opportunity, or Threat.
- */
-@JsonClassDescription("A single SWOT observation")
-data class SwotEntry(
-    @get:JsonPropertyDescription("One of: Strength, Weakness, Opportunity, Threat")
-    val category: String,
-    @get:JsonPropertyDescription("Concise description of this SWOT item")
-    val description: String,
-)
-
-/**
- * Container for a list of [SwotEntry] items.
- *
- * Wraps `List<SwotEntry>` as a named type to avoid generic type erasure
- * during LLM-driven JSON deserialisation.
- */
-@JsonClassDescription("A list of SWOT entries")
-data class SwotEntryList(
-    val items: List<SwotEntry>,
-)
-
-/**
- * Container for a list of key market trend statements.
- *
- * Wraps `List<String>` as a named type to avoid generic type erasure
- * during LLM-driven JSON deserialisation.
- */
-@JsonClassDescription("A list of key trend statements")
-data class KeyTrendList(
-    val items: List<String>,
-)
-
-/**
- * A structured market intelligence report produced by [MarketIntelligenceAgent].
- *
- * Combines an executive summary, SWOT analysis, competitive landscape, and
- * key trend observations for a given subject and region.
- * Implements [HasContent] so the report can be consumed by downstream agents
- * or exported as a content asset.
- */
-@JsonClassDescription("Market intelligence report")
-data class MarketIntelligenceReport(
-    /** Company name, sector, or market segment that was analysed. */
-    val subject: String,
-    /** Geographic scope of the report (e.g. `US`, `EU`, `Global`). */
-    val region: String,
-    /** Four-sentence executive summary suitable for a senior decision-maker. */
-    val executiveSummary: String,
-    /** SWOT analysis entries, 2–3 items per category. */
-    val swot: List<SwotEntry>,
-    /** Top competitors or comparable entities with strategic positioning notes. */
-    val competitors: List<CompetitorInsight>,
-    /** Five most significant market trends, each expressed as a single sentence. */
-    val keyTrends: List<String>,
-    override val content: String,
-) : HasContent
 
 /**
  * Agent that produces a structured market intelligence report for a given company or sector.
@@ -129,12 +32,15 @@ data class MarketIntelligenceReport(
  * 1. [parseSubject] — extracts the analysis subject and region from freeform user input.
  * 2. [gatherIntelligence] — searches the web for recent news, competitor activity,
  *    and industry trends.
- * 3. [synthesiseReport] — runs four parallel LLM calls to produce a SWOT analysis,
+ * 3. [synthesiseReport] — runs four sequential LLM calls to produce a SWOT analysis,
  *    competitive insights, key trends, and an executive summary, then assembles
  *    the final [MarketIntelligenceReport].
  *
  * Access to this agent requires the `market:admin` authority, enforced at the
  * MCP tool level via `@SecureAgentTool`.
+ *
+ * Domain types used by this agent are defined in `MarketIntelligenceTypes.kt` in
+ * `examples-common` and shared with the Java implementation.
  */
 @Agent(
     description = "Produce a structured market intelligence report including SWOT analysis, " +

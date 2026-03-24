@@ -1,0 +1,223 @@
+/*
+ * Copyright 2024-2026 Embabel Pty Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.embabel.example.secured;
+
+import com.embabel.agent.api.annotation.AchievesGoal;
+import com.embabel.agent.api.annotation.Action;
+import com.embabel.agent.api.annotation.Agent;
+import com.embabel.agent.api.annotation.Export;
+import com.embabel.agent.api.common.OperationContext;
+import com.embabel.agent.core.CoreToolGroups;
+import com.embabel.agent.domain.io.UserInput;
+import com.embabel.agent.mcpserver.security.SecureAgentTool;
+
+import java.util.stream.Collectors;
+
+/**
+ * Agent that produces a structured market intelligence report for a given company or sector.
+ *
+ * <p>The agent follows a three-step pipeline:
+ * <ol>
+ *   <li>{@link #parseSubject} — extracts the analysis subject and region from freeform
+ *       user input.</li>
+ *   <li>{@link #gatherIntelligence} — searches the web for recent news, competitor
+ *       activity, and industry trends.</li>
+ *   <li>{@link #synthesiseReport} — runs four sequential LLM calls to produce a SWOT
+ *       analysis, competitive insights, key trends, and an executive summary, then
+ *       assembles the final {@link MarketIntelligenceReport}.</li>
+ * </ol>
+ *
+ * <p>Access to this agent requires the {@code market:admin} authority, enforced at the
+ * MCP tool level via {@code @SecureAgentTool}.
+ *
+ * <p>Domain types used by this agent are defined in {@code MarketIntelligenceTypes.kt} in
+ * {@code examples-common} and shared with the Kotlin implementation.
+ */
+@Agent(
+        description = "Produce a structured market intelligence report including SWOT analysis, " +
+                "competitive landscape, and key trends for a given company or sector"
+)
+@SecureAgentTool("hasAuthority('market:admin')")
+public class MarketIntelligenceAgent {
+
+    /**
+     * Extracts the {@link AnalysisSubject} from freeform {@link UserInput}.
+     *
+     * <p>Uses the default LLM to identify the company name, sector, or market segment
+     * and the geographic region. Defaults the region to {@code Global} when not specified.
+     *
+     * @param userInput the raw user request
+     * @param context   the current operation context
+     * @return the parsed {@link AnalysisSubject}
+     */
+    @Action
+    public AnalysisSubject parseSubject(UserInput userInput, OperationContext context) {
+        return context.ai()
+                .withDefaultLlm()
+                .createObject(
+                        """
+                        Extract the subject of market analysis from the following user input.
+                        Identify the company name, sector, or market segment, and the geographic region if mentioned.
+                        Default the region to Global if not specified.
+
+                        User input: %s
+                        """.formatted(userInput.getContent()),
+                        AnalysisSubject.class
+                );
+    }
+
+    /**
+     * Gathers raw market intelligence for the given {@link AnalysisSubject} via web search.
+     *
+     * <p>Searches for recent news and developments (last 90 days), key competitors and their
+     * recent moves, industry trends and disruptions, and notable strengths or vulnerabilities.
+     * Returns a detailed summary of at least 400 words.
+     *
+     * @param subject the analysis subject and region
+     * @param context the current operation context
+     * @return a raw intelligence summary string
+     */
+    @Action
+    public String gatherIntelligence(AnalysisSubject subject, OperationContext context) {
+        return context.ai()
+                .withDefaultLlm()
+                .withToolGroup(CoreToolGroups.WEB)
+                .createObject(
+                        """
+                        Search the web to gather recent market intelligence about: %s
+                        Region: %s
+
+                        Collect the following in a structured summary:
+                        - Recent news and developments (last 90 days)
+                        - Key competitors and their recent moves
+                        - Industry trends and disruptions
+                        - Any notable strengths or vulnerabilities
+
+                        Return a detailed raw intelligence summary of at least 400 words.
+                        """.formatted(subject.getSubject(), subject.getRegion()),
+                        String.class
+                );
+    }
+
+    /**
+     * Synthesises a {@link MarketIntelligenceReport} from the gathered intelligence.
+     *
+     * <p>Runs four sequential LLM calls against the raw intelligence to produce:
+     * <ul>
+     *   <li>A {@link SwotEntryList} with 2–3 items per category.</li>
+     *   <li>A {@link CompetitorInsightList} covering the top 4 competitors.</li>
+     *   <li>A {@link KeyTrendList} of the 5 most significant market trends.</li>
+     *   <li>A four-sentence executive summary.</li>
+     * </ul>
+     *
+     * <p>The results are assembled into the final {@link MarketIntelligenceReport} and
+     * exported remotely as {@code marketIntelligenceReport}.
+     *
+     * @param subject         the analysis subject and region
+     * @param rawIntelligence the raw intelligence summary from {@link #gatherIntelligence}
+     * @param context         the current operation context
+     * @return the completed {@link MarketIntelligenceReport}
+     */
+    @AchievesGoal(
+            description = "Produce a structured market intelligence report with SWOT analysis, " +
+                    "competitive insights, and key trends",
+            export = @Export(
+                    remote = true,
+                    name = "marketIntelligenceReport",
+                    startingInputTypes = {UserInput.class}
+            )
+    )
+    @Action
+    public MarketIntelligenceReport synthesiseReport(
+            AnalysisSubject subject,
+            String rawIntelligence,
+            OperationContext context
+    ) {
+        SwotEntryList swotList = context.ai()
+                .withDefaultLlm()
+                .createObject(
+                        """
+                        Based on the following market intelligence, produce a SWOT analysis for %s.
+                        Each entry must have a category (Strength, Weakness, Opportunity, or Threat)
+                        and a concise description. Return 2-3 items per category.
+
+                        Intelligence:
+                        %s
+                        """.formatted(subject.getSubject(), rawIntelligence),
+                        SwotEntryList.class
+                );
+
+        CompetitorInsightList competitorList = context.ai()
+                .withDefaultLlm()
+                .createObject(
+                        """
+                        Based on the following market intelligence, identify the top 4 competitors
+                        or comparable entities for %s in %s.
+                        For each, provide a notable recent development or strategic positioning insight.
+
+                        Intelligence:
+                        %s
+                        """.formatted(subject.getSubject(), subject.getRegion(), rawIntelligence),
+                        CompetitorInsightList.class
+                );
+
+        KeyTrendList trendList = context.ai()
+                .withDefaultLlm()
+                .createObject(
+                        """
+                        Based on the following market intelligence, extract the 5 most significant
+                        market trends affecting %s in %s.
+                        Return each as a concise single sentence inside the items list.
+
+                        Intelligence:
+                        %s
+                        """.formatted(subject.getSubject(), subject.getRegion(), rawIntelligence),
+                        KeyTrendList.class
+                );
+
+        String summary = context.ai()
+                .withDefaultLlm()
+                .createObject(
+                        """
+                        Write a 4-sentence executive summary for a market intelligence report on
+                        %s (%s).
+                        Be concise, analytical, and suitable for a senior decision-maker.
+
+                        Key findings:
+                        SWOT: %s
+                        Trends: %s
+                        """.formatted(
+                                subject.getSubject(),
+                                subject.getRegion(),
+                                swotList.getItems().stream()
+                                        .map(e -> e.getCategory() + ": " + e.getDescription())
+                                        .collect(Collectors.joining("; ")),
+                                String.join("; ", trendList.getItems())
+                        ),
+                        String.class
+                );
+
+        return new MarketIntelligenceReport(
+                subject.getSubject(),
+                subject.getRegion(),
+                summary,
+                swotList.getItems(),
+                competitorList.getItems(),
+                trendList.getItems(),
+                summary
+        );
+    }
+}
