@@ -42,6 +42,9 @@ import java.util.stream.Collectors;
  *
  * <p>Access to this agent requires the {@code market:admin} authority, enforced at the
  * MCP tool level via {@code @SecureAgentTool}.
+ *
+ * <p>Domain types used by this agent are defined in {@code MarketIntelligenceTypes.kt} in
+ * {@code examples-common} and shared with the Kotlin implementation.
  */
 @Agent(
         description = "Produce a structured market intelligence report including SWOT analysis, " +
@@ -104,7 +107,7 @@ public class MarketIntelligenceAgent {
                         - Any notable strengths or vulnerabilities
 
                         Return a detailed raw intelligence summary of at least 400 words.
-                        """.formatted(subject.subject(), subject.region()),
+                        """.formatted(subject.getSubject(), subject.getRegion()),
                         String.class
                 );
     }
@@ -123,9 +126,9 @@ public class MarketIntelligenceAgent {
      * <p>The results are assembled into the final {@link MarketIntelligenceReport} and
      * exported remotely as {@code marketIntelligenceReport}.
      *
-     * @param subject          the analysis subject and region
-     * @param rawIntelligence  the raw intelligence summary from {@link #gatherIntelligence}
-     * @param context          the current operation context
+     * @param subject         the analysis subject and region
+     * @param rawIntelligence the raw intelligence summary from {@link #gatherIntelligence}
+     * @param context         the current operation context
      * @return the completed {@link MarketIntelligenceReport}
      */
     @AchievesGoal(
@@ -153,7 +156,7 @@ public class MarketIntelligenceAgent {
 
                         Intelligence:
                         %s
-                        """.formatted(subject.subject(), rawIntelligence),
+                        """.formatted(subject.getSubject(), rawIntelligence),
                         SwotEntryList.class
                 );
 
@@ -167,7 +170,7 @@ public class MarketIntelligenceAgent {
 
                         Intelligence:
                         %s
-                        """.formatted(subject.subject(), subject.region(), rawIntelligence),
+                        """.formatted(subject.getSubject(), subject.getRegion(), rawIntelligence),
                         CompetitorInsightList.class
                 );
 
@@ -181,7 +184,7 @@ public class MarketIntelligenceAgent {
 
                         Intelligence:
                         %s
-                        """.formatted(subject.subject(), subject.region(), rawIntelligence),
+                        """.formatted(subject.getSubject(), subject.getRegion(), rawIntelligence),
                         KeyTrendList.class
                 );
 
@@ -197,23 +200,23 @@ public class MarketIntelligenceAgent {
                         SWOT: %s
                         Trends: %s
                         """.formatted(
-                                subject.subject(),
-                                subject.region(),
-                                swotList.items().stream()
-                                        .map(e -> e.category() + ": " + e.description())
+                                subject.getSubject(),
+                                subject.getRegion(),
+                                swotList.getItems().stream()
+                                        .map(e -> e.getCategory() + ": " + e.getDescription())
                                         .collect(Collectors.joining("; ")),
-                                String.join("; ", trendList.items())
+                                String.join("; ", trendList.getItems())
                         ),
                         String.class
                 );
 
         return new MarketIntelligenceReport(
-                subject.subject(),
-                subject.region(),
+                subject.getSubject(),
+                subject.getRegion(),
                 summary,
-                swotList.items(),
-                competitorList.items(),
-                trendList.items(),
+                swotList.getItems(),
+                competitorList.getItems(),
+                trendList.getItems(),
                 summary
         );
     }

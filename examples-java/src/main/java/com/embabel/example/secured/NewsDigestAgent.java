@@ -40,6 +40,9 @@ import java.util.stream.Collectors;
  *
  * <p>Access requires the {@code news:read} authority, enforced at the MCP tool level
  * via {@code @SecureAgentTool}.
+ *
+ * <p>Domain types used by this agent are defined in {@code NewsDigestTypes.kt} in
+ * {@code examples-common} and shared with the Kotlin implementation.
  */
 @Agent(description = "Research a topic and return a curated news digest with headlines and summaries")
 @SecureAgentTool("hasAuthority('news:read')")
@@ -98,8 +101,8 @@ public class NewsDigestAgent {
     )
     @Action
     public NewsDigest produceDigest(NewsTopic topic, OperationContext context) {
-        String focusClause = !topic.focusArea().isBlank()
-                ? "Focus specifically on: " + topic.focusArea() + "."
+        String focusClause = !topic.getFocusArea().isBlank()
+                ? "Focus specifically on: " + topic.getFocusArea() + "."
                 : "";
 
         DigestItemList digestItemList = context.ai()
@@ -110,7 +113,7 @@ public class NewsDigestAgent {
                         Use web search to find the 5 most recent and relevant news items about: %s.
                         %s
                         For each item return a headline, a 2-3 sentence summary, and the source URL.
-                        """.formatted(topic.topic(), focusClause),
+                        """.formatted(topic.getTopic(), focusClause),
                         DigestItemList.class
                 );
 
@@ -124,14 +127,14 @@ public class NewsDigestAgent {
                         Items:
                         %s
                         """.formatted(
-                                topic.topic(),
-                                digestItemList.items().stream()
-                                        .map(item -> "- " + item.headline() + ": " + item.summary())
+                                topic.getTopic(),
+                                digestItemList.getItems().stream()
+                                        .map(item -> "- " + item.getHeadline() + ": " + item.getSummary())
                                         .collect(Collectors.joining("\n"))
                         ),
                         String.class
                 );
 
-        return new NewsDigest(topic.topic(), digestItemList.items(), narrative);
+        return new NewsDigest(topic.getTopic(), digestItemList.getItems(), narrative);
     }
 }
