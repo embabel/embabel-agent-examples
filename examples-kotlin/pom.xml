@@ -170,5 +170,33 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>enable-secured-agent-mcp-server</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-mcpserver</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.embabel.agent</groupId>
+                    <artifactId>embabel-agent-starter-mcpserver-security</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>com.embabel.example.KotlinAgentSecuredMcpServerApplicationKt</mainClass>
+                        </configuration>
+                        <version>${spring-boot.version}</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>

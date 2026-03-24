@@ -1,0 +1,16 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:keys/public.pem
+          jws-algorithms: RS256
+
+server:
+  port: 8443
+
+spring.ai.mcp.server:
+  name: embabel-secured-examples
+  version: 1.0.0
+
+embabel.agent.application.name: embabel-secured-examples
