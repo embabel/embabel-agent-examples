@@ -451,6 +451,60 @@ data class AssertionCheck(
 
 ---
 
+### 🔒 **Expert: Secured Agents**
+
+> **Available in:** Java & Kotlin | **Concept:** MCP Tool Access Control
+
+Demonstrates JWT-secured MCP tool exposure using `@SecureAgentTool`. Each agent class
+declares the Spring Security SpEL expression required to invoke any of its actions.
+
+**What It Teaches:**
+
+- 🔒 **Class-level access control** with `@SecureAgentTool`
+- 🔑 **JWT Bearer token** validation at the HTTP transport layer
+- 🛡️ **Two-layer security** — filter chain rejects unauthenticated requests; `@SecureAgentTool` enforces per-agent authority checks
+- ⚡ **Fail-fast security** — denied calls return a clean MCP error without retrying or burning LLM tokens
+
+**Agents:**
+
+| Agent | Required authority | What it does |
+|---|---|---|
+| `NewsDigestAgent` | `news:read` | Researches a topic via web search and returns a curated digest |
+| `MarketIntelligenceAgent` | `market:admin` | Produces a SWOT + competitive intelligence report |
+
+**Key Pattern:**
+
+```kotlin
+@Agent(description = "Research a topic and return a news digest")
+@SecureAgentTool("hasAuthority('news:read')")  // protects every @Action in this agent
+class NewsDigestAgent {
+
+    @Action  // also requires news:read
+    fun extractTopic(userInput: UserInput, context: OperationContext): NewsTopic
+
+    @AchievesGoal(description = "Produce a curated news digest",
+                  export = Export(remote = true, name = "newsDigest",
+                                  startingInputTypes = [UserInput::class]))
+    @Action  // also requires news:read
+    fun produceDigest(topic: NewsTopic, context: OperationContext): NewsDigest
+}
+```
+
+**Run it:**
+
+```bash
+cd scripts/kotlin && ./mcp_secured_server.sh
+```
+
+See [Secured MCP Server Mode](#secured-mcp-server-mode) for token generation and MCP Inspector setup.
+
+**Code:**
+
+- **Kotlin:** `examples-kotlin/src/main/kotlin/com/embabel/example/secured/`
+- **Java:** `examples-java/src/main/java/com/embabel/example/secured/`
+
+---
+
 ## 🛠️ Core Concepts You'll Learn
 
 ### **Spring Framework Integration**
@@ -566,6 +620,17 @@ cd scripts/java && mcp_server.cmd        # Windows
 
 Uses Maven profile: `enable-agent-mcp-server`
 
+### **Secured MCP Server Mode**
+
+```bash
+cd scripts/kotlin && ./mcp_secured_server.sh
+cd scripts/kotlin && mcp_secured_server.cmd  # Windows
+```
+
+Uses Maven profile: `enable-secured-agent-mcp-server`
+
+See [Secured MCP Server Mode](#secured-mcp-server-mode) for token setup and connection instructions.
+
 You can use the Embabel agent platform as an MCP server from a
 UI like Claude Desktop. The Embabel MCP server is available over SSE.
 
@@ -671,6 +736,74 @@ Your agents become available as tools:
 - **StarNewsFinder** - `find_horoscope_news`
 - **Researcher** - `research_topic`
 - **FactChecker** - `check_facts`
+
+### **Secured MCP Server Mode**
+
+Run a JWT-secured MCP server that enforces per-agent access control using `@SecureAgentTool`.
+This mode requires a valid Bearer token on every MCP request.
+
+```bash
+# Start secured Kotlin agents as MCP server
+cd scripts/kotlin && ./mcp_secured_server.sh
+mcp_secured_server.cmd     # Windows
+```
+
+Uses Maven profile: `enable-secured-agent-mcp-server`
+
+The secured server exposes two agents, each requiring specific JWT authorities:
+
+| Agent | Tool name | Required authority |
+|---|---|---|
+| `NewsDigestAgent` | `newsDigest` | `news:read` |
+| `MarketIntelligenceAgent` | `marketIntelligenceReport` | `market:admin` |
+
+All `@Action` methods in each agent are protected — not just the goal-achieving action.
+Intermediate steps like topic extraction and web research also require the authority,
+so unauthorised callers cannot burn LLM tokens on partial execution.
+
+#### Generating a JWT token
+
+A keypair and token generator script are included for local development:
+
+```bash
+# Generate RSA keypair (one-time setup, from the keys/ directory)
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -pubout -out public.pem
+```
+
+The keys directory is at:
+```
+examples-common/src/main/resources/keys/
+```
+
+Generate a token:
+
+```bash
+pip install pyjwt cryptography
+cd examples-common/src/main/resources/keys
+python generate_token.py
+```
+
+The generated token includes `news:read` and `market:admin` authorities.
+Paste it into your MCP client as a `Bearer <token>` Authorization header.
+
+#### Connecting MCP Inspector
+
+Start MCP Inspector and connect with transport type **SSE**, URL `http://localhost:8443/sse`,
+and Authorization header:
+
+```
+Bearer <your_token>
+```
+
+#### How it works
+
+Security is enforced in two layers:
+
+1. **HTTP filter chain** — all requests to `/sse/**` and `/mcp/**` require a valid JWT (401 if missing or invalid)
+2. **`@SecureAgentTool`** — each agent class declares the required authority; denied calls return a clean MCP error response without retrying
+
+The `secured` Spring profile activates both layers. Without that profile, the server runs without authentication (standard MCP server mode).
 
 ### **MCP Client Support**
 
@@ -807,10 +940,12 @@ Look at the log output in the event of failure as it may contain hints as to the
 embabel-agent-examples/
 ├── examples-kotlin/                 # 🏆 Kotlin implementations
 │   ├── src/main/kotlin/com/embabel/example/
-│   │   ├── KotlinAgentShellApplication.kt       # Shell + MCP client (default)
-│   │   ├── KotlinAgentSimpleShellApplication.kt # Shell without MCP
-│   │   ├── KotlinAgentMcpServerApplication.kt   # MCP server mode  
+│   │   ├── KotlinAgentShellApplication.kt           # Shell + MCP client (default)
+│   │   ├── KotlinAgentSimpleShellApplication.kt     # Shell without MCP
+│   │   ├── KotlinAgentMcpServerApplication.kt       # MCP server mode
+│   │   ├── KotlinAgentSecuredMcpServerApplication.kt# 🔒 Secured MCP server mode
 │   │   ├── horoscope/              # 🌟 Beginner: Star news agent
+│   │   ├── secured/                # 🔒 Expert: JWT-secured agents
 │   ├── pom.xml                     # Maven profiles for each mode
 │   └── README.md                   # 📖 Kotlin-specific documentation
 │
@@ -826,7 +961,8 @@ embabel-agent-examples/
 ├── scripts/                        # 🚀 Quick-start scripts
 │   ├── kotlin/
 │   │   ├── shell.sh               # Launch shell (--no-docker-tools to disable)
-│   │   └── mcp_server.sh          # Launch MCP server
+│   │   ├── mcp_server.sh          # Launch MCP server
+│   │   └── mcp_secured_server.sh  # Launch JWT-secured MCP server
 │   ├── java/
 │   │   ├── shell.sh               # Launch shell (--no-docker-tools to disable)
 │   │   └── mcp_server.sh          # Launch MCP server
