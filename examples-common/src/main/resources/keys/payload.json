@@ -1,4 +1,0 @@
-{
-  "sub": "test-user",
-  "authorities": ["news:read", "market:admin"]
-}
