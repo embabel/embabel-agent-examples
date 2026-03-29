@@ -8,8 +8,17 @@ fi
 # Default: Docker tools enabled (reversed from original logic)
 export MAVEN_PROFILE=enable-shell-mcp-client
 
-# Default: No observability profile
+# Default: No additional Spring profiles
 export SPRING_PROFILES_ACTIVE=""
+
+# Helper: append a Spring profile to SPRING_PROFILES_ACTIVE (comma-separated)
+append_profile() {
+    if [ -z "$SPRING_PROFILES_ACTIVE" ]; then
+        export SPRING_PROFILES_ACTIVE="$1"
+    else
+        export SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE,$1"
+    fi
+}
 
 # Check for optional parameters
 while [[ $# -gt 0 ]]; do
@@ -19,7 +28,11 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --observability)
-            export SPRING_PROFILES_ACTIVE=observability
+            append_profile observability
+            shift
+            ;;
+        --lazy-tools)
+            append_profile lazy-tools
             shift
             ;;
         *)
@@ -44,9 +57,16 @@ if [ "$MAVEN_PROFILE" = "enable-shell" ]; then
 fi
 
 # Display observability status
-if [ -n "$SPRING_PROFILES_ACTIVE" ]; then
+if [[ "$SPRING_PROFILES_ACTIVE" == *"observability"* ]]; then
     echo -e "\033[35mINFO: Observability profile is enabled\033[0m"
     echo -e "\033[36mMake sure to run 'docker compose up' to start Zipkin trace collector\033[0m"
+    echo
+fi
+
+# Display lazy-tools status
+if [[ "$SPRING_PROFILES_ACTIVE" == *"lazy-tools"* ]]; then
+    echo -e "\033[33mINFO: Lazy tools profile is enabled\033[0m"
+    echo -e "\033[36mMCP clients will initialize on first use (JIT), not at startup\033[0m"
     echo
 fi
 
