@@ -19,10 +19,13 @@ echo.
 echo   --help, -h              Show this help message
 echo   --observability         Enable observability features (Zipkin tracing)
 echo   --no-docker-tools       Disable Docker tool integration (basic features only)
+echo   --lazy-tools            Defer MCP client initialization to first use (JIT).
+echo                           Required when MCP servers authenticate via user OAuth tokens.
 echo.
 echo Examples:
 echo   shell.cmd
 echo   shell.cmd --observability
+echo   shell.cmd --lazy-tools
 echo   shell.cmd --observability --no-docker-tools
 echo.
 exit /b 0

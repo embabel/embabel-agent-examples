@@ -9,7 +9,7 @@ if not defined AGENT_APPLICATION (
 REM Default: Docker tools enabled (reversed from original logic)
 set MAVEN_PROFILE=enable-shell-mcp-client
 
-REM Default: No observability profile
+REM Default: No additional Spring profiles
 set SPRING_PROFILES_ACTIVE=
 
 REM Check for optional parameters
@@ -21,7 +21,12 @@ if "%~1"=="--no-docker-tools" (
     goto parse_args
 )
 if "%~1"=="--observability" (
-    set SPRING_PROFILES_ACTIVE=observability
+    call :append_profile observability
+    shift
+    goto parse_args
+)
+if "%~1"=="--lazy-tools" (
+    call :append_profile lazy-tools
     shift
     goto parse_args
 )
@@ -46,11 +51,30 @@ if "%MAVEN_PROFILE%"=="enable-shell" (
 )
 
 REM Display observability status
-if defined SPRING_PROFILES_ACTIVE (
+echo %SPRING_PROFILES_ACTIVE% | findstr /i "observability" >nul 2>&1
+if not errorlevel 1 (
     powershell -Command "Write-Host 'INFO: Observability profile is enabled' -ForegroundColor Magenta"
     powershell -Command "Write-Host 'Make sure to run docker compose up to start Zipkin trace collector' -ForegroundColor Cyan"
     echo.
 )
 
+REM Display lazy-tools status
+echo %SPRING_PROFILES_ACTIVE% | findstr /i "lazy-tools" >nul 2>&1
+if not errorlevel 1 (
+    powershell -Command "Write-Host 'INFO: Lazy tools profile is enabled' -ForegroundColor Yellow"
+    powershell -Command "Write-Host 'MCP clients will initialize on first use (JIT), not at startup' -ForegroundColor Cyan"
+    echo.
+)
+
 call %~dp0..\support\agent.bat
 endlocal
+exit /b 0
+
+REM Helper: append a Spring profile to SPRING_PROFILES_ACTIVE (comma-separated)
+:append_profile
+if "%SPRING_PROFILES_ACTIVE%"=="" (
+    set SPRING_PROFILES_ACTIVE=%~1
+) else (
+    set SPRING_PROFILES_ACTIVE=%SPRING_PROFILES_ACTIVE%,%~1
+)
+exit /b 0

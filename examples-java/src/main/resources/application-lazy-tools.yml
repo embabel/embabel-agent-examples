@@ -1,0 +1,70 @@
+# application-lazy-tools.yml
+#
+# Demonstrates just-in-time (lazy) MCP tool group initialization.
+#
+# Problem: When this application runs as both an MCP client (consuming Docker tools)
+# and an MCP server (exposing agents), three separate startup paths each try to touch
+# the MCP client before any user request — and therefore before any OAuth token exists:
+#
+#   PATH 1 — ToolGroupsConfiguration.init()
+#     Accesses McpSyncClient.serverInfo to log connected servers.
+#     Fix: embabel.agent.platform.tools.lazy-init=true (suppresses that lookup).
+#
+#   PATH 2 — RegistryToolGroupResolver.init()
+#     Called infoString(verbose=true), which accessed McpToolGroup.tools,
+#     which fired the lazy block.
+#     Fix: changed to infoString(verbose=false) in RegistryToolGroupResolver (framework fix).
+#          Also fixed ToolGroup.infoString to never access `tools` unless verbose=true.
+#
+#   PATH 3 — Spring AI ToolCallbackConverterAutoConfiguration
+#     Collects every ToolCallbackProvider bean (including the auto-created
+#     SyncMcpToolCallbackProvider for the client) and calls getToolCallbacks()
+#     on all of them to build SyncToolSpecification beans for the MCP server.
+#     That call reaches McpSyncClient.listTools() → McpSyncClient.initialize().
+#
+#     The root cause is the SyncMcpToolCallbackProvider bean itself — it wraps
+#     the Docker MCP clients and is picked up by the converter. The fix is to
+#     prevent that bean from being created at all:
+#
+#     Fix: spring.ai.mcp.client.toolcallback.enabled=false
+#
+#     This is more surgical than disabling the converter entirely
+#     (spring.ai.mcp.server.tool-callback-converter=false), which would also
+#     silently drop helloBanner and any Spring AI @Tool-annotated beans.
+#     With toolcallback.enabled=false, the converter still runs but finds no
+#     Docker MCP provider — so helloBanner and @Tool beans are unaffected.
+#
+#     Embabel's AbstractMcpServerConfiguration registers agent goal tools
+#     independently via AgentScanningBeanPostProcessorEvent, so those are
+#     unaffected by either setting.
+#
+# With all three paths addressed, the MCP handshake fires only when an @Action
+# that requires a tool group (e.g. CoreToolGroups.WEB) first executes — at which
+# point the user's security context and OAuth token are present.
+
+spring:
+  ai:
+    mcp:
+      client:
+        # Do not call McpSyncClient.initialize() at startup.
+        # The client will be initialized on first use, when the user's
+        # OAuth token is already present in the Authorization header.
+        initialized: false
+
+        # Prevent SyncMcpToolCallbackProvider from being created as a Spring bean.
+        # Without this, ToolCallbackConverterAutoConfiguration picks up that bean
+        # and calls getToolCallbacks() → listTools() → initialize() at startup,
+        # defeating the initialized=false setting above.
+        # Embabel's McpToolGroup constructs its own SyncMcpToolCallbackProvider
+        # internally on first use, so this bean is not needed.
+        toolcallback:
+          enabled: false
+
+embabel:
+  agent:
+    platform:
+      tools:
+        # Suppress the startup serverInfo lookup in ToolGroupsConfiguration.
+        # Without this, accessing client.serverInfo would trigger the MCP
+        # handshake at startup, defeating spring.ai.mcp.client.initialized=false above.
+        lazy-init: true

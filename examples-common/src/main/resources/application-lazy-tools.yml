@@ -1,0 +1,16 @@
+# application-lazy-tools.yml
+#
+# Demonstrates just-in-time (lazy) MCP tool group initialization.
+#
+spring:
+  ai:
+    mcp:
+      client:
+        toolcallback:
+          enabled: false
+
+embabel:
+  agent:
+    platform:
+      tools:
+        lazy-init: true

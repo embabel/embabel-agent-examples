@@ -14,10 +14,13 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "  --help, -h              Show this help message"
     echo "  --observability         Enable observability features (Zipkin tracing)"
     echo "  --no-docker-tools       Disable Docker tool integration (basic features only)"
+    echo "  --lazy-tools            Defer MCP client initialization to first use (JIT)."
+    echo "                          Required when MCP servers authenticate via user OAuth tokens."
     echo
     echo "Examples:"
     echo "  ./shell.sh"
     echo "  ./shell.sh --observability"
+    echo "  ./shell.sh --lazy-tools"
     echo "  ./shell.sh --observability --no-docker-tools"
     echo
     exit 0
