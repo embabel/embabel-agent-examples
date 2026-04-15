@@ -15,8 +15,13 @@
  */
 package com.embabel.example.horoscope
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
+import java.net.http.HttpClient
 
 fun interface HoroscopeService {
 
@@ -27,27 +32,36 @@ fun interface HoroscopeService {
 class HoroscopeAppApiHoroscopeService : HoroscopeService {
 
     private val restClient = RestClient.builder()
-        .baseUrl("https://api.api-ninjas.com")
+        .baseUrl("https://horoscope-app-api.vercel.app")
+        .requestFactory(
+            JdkClientHttpRequestFactory(
+                HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build()
+            )
+        )
         .build()
 
-    override fun dailyHoroscope(sign: String): String {
-        val response = restClient.get()
-            .uri("/v1/horoscope?zodiac={sign}", sign.lowercase())
-            .retrieve()
-            .body(HoroscopeResponse::class.java)
+    private val objectMapper = ObjectMapper().registerKotlinModule()
 
-        return response?.data?.horoscope_data
+    override fun dailyHoroscope(sign: String): String {
+        val body = restClient.get()
+            .uri("/api/v1/get-horoscope/daily?sign={sign}&day=today", sign.lowercase())
+            .retrieve()
+            .body<String>()
+            ?: return "Unable to retrieve horoscope for $sign today."
+
+        val response = objectMapper.readValue(body, HoroscopeResponse::class.java)
+        return response.data?.horoscope
             ?: "Unable to retrieve horoscope for $sign today."
     }
 }
 
 private data class HoroscopeResponse(
-    val success: Boolean,
-    val status: Int,
-    val data: HoroscopeData?
+    val data: HoroscopeData?,
 )
 
 private data class HoroscopeData(
     val date: String,
-    val horoscope_data: String
+    val sign: String,
+    val period: String,
+    val horoscope: String,
 )
