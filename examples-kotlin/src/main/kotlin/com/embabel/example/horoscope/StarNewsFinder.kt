@@ -76,7 +76,8 @@ data class Writeup(
 ) : HasContent
 
 /**
- * An agent that finds personalized news stories based on a person's star sign.
+ * An agent that writes a personalised, amusing writeup for a person by combining
+ * their daily horoscope with relevant current news stories.
  *
  * This agent demonstrates the workflow of:
  * 1. Extracting person information from user input
@@ -90,7 +91,7 @@ data class Writeup(
  * to define its capabilities and workflow.
  */
 @Agent(
-    description = "Find news based on a person's star sign",
+    description = "Write an amusing personalised writeup combining a person's horoscope and current news stories",
     scan = true,
     beanName = "KotlinStarNewsFinder",
 )
@@ -254,7 +255,7 @@ class StarNewsFinder(
     // The @AchievesGoal annotation indicates that completing this action
     // achieves the given goal, so the agent flow can be complete
     @AchievesGoal(
-        description = "Create an amusing writeup for the target person based on their horoscope",
+        description = "Create an amusing writeup for the target person based on their horoscope and current news stories",
         export = Export(
             remote = true,
             name = "StarNewsWriteup",
