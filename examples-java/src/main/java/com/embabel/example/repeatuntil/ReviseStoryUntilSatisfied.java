@@ -39,8 +39,10 @@ class ReviseStoryUntilSatisfied {
     Story rewriteUntilSatisfied(
             UserInput userInput,
             ActionContext actionContext) {
+        // Note: gpt-4.1-mini no longer accepts a custom temperature (only the default is allowed),
+        // so we don't set one here.
         var writerPromptRunner = actionContext.ai()
-                .withLlm(LlmOptions.withModel(OpenAiModels.GPT_41_MINI).withTemperature(.8));
+                .withLlm(LlmOptions.withModel(OpenAiModels.GPT_41_MINI));
         var reviewerPromptRunner = actionContext.ai()
                 .withLlm(LlmOptions.withModel(OpenAiModels.GPT_41_MINI));
         return RepeatUntilAcceptableBuilder
