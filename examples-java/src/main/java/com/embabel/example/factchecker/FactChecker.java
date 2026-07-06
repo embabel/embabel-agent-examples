@@ -152,7 +152,7 @@ class FactChecker {
                         context.ai()
                                 .withLlm(LlmOptions.withModel(model).withTimeout(Duration.ofMinutes(3)))
                                 .withPromptContributor(properties.promptContributor())
-                                .withTools(CoreToolGroups.WEB)
+                                .withToolGroup(CoreToolGroups.WEB)
                                 .createObject(
                                         """
                                                 Given the following assertion, check if it is true or false and explain why in %d words
@@ -214,7 +214,7 @@ class FactChecker {
         return context.ai()
                 .withLlm(properties.deduplicationLlm())
                 // Jinjava template from classpath at prompts/factchecker/consolidate_assertions.jinja
-                .withTemplate("factchecker/consolidate_assertions")
+                .rendering("factchecker/consolidate_assertions")
                 .createObject(
                         DistinctFactualAssertions.class,
                         Map.of(
@@ -241,7 +241,7 @@ class FactChecker {
         }
         return context.ai()
                 .withLlm(properties.deduplicationLlm().withTimeout(Duration.ofMinutes(3)))
-                .withTools(CoreToolGroups.WEB)
+                .withToolGroup(CoreToolGroups.WEB)
                 .withPromptContributor(properties.promptContributor())
                 .createObject(
                         """

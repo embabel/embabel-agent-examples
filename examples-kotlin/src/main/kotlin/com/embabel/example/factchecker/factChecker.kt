@@ -138,7 +138,7 @@ fun factCheckerAgent(
     transformation<RationalizedFactualAssertions, FactCheck> { operationContext ->
         val promptRunner = operationContext.ai()
             .withAutoLlm()
-            .withTools(
+            .withToolGroups(
                 CoreToolGroups.WEB, CoreToolGroups.BROWSER_AUTOMATION,
             )
         val checks = operationContext.input.factualAssertions.parallelMap(operationContext) { assertion ->
