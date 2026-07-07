@@ -37,7 +37,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -152,7 +151,7 @@ class FactChecker {
                         context.ai()
                                 .withLlm(LlmOptions.withModel(model).withTimeout(Duration.ofMinutes(3)))
                                 .withPromptContributor(properties.promptContributor())
-                                .withTools(CoreToolGroups.WEB)
+                                .withToolGroup(CoreToolGroups.WEB)
                                 .createObject(
                                         """
                                                 Given the following assertion, check if it is true or false and explain why in %d words
@@ -211,16 +210,44 @@ class FactChecker {
                 .flatMap(result -> result.assertions().stream())
                 .distinct()
                 .toList();
+        var formattedAssertions = allAssertions.stream()
+                .map(assertion -> "- " + assertion)
+                .collect(java.util.stream.Collectors.joining("\n"));
         return context.ai()
                 .withLlm(properties.deduplicationLlm())
-                // Jinjava template from classpath at prompts/factchecker/consolidate_assertions.jinja
-                .withTemplate("factchecker/consolidate_assertions")
                 .createObject(
-                        DistinctFactualAssertions.class,
-                        Map.of(
-                                "assertions", allAssertions,
-                                "reasoningWordCount", properties.reasoningWordCount()
-                        )
+                        """
+                                Consolidate different factual assertions into a single list,
+                                with no overlap.
+                                Each assertion you return should be clear and stand by itself.
+
+                                For example, if the input is:
+
+                                - "The sky is blue."
+                                - "The sky is blue and the grass is green."
+                                - "The grass is green."
+                                You should return:
+                                - "The sky is blue."
+                                - "The grass is green."
+
+                                If the input is:
+                                - France is larger than Sweden
+                                - The user suggested that France is larger than Sweden
+                                - Check whether France is larger than Sweden
+                                You should return:
+                                - "France is larger than Sweden."
+
+                                Consolidate the following potentially overlapping factual assertions into a single list.
+                                Each assertion should be expressed in at most %d words.
+
+                                Full list of assertions:
+
+                                %s
+                                """.formatted(
+                                properties.reasoningWordCount(),
+                                formattedAssertions
+                        ),
+                        DistinctFactualAssertions.class
                 );
     }
 
@@ -241,7 +268,7 @@ class FactChecker {
         }
         return context.ai()
                 .withLlm(properties.deduplicationLlm().withTimeout(Duration.ofMinutes(3)))
-                .withTools(CoreToolGroups.WEB)
+                .withToolGroup(CoreToolGroups.WEB)
                 .withPromptContributor(properties.promptContributor())
                 .createObject(
                         """
