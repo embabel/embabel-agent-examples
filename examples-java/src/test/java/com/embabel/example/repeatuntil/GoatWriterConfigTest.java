@@ -27,6 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(classes = JavaAgentShellApplication.class)
 public class GoatWriterConfigTest {
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private com.embabel.common.ai.model.ModelProvider modelProvider;
+
     @Autowired
     private AgentPlatform agentPlatform;
 
