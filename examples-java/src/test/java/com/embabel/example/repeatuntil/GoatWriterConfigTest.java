@@ -34,29 +34,38 @@ public class GoatWriterConfigTest {
     public void testGoatWriterIsRegistered() throws Exception {
         boolean found = false;
         
-        // Find getter for agents
+        // Find a no-arg accessor that returns an Iterable of agents.
         java.lang.reflect.Method getAgentsMethod = null;
         for (java.lang.reflect.Method m : agentPlatform.getClass().getMethods()) {
-            if (m.getReturnType().equals(java.util.List.class) || m.getReturnType().equals(java.util.Collection.class)) {
-                if (m.getName().toLowerCase().contains("agent")) {
-                    getAgentsMethod = m;
-                    break;
-                }
+            if (m.getParameterCount() == 0
+                    && java.lang.Iterable.class.isAssignableFrom(m.getReturnType())
+                    && m.getName().toLowerCase().contains("agent")) {
+                getAgentsMethod = m;
+                break;
             }
         }
-        
-        if (getAgentsMethod != null) {
-            Iterable<?> agents = (Iterable<?>) getAgentsMethod.invoke(agentPlatform);
-            for (Object agent : agents) {
-                java.lang.reflect.Method nameMethod = agent.getClass().getMethod("getName");
-                String name = (String) nameMethod.invoke(agent);
-                if ("GoatWriter".equals(name)) {
-                    found = true;
-                    break;
-                }
+
+        assertNotNull(getAgentsMethod,
+                "Could not locate an AgentPlatform method returning agents (API changed or bean scanning not enabled)");
+
+        Object agentsResult = getAgentsMethod.invoke(agentPlatform);
+        assertTrue(agentsResult instanceof java.lang.Iterable<?>,
+                "AgentPlatform agent accessor did not return an Iterable");
+
+        for (Object agent : (java.lang.Iterable<?>) agentsResult) {
+            java.lang.reflect.Method nameMethod;
+            try {
+                nameMethod = agent.getClass().getMethod("getName");
+            } catch (NoSuchMethodException e) {
+                nameMethod = agent.getClass().getMethod("name");
+            }
+            String name = (String) nameMethod.invoke(agent);
+            if ("GoatWriter".equals(name)) {
+                found = true;
+                break;
             }
         }
-        
+
         assertTrue(found, "GoatWriter should be registered as an agent in the platform");
     }
 }
