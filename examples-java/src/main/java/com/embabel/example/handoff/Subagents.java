@@ -53,7 +53,7 @@ class Subagents {
                 .withLlm(LlmOptions.withAutoLlm())
                 .withTools(
                         Subagent.ofClass(StarNewsFinder.class).consuming(StarPerson.class),
-                        Subagent.byName("GoatWriter").consuming(UserInput.class))
+                        Subagent.byName("ReviseStoryUntilSatisfied").consuming(UserInput.class))
                 .createObject("""
                                 The person has a strong interest in astrology and goats.
                                 Find 5 facts that will interest them, and return them as a list.
