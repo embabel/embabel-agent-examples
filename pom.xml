@@ -19,6 +19,13 @@
         <mockk.version>1.13.3</mockk.version>
     </properties>
 
+    <scm>
+        <url>https://github.com/embabel/embabel-agent-examples</url>
+        <connection>scm:git:https://github.com/embabel/embabel-agent-examples.git</connection>
+        <developerConnection>scm:git:https://github.com/embabel/embabel-agent-examples.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <modules>
         <module>examples-kotlin</module>
         <module>examples-java</module>
