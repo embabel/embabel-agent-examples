@@ -14,7 +14,7 @@
     <description>Example Agentic Flows</description>
 
     <properties>
-        <embabel-agent.version>1.0.0</embabel-agent.version>
+        <embabel-agent.version>1.0.1-SNAPSHOT</embabel-agent.version>
         <mockk.version>1.13.3</mockk.version>
     </properties>
 
