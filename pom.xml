@@ -8,7 +8,7 @@
     </parent>
     <groupId>com.embabel.example</groupId>
     <artifactId>example-agent-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Embabel Example Agent Parent</name>
     <description>Example Agentic Flows</description>
@@ -22,7 +22,7 @@
         <url>https://github.com/embabel/embabel-agent-examples</url>
         <connection>scm:git:https://github.com/embabel/embabel-agent-examples.git</connection>
         <developerConnection>scm:git:https://github.com/embabel/embabel-agent-examples.git</developerConnection>
-        <tag>v1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
