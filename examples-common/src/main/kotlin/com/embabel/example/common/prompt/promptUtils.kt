@@ -16,19 +16,22 @@
 package com.embabel.example.common.prompt
 
 import com.embabel.common.util.DummyInstanceCreator
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 /**
  * Utility functions for building prompts.
+ *
+ * Jackson 3 made [ObjectMapper] immutable (no more fluent `.registerModule(...)` on a constructed
+ * mapper) and folded JSR-310 Java Time support into databind itself, so the previous
+ * `jacksonObjectMapper().registerKotlinModule().registerModule(JavaTimeModule())` chain
+ * collapses to a single call: [jacksonObjectMapper] already wires up the Kotlin module.
  */
 object PromptUtils {
 
     val dummyInstanceCreator = DummyInstanceCreator()
 
-    val om: ObjectMapper = jacksonObjectMapper().registerKotlinModule().registerModule(JavaTimeModule())
+    val om: ObjectMapper = jacksonObjectMapper()
 
     /**
      * Generates a JSON example of the given class

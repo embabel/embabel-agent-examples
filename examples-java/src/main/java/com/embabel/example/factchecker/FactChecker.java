@@ -210,44 +210,18 @@ class FactChecker {
                 .flatMap(result -> result.assertions().stream())
                 .distinct()
                 .toList();
-        var formattedAssertions = allAssertions.stream()
-                .map(assertion -> "- " + assertion)
-                .collect(java.util.stream.Collectors.joining("\n"));
+        // The prompt lives in the Jinjava template (prompts/factchecker/consolidate_assertions.jinja);
+        // 2.0.0 createObject takes (Class, Map<String, ?>) of template variables, not a literal prompt.
         return context.ai()
                 .withLlm(properties.deduplicationLlm())
+                // Jinjava template from classpath at prompts/factchecker/consolidate_assertions.jinja
+                .rendering("factchecker/consolidate_assertions")
                 .createObject(
-                        """
-                                Consolidate different factual assertions into a single list,
-                                with no overlap.
-                                Each assertion you return should be clear and stand by itself.
-
-                                For example, if the input is:
-
-                                - "The sky is blue."
-                                - "The sky is blue and the grass is green."
-                                - "The grass is green."
-                                You should return:
-                                - "The sky is blue."
-                                - "The grass is green."
-
-                                If the input is:
-                                - France is larger than Sweden
-                                - The user suggested that France is larger than Sweden
-                                - Check whether France is larger than Sweden
-                                You should return:
-                                - "France is larger than Sweden."
-
-                                Consolidate the following potentially overlapping factual assertions into a single list.
-                                Each assertion should be expressed in at most %d words.
-
-                                Full list of assertions:
-
-                                %s
-                                """.formatted(
-                                properties.reasoningWordCount(),
-                                formattedAssertions
-                        ),
-                        DistinctFactualAssertions.class
+                        DistinctFactualAssertions.class,
+                        java.util.Map.of(
+                                "reasoningWordCount", properties.reasoningWordCount(),
+                                "assertions", allAssertions
+                        )
                 );
     }
 

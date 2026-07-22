@@ -15,9 +15,9 @@
  */
 package com.embabel.example.horoscope
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.http.client.JdkClientHttpRequestFactory
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
@@ -40,7 +40,9 @@ class HoroscopeAppApiHoroscopeService : HoroscopeService {
         )
         .build()
 
-    private val objectMapper = ObjectMapper().registerKotlinModule()
+    // Jackson 3's ObjectMapper is immutable, so we can't call registerKotlinModule() on
+    // a constructed instance. jacksonObjectMapper() returns a pre-configured mapper.
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
 
     override fun dailyHoroscope(sign: String): String {
         val body = restClient.get()
