@@ -44,7 +44,7 @@ examples-java/
     └── application.yml                     # Configuration
 ```
 
-## 🎯 Available Example
+## 🎯 Available Examples
 
 ### **Horoscope News Finder** (Beginner-Friendly)
 
@@ -91,6 +91,27 @@ public class StarNewsFinder {
 shell:> execute "Find horoscope news for Bob who is a Scorpio"
 shell:> execute "What's in the stars for Alice today? She's a Gemini"
 ```
+
+### **Company Namer** (Beginner-Friendly)
+
+Suggest company names from a business brief and perform a deterministic DNS check for each matching `.com` domain.
+
+```text
+shell:> execute "Suggest company names for a sustainable accounting platform"
+```
+
+The example deliberately uses the JDK DNS resolver instead of a domain-availability API, so it needs no additional API
+key and does not consume a provider quota. A domain with DNS records is reported as `IN_USE`. A domain with no DNS
+records is only `POTENTIALLY_AVAILABLE`, because registered domains do not have to publish DNS records; always confirm
+the final choice with a registrar.
+
+The workflow demonstrates structured generation followed by deterministic processing:
+
+1. `CompanyNamer.suggestNames` creates eight names, domains, and rationales.
+2. `CompanyNamer.checkDomains` delegates each lookup to `DomainAvailabilityService`.
+3. The service validates and normalizes domains, caches results, and distinguishes conclusive from inconclusive checks.
+
+**Location:** `src/main/java/com/embabel/example/companynamer/`
 
 ## 🛠️ Configuration
 
