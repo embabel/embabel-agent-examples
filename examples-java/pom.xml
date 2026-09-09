@@ -10,11 +10,6 @@
     <artifactId>example-agent-java</artifactId>
     <name>Embabel Agent Java Examples</name>
     <description>Java Examples for Embabel Agentic Flows</description>
-    <properties>
-        <spring-shell-standard.version>3.4.0</spring-shell-standard.version>
-    </properties>
-
-
     <dependencies>
         <dependency>
             <groupId>com.embabel.example</groupId>
@@ -32,12 +27,6 @@
         <dependency>
             <groupId>com.embabel.agent</groupId>
             <artifactId>embabel-agent-netty-client-autoconfigure</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.shell</groupId>
-            <artifactId>spring-shell-standard</artifactId>
-            <version>${spring-shell-standard.version}</version>
         </dependency>
 
         <!-- Test Dependencies -->

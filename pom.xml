@@ -15,6 +15,7 @@
 
     <properties>
         <embabel-agent.version>1.5.0</embabel-agent.version>
+        <spring-shell.version>4.0.2</spring-shell.version>
         <mockk.version>1.13.3</mockk.version>
     </properties>
 
@@ -35,6 +36,16 @@
     <!-- Embabel Common BOM -->
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.shell</groupId>
+                <artifactId>spring-shell-starter</artifactId>
+                <version>${spring-shell.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.shell</groupId>
+                <artifactId>spring-shell-jline</artifactId>
+                <version>${spring-shell.version}</version>
+            </dependency>
             <!-- Embabel Agent BOM -->
             <dependency>
                 <groupId>com.embabel.agent</groupId>
