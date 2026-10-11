@@ -377,6 +377,61 @@ data class AssertionCheck(
 ```
 **代码位置:** `examples-kotlin/src/main/kotlin/com/embabel/example/factchecker/`
 
+### 🔒 **专家：安全受控的 Agent**
+
+> **适用语言：** Java & Kotlin | **核心概念：** MCP 工具访问控制
+
+演示了如何使用 `@SecureAgentTool` 实现基于 JWT 保护的 MCP 工具暴露。每个 Agent 类都会声明调用其任何操作所需的 Spring Security SpEL 表达式。
+
+**主要内容：**
+
+* 🔒 **类级别的访问控制**：使用 `@SecureAgentTool`
+* 🔑 **JWT 承载令牌（Bearer token）**：在 HTTP 传输层进行验证
+* 🛡️ **双层安全防护** — 过滤器链拒绝未认证的请求；`@SecureAgentTool` 强制执行按 Agent 的权限检查
+* ⚡ **快速失败安全机制** — 被拒绝的调用会返回清晰的 MCP 错误，而不会重试或消耗大语言模型（LLM）Token
+
+**Agent 列表：**
+
+| Agent | 所需权限 | 功能描述 |
+| --- | --- | --- |
+| `NewsDigestAgent` | `news:read` | 通过网络搜索研究某个主题并返回精选摘要 |
+| `MarketIntelligenceAgent` | `market:admin` | 生成 SWOT 加竞争情报报告 |
+
+**核心模式：**
+
+```kotlin
+@Agent(description = "研究一个主题并返回新闻摘要")
+@SecureAgentTool("hasAuthority('news:read')")  // 保护该 Agent 中的每一个 @Action
+class NewsDigestAgent {
+
+    @Action   // 同样需要 news:read 权限
+    fun extractTopic(userInput: UserInput, context: OperationContext): NewsTopic
+
+    @AchievesGoal(description = "生成精选新闻摘要",
+                  export = Export(remote = true, name = "newsDigest",
+                                  startingInputTypes = [UserInput::class]))
+    @Action   // 同样需要 news:read 权限
+    fun produceDigest(topic: NewsTopic, context: OperationContext): NewsDigest
+}
+
+```
+
+**运行方式：**
+
+```bash
+cd scripts/kotlin && ./mcp_secured_server.sh
+
+```
+
+有关令牌生成和 MCP Inspector 的设置，请参阅[安全 MCP 服务器模式](https://www.google.com/search?q=%23secured-mcp-server-mode)。
+
+**源码位置：**
+
+* **Kotlin：** `examples-kotlin/src/main/kotlin/com/embabel/example/secured/`
+* **Java：** `examples-java/src/main/java/com/embabel/example/secured/`
+
+---
+
 ## 🛠️ 您将学习的核心概念
 ### **Spring 框架集成**
 - **自动配置:** Starter（起步依赖）自动处理所有配置
@@ -478,6 +533,18 @@ cd scripts/java && mcp_server.cmd        # Windows
 ```
 使用 Maven 配置文件：`enable-agent-mcp-server`
 
+### **安全受控的 MCP 服务器模式**
+
+```bash
+cd scripts/kotlin && ./mcp_secured_server.sh
+cd scripts/kotlin && mcp_secured_server.cmd  # Windows
+
+```
+
+使用 Maven Profile：`enable-secured-agent-mcp-server`
+
+有关令牌设置和连接说明，请参阅[安全 MCP 服务器模式](https://www.google.com/search?q=%23secured-mcp-server-mode)。
+
 您可以将 Embabel 智能体平台作为 MCP 服务器从 UI（如 Claude Desktop）使用。Embabel MCP 服务器通过 SSE 提供。
 
 在 `claude_desktop_config.yml` 中将 Claude Desktop 配置如下：
@@ -562,6 +629,80 @@ cd scripts/java && ./mcp_server.sh
 - **星座新闻发现** - `find_horoscope_news`
 - **研究者** - `research_topic`
 - **事实核查者** - `check_facts`
+
+### **安全受控的 MCP 服务器模式**
+
+运行一个由 JWT 保护的 MCP 服务器，通过 `@SecureAgentTool` 强制执行基于每个 Agent 的访问控制。
+该模式要求每个 MCP 请求都必须包含有效的 Bearer 令牌。
+
+```bash
+# 启动受保护的 Kotlin Agent 作为 MCP 服务器
+cd scripts/kotlin && ./mcp_secured_server.sh
+mcp_secured_server.cmd     # Windows
+
+```
+
+使用 Maven Profile：`enable-secured-agent-mcp-server`
+
+受保护的服务器暴露了两个 Agent，每个 Agent 都需要特定的 JWT 权限：
+
+| Agent | 工具名称 | 所需权限 |
+| --- | --- | --- |
+| `NewsDigestAgent` | `newsDigest` | `news:read` |
+| `MarketIntelligenceAgent` | `marketIntelligenceReport` | `market:admin` |
+
+每个 Agent 中的所有 `@Action` 方法都受到保护——不仅限于实现目标的 Action。
+诸如主题提取和网络研究等中间步骤同样需要权限，
+因此未经授权的调用者无法在部分执行时消耗大语言模型（LLM）Token。
+
+#### 生成 JWT 令牌
+
+本地开发时附带了一个密钥对和令牌生成脚本：
+
+```bash
+# 生成 RSA 密钥对（一次性设置，在 keys/ 目录下）
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -pubout -out public.pem
+
+```
+
+`keys` 目录位于：
+
+```
+examples-common/src/main/resources/keys/
+
+```
+
+生成令牌：
+
+```bash
+pip install pyjwt cryptography
+cd examples-common/src/main/resources/keys
+python generate_token.py
+
+```
+
+生成的令牌包含 `news:read` 和 `market:admin` 权限。
+将其作为 `Bearer <token>` 授权标头粘贴到你的 MCP 客户端中。
+
+#### 连接 MCP Inspector
+
+启动 MCP Inspector 并使用 **SSE** 传输类型连接，URL 为 `http://localhost:8443/sse`，
+以及授权标头：
+
+```
+Bearer <your_token>
+
+```
+
+#### 工作原理
+
+安全防护在两个层面上强制执行：
+
+1. **HTTP 过滤器链** — 对 `/sse/**` 和 `/mcp/**` 的所有请求都要求提供有效的 JWT（缺失或无效时返回 401）
+2. **`@SecureAgentTool`** — 每个 Agent 类都声明所需的权限；被拒绝的调用会返回清晰的 MCP 错误响应，而不会重试
+
+`secured` Spring Profile 同时激活了这两个层面。没有该 Profile 时，服务器将在无认证状态下运行（标准 MCP 服务器模式）。
 
 ### **MCP 客户端支持**
 
@@ -675,35 +816,40 @@ fun main(args: Array<String>) {
 在出现问题时查看日志输出，其中可能包含解决问题的提示。
 
 ## 📁 项目结构
-```
+
 ```text
 embabel-agent-examples/
-├── examples-kotlin/                    # 🏆 Kotlin 实现
+├── examples-kotlin/                 # 🏆 Kotlin 实现
 │   ├── src/main/kotlin/com/embabel/example/
-│   │   ├── KotlinAgentShellApplication.kt       # Shell + MCP 客户端（默认）
-│   │   ├── KotlinAgentSimpleShellApplication.kt # 不含 MCP 的 Shell
-│   │   ├── KotlinAgentMcpServerApplication.kt   # MCP 服务器模式 
+│   │   ├── KotlinAgentShellApplication.kt           # Shell + MCP 客户端（默认）
+│   │   ├── KotlinAgentSimpleShellApplication.kt     # 不含 MCP 的 Shell
+│   │   ├── KotlinAgentMcpServerApplication.kt       # MCP 服务器模式
+│   │   ├── KotlinAgentSecuredMcpServerApplication.kt# 🔒 安全受控的 MCP 服务器模式
 │   │   ├── horoscope/              # 🌟 初学者：星座新闻 Agent
+│   │   ├── secured/                # 🔒 专家：JWT 安全受控的 Agent
 │   ├── pom.xml                     # 各模式的 Maven Profile
 │   └── README.md                   # 📖 Kotlin 专项文档
-├── examples-java/                     # ☕ Java 实现 
+│
+├── examples-java/                    # ☕ Java 实现  
 │   ├── src/main/java/com/embabel/example/
 │   │   ├── JavaAgentShellApplication.java       # 带主题的 Shell
 │   │   ├── JavaAgentSimpleShellApplication.java # 不含 MCP 的 Shell
 │   │   ├── JavaMcpServerApplication.java        # MCP 服务器模式
 │   │   └── horoscope/              # 🌟 初学者：星座新闻 Agent
 │   └── README.md                   # 📖 Java 专项文档
-├── examples-common/                    # 🔧 共享服务与工具
-├── scripts/                            # 🚀 快速启动脚本
+│
+├── examples-common/                 # 🔧 共享服务与工具
+├── scripts/                        # 🚀 快速启动脚本
 │   ├── kotlin/
 │   │   ├── shell.sh               # 启动 Shell（使用 --no-docker-tools 禁用）
-│   │   └── mcp_server.sh          # 启动 MCP 服务器
+│   │   ├── mcp_server.sh          # 启动 MCP 服务器
+│   │   └── mcp_secured_server.sh  # 启动 JWT 安全受控的 MCP 服务器
 │   ├── java/
 │   │   ├── shell.sh               # 启动 Shell（使用 --no-docker-tools 禁用）
 │   │   └── mcp_server.sh          # 启动 MCP 服务器
 │   ├── support/                    # 共享脚本工具
 │   └── README.md                   # 📖 脚本说明文档
-└── pom.xml                         # 父级 Maven 配置
+└── pom.xml                         # 父 Maven 配置
 ```
 
 ## 📄 开源协议
