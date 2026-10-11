@@ -336,6 +336,31 @@ class StarNewsFinder {
 
 ---
 
+### 🌐 **Beginner: Company Namer**
+
+> **Available in:** Java | **Concept:** Combining generative and deterministic actions
+
+Suggests company names from a business brief, then checks each matching `.com` domain using Java's DNS resolver.
+The check requires no third-party availability API or API key: domains with DNS records are reported as in use, while
+domains without DNS records are reported as potentially available and must be confirmed with a registrar.
+
+**What It Teaches:**
+
+- Generating structured candidate data with an LLM
+- Passing generated data to a deterministic action
+- Keeping external checks behind an injected service
+- Caching DNS results and representing inconclusive checks honestly
+
+**Try It:**
+
+```bash
+x "Suggest company names for a sustainable accounting platform"
+```
+
+**Location:** `examples-java/src/main/java/com/embabel/example/companynamer/`
+
+---
+
 ### 🔬 **Expert: Multi-LLM Research Agent**
 
 > **Available in:** Java, Kotlin | **Concept:** Self-Improving AI Workflows
