@@ -67,21 +67,21 @@ export ANTHROPIC_API_KEY="your_anthropic_key"
 #### **Kotlin 示例**
 ```bash
 cd scripts/kotlin
-./shell.sh                    # Unix/Linux/macOS - 基本功能
-shell.cmd                     # Windows - 基本功能
+./shell.sh                    # Unix/Linux/macOS - 带有 Docker 工具（默认）
+shell.cmd                     # Windows - 带有 Docker 工具（默认）
 
-./shell.sh --docker-tools     # Unix/Linux/macOS - 启用 Docker 集成
-shell.cmd --docker-tools      # Windows - 启用 Docker 集成
+./shell.sh --no-docker-tools  # Unix/Linux/macOS - 仅基础功能
+shell.cmd --no-docker-tools   # Windows - 仅基础功能
 ```
 
 #### **Java 示例**
 ```bash
 cd scripts/java
-./shell.sh                    # Unix/Linux/macOS - 基本功能
-shell.cmd                     # Windows - 基本功能
+./shell.sh                    # Unix/Linux/macOS - 带有 Docker 工具（默认）
+shell.cmd                     # Windows - 带有 Docker 工具（默认）
 
-./shell.sh --docker-tools     # Unix/Linux/macOS - 启用 Docker 集成
-shell.cmd --docker-tools      # Windows - 启用 Docker 集成
+./shell.sh --no-docker-tools  # Unix/Linux/macOS - 仅基础功能
+shell.cmd --no-docker-tools   # Windows - 仅基础功能
 ```
 
 ### 创建您自己的项目
@@ -123,79 +123,97 @@ uvx --from git+https://github.com/embabel/project-creator.git project-creator
 - ✅ 安全性与沙箱化
 
 
-### **三种应用模式**
+### **应用示例**
 
-Embabel Agent框架提供三种不同的应用模式，每种模式都针对不同的用例进行了优化：
-
-1. 交互式Shell模式（带星球大战主题日志）
-```xml
-<dependency>
-    <groupId>com.embabel.agent</groupId>
-    <artifactId>embabel-agent-starter-shell</artifactId>
-</dependency>
-```
+#### 带日志主题的 Shell 模式
 
 ```kotlin
 @SpringBootApplication
-@EnableAgents(loggingTheme = LoggingThemes.STAR_WARS)
-class AgentShellApplication
-```
+@ConfigurationPropertiesScan(basePackages = ["com.embabel.example"])
+class KotlinAgentShellApplication
 
-2. Shell模式（支持MCP客户端，Docker Desktop集成）
 
-```xml
-<dependency>
-    <groupId>com.embabel.agent</groupId>
-    <artifactId>embabel-agent-starter-shell</artifactId>
-</dependency>
-```
-
-```kotlin
-@SpringBootApplication
-@EnableAgents(
-   loggingTheme = LoggingThemes.SEVERANCE,
-   mcpServers = [McpServers.DOCKER_DESKTOP]
-)
-class AgentShellMcpClientApplication
-```
-
-3. MCP服务器模式
-```xml
-<dependency>
-    <groupId>com.embabel.agent</groupId>
-    <artifactId>embabel-agent-starter-mcpserver</artifactId>
-</dependency>
-```
-
-```kotlin
-@SpringBootApplication
-@EnableAgents(mcpServers = [McpServers.DOCKER_DESKTOP])
-class AgentMcpServerApplication
+fun main(args: Array<String>) {
+    runApplication<KotlinAgentShellApplication>(*args) {
+        setDefaultProperties(
+            mapOf("embabel.agent.logging.personality" to LoggingThemes.STAR_WARS)
+        )
+    }
+}
 ```
 
 ```java
-// Java 版本
+// Java version
 @SpringBootApplication
-@EnableAgents(
-    loggingTheme = LoggingThemes.STAR_WARS,
-    mcpServers = {McpServers.DOCKER_DESKTOP}
-)
-public class AgentShellApplication;
-
-@SpringBootApplication  
-@EnableAgents(mcpServers = {McpServers.DOCKER_DESKTOP})
-public class AgentMcpApplication;
+@ConfigurationPropertiesScan(basePackages = {"com.embabel.example"})
+public class JavaAgentShellApplication {
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(JavaAgentShellApplication.class);
+        app.setDefaultProperties(Map.of(
+            "embabel.agent.logging.personality", LoggingThemes.STAR_WARS
+        ));
+        app.run(args);
+    }
+}
 ```
 
-### **注解指南：**
+#### Docker 工具支持的 Shell 模式
 
-#### **`@EnableAgents`**
-- 🎨 **loggingTheme**：自定义智能体的日志个性
-  - `"starwars"` - 愿原力与你的日志同在！
-  - `"severance"` - 欢迎来到 Lumon Industries（默认）
-- 🐳 **mcpServers**：启用 MCP 客户端集成
-  - `"docker-desktop"` - Docker Desktop AI 功能
-  - 可以添加自定义客户端
+```kotlin
+@SpringBootApplication
+@ConfigurationPropertiesScan(basePackages = ["com.embabel.example"])
+class KotlinAgentShellApplication
+
+fun main(args: Array<String>) {
+    runApplication<KotlinAgentShellApplication>(*args) {
+        setAdditionalProfiles(McpServers.DOCKER)  // Activates application-docker-ce.yml
+        setDefaultProperties(
+            mapOf("embabel.agent.logging.personality" to LoggingThemes.SEVERANCE)
+        )
+    }
+}
+```
+
+#### MCP 服务器模式
+
+```kotlin
+@SpringBootApplication
+@ConfigurationPropertiesScan(basePackages = ["com.embabel.example"])
+class KotlinAgentMcpServerApplication
+
+fun main(args: Array<String>) {
+    runApplication<KotlinAgentMcpServerApplication>(*args) {
+        setAdditionalProfiles(McpServers.DOCKER, McpServers.DOCKER_DESKTOP)
+    }
+}
+```
+
+### **配置指南**
+
+#### 日志个性
+
+通过 `embabel.agent.logging.personality` 属性设置：
+
+* `"starwars"` - 愿原力与你的日志同在！
+* `"severance"` - 欢迎来到卢蒙工业（默认）
+
+#### MCP 客户端集成
+
+通过在 `application-{profile}.yml` 中定义 Spring AI MCP 客户端连接的 Spring Profile 进行配置：
+
+```yaml
+# application-docker-ce.yml
+spring:
+  ai:
+    mcp:
+      client:
+        type: SYNC
+        stdio:
+          connections:
+            docker-mcp:
+              command: docker
+              args: [mcp, gateway, run]
+```
 
 ## 设置 MCP 工具
 
@@ -249,10 +267,10 @@ x "Find horoscope news for Alice who is a Gemini"
 class StarNewsFinder {
     
     @Action
-    fun extractPerson(userInput: UserInput): Person?
+    fun extractPerson(userInput: UserInput, context: OperationContext): Person?
     
     @Action(toolGroups = [CoreToolGroups.WEB])
-    fun findNewsStories(person: StarPerson, horoscope: Horoscope): RelevantNewsStories
+    fun findNewsStories(person: StarPerson, horoscope: Horoscope, context: OperationContext): RelevantNewsStories
     
     @AchievesGoal(description = "Create an amusing writeup")
     @Action
@@ -361,7 +379,8 @@ data class AssertionCheck(
 
 ## 🛠️ 您将学习的核心概念
 ### **Spring 框架集成**
-- **多个应用程序类:** 针对不同模式的专用启动器
+- **自动配置:** Starter（起步依赖）自动处理所有配置
+- **基于 Profile 的配置:** 通过 Spring Profile 配置 MCP 客户端
 - **Maven 配置:** `enable-shell`、`enable-shell-mcp-client`、`enable-agent-mcp-server`
 - **依赖注入:** 采用构造函数注入，智能体作为 Spring beans
 - **配置属性:** 使用 `@ConfigurationProperties` 进行类型安全配置
@@ -369,11 +388,12 @@ data class AssertionCheck(
 - **仓储模式:** Spring Data 集成用于领域实体
 
 ### **现代 Spring Boot 模式**
-- **多注解架构:** 结合多个 `@Enable*` 注解
+- **自动配置:** Starter（起步依赖）自动处理所有配置
+- **基于 Profile 的配置:** 通过 Spring Profile 配置 MCP 客户端
 - **基于配置文件的执行:** Maven 配置控制哪个应用程序类运行
 - **自动配置类:** 理解 Spring Boot 的自动配置
 - **条件配置:** 特定模式的 Bean 加载
-- **基于主题的自定义:** 基于配置的动态行为
+- **基于主题的自定义:** 基于特性的动态行为
 
 ### **现代 Kotlin 特性**
 - **数据类:** 带计算属性的丰富领域模型
@@ -406,23 +426,28 @@ data class AssertionCheck(
 ## 🔧 运行特定示例
 ### **交互式 Shell 模式**（默认)
 ```bash
-cd scripts/kotlin && ./shell.sh          # 基本功能
-cd scripts/kotlin && shell.cmd           # 基本功能（Windows）
-# 或
-cd scripts/java && ./shell.sh            # 基本功能
-cd scripts/java && shell.cmd             # 基本功能（Windows）
-```
-使用 Maven 配置文件：`enable-shell`
+cd scripts/kotlin && ./shell.sh         # 带有 Docker 工具（默认）
+cd scripts/kotlin && shell.cmd            # 带有 Docker 工具（Windows）
+# 或者
+cd scripts/java && ./shell.sh             # 带有 Docker 工具（默认）
+cd scripts/java && shell.cmd              # 带有 Docker 工具（Windows）
 
-### **带有 MCP 客户端支持的 Shell**
-```bash
-cd scripts/kotlin && ./shell.sh --docker-tools     # 高级 Docker 集成
-cd scripts/kotlin && shell.cmd --docker-tools      # 高级 Docker 集成
-# 或
-cd scripts/java && ./shell.sh --docker-tools       # 高级 Docker 集成
-cd scripts/java && shell.cmd --docker-tools        # 高级 Docker 集成
 ```
-使用 Maven 配置文件：`enable-shell-mcp-client`
+
+使用 Maven Profile：`enable-shell-mcp-client`
+
+### **不带 Docker 工具的 Shell**
+
+```bash
+cd scripts/kotlin && ./shell.sh --no-docker-tools      # 仅基础功能
+cd scripts/kotlin && shell.cmd --no-docker-tools      # 仅基础功能（Windows）
+# 或者
+cd scripts/java && ./shell.sh --no-docker-tools       # 仅基础功能
+cd scripts/java && shell.cmd --no-docker-tools        # 仅基础功能（Windows）
+
+```
+
+使用 Maven 配置文件：`enable-shell`
 
 ### **可观测性 (Zipkin 追踪)**
 
@@ -487,13 +512,13 @@ npx @modelcontextprotocol/inspector
 
 ### **手动执行**
 ```bash
-# Kotlin shell 模式
-cd examples-kotlin
-mvn -P enable-shell spring-boot:run
-
-# Kotlin 带有 MCP 客户端
+# 带 MCP 客户端的 Kotlin shell 模式（默认）
 cd examples-kotlin
 mvn -P enable-shell-mcp-client spring-boot:run
+
+# 不带 MCP 客户端的 Kotlin shell 模式
+cd examples-kotlin
+mvn -P enable-shell spring-boot:run
 
 # Kotlin MCP 服务器模式
 cd examples-kotlin  
@@ -501,7 +526,7 @@ mvn -P enable-agent-mcp-server spring-boot:run
 
 # Java 的对应命令使用相同模式
 cd examples-java
-mvn -P enable-shell spring-boot:run
+mvn -P enable-shell-mcp-client spring-boot:run
 ```
 
 ### **测试**
@@ -540,14 +565,16 @@ cd scripts/java && ./mcp_server.sh
 
 ### **MCP 客户端支持**
 
-通过使用 `--docker-tools` 参数启用您的智能体使用外部 MCP 工具：
+Docker 工具默认处于启用状态。如需禁用，请运行：
+
 ```bash
-# 启用 Docker Desktop MCP 集成
-cd scripts/kotlin && ./shell.sh --docker-tools
-cd scripts/java && ./shell.sh --docker-tools
+# 禁用 Docker MCP 集成
+cd scripts/kotlin && ./shell.sh --no-docker-tools
+cd scripts/java && ./shell.sh --no-docker-tools
+
 ```
 
-这使得您的智能体能够：
+启用 Docker 工具后，你的 Agent 可以：
 - 在 Docker 容器中执行命令
 - 访问容器化服务
 - 与其他兼容 MCP 的工具集成
@@ -563,34 +590,41 @@ cd scripts/java && ./shell.sh --docker-tools
 ### **基本 Shell 应用程序**
 ```kotlin
 @SpringBootApplication
-@EnableAgentShell
-@EnableAgents
 class MyAgentApplication
 
 fun main(args: Array<String>) {
     runApplication<MyAgentApplication>(*args)
 }
 ```
+
+将 shell starter 添加到你的 `pom.xml` 中：
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-shell</artifactId>
+</dependency>
+```
+
 ### **带主题和 MCP 客户端的 Shell**
 ```kotlin
 @SpringBootApplication
-@EnableAgentShell
-@EnableAgents(
-    loggingTheme = LoggingThemes.STAR_WARS,
-    mcpServers = [McpServers.DOCKER_DESKTOP]
-)
+@ConfigurationPropertiesScan(basePackages = ["com.example"])
+
 class MyThemedAgentApplication
 
 fun main(args: Array<String>) {
-    runApplication<MyThemedAgentApplication>(*args)
+    runApplication<MyThemedAgentApplication>(*args) {
+        setAdditionalProfiles("docker-ce")  // Enable MCP client via profile
+        setDefaultProperties(
+            mapOf("embabel.agent.logging.personality" to LoggingThemes.STAR_WARS)
+        )
+    }
 }
 ```
 
 ### **MCP 服务器应用程序**
 ```kotlin
 @SpringBootApplication
-@EnableAgentMcpServer
-@EnableAgents
 class MyMcpServerApplication
 
 fun main(args: Array<String>) {
@@ -598,12 +632,19 @@ fun main(args: Array<String>) {
 }
 ```
 
+将 shell starter 添加到你的 `pom.xml` 中：
+```xml
+<dependency>
+    <groupId>com.embabel.agent</groupId>
+    <artifactId>embabel-agent-starter-mcpserver</artifactId>
+</dependency>
+```
 ## 🎯 入门建议
 ### **对智能体不熟悉?**
 1. 从 **星座新闻智能体**（Java 或 Kotlin）开始
 2. 比较 Java 和 Kotlin 实现
 3. 尝试不同的提示，观察智能体规划不同的工作流
-4. 尝试不同的日志主题，让开发更加有趣！
+4. 查看 Profile 和属性是如何配置 MCP 客户端的
 
 ### **Spring 开发者?**
 1. 查看配置类和仓储集成
@@ -635,33 +676,33 @@ fun main(args: Array<String>) {
 
 ## 📁 项目结构
 ```
+```text
 embabel-agent-examples/
-├── examples-kotlin/                 # 🏆 Kotlin 实现
+├── examples-kotlin/                    # 🏆 Kotlin 实现
 │   ├── src/main/kotlin/com/embabel/example/
-│   │   ├── AgentShellApplication.kt         # 基本 shell 模式
-│   │   ├── AgentShellMcpClientApplication.kt # Shell + MCP 客户端
-│   │   ├── AgentMcpServerApplication.kt     # MCP 服务器模式  
-│   │   ├── horoscope/              # 🌟 初学者: 星座新闻智能体
-│   ├── pom.xml                     # 每个模式的 Maven 配置
-│   └── README.md                   # 📖 针对 Kotlin 的具体文档
-│
-├── examples-java/                   # ☕ Java 实现  
+│   │   ├── KotlinAgentShellApplication.kt       # Shell + MCP 客户端（默认）
+│   │   ├── KotlinAgentSimpleShellApplication.kt # 不含 MCP 的 Shell
+│   │   ├── KotlinAgentMcpServerApplication.kt   # MCP 服务器模式 
+│   │   ├── horoscope/              # 🌟 初学者：星座新闻 Agent
+│   ├── pom.xml                     # 各模式的 Maven Profile
+│   └── README.md                   # 📖 Kotlin 专项文档
+├── examples-java/                     # ☕ Java 实现 
 │   ├── src/main/java/com/embabel/example/
-│   │   ├── AgentShellApplication.java  # Shell 模式，带主题
-│   │   ├── AgentMcpApplication.java    # MCP 服务器模式
-│   │   └── horoscope/              # 🌟 初学者: 星座新闻智能体
-│   └── README.md                   # 📖 针对 Java 的具体文档
-│
-├── examples-common/                 # 🔧 共享服务和工具
-├── scripts/                        # 🚀 快速启动脚本
+│   │   ├── JavaAgentShellApplication.java       # 带主题的 Shell
+│   │   ├── JavaAgentSimpleShellApplication.java # 不含 MCP 的 Shell
+│   │   ├── JavaMcpServerApplication.java        # MCP 服务器模式
+│   │   └── horoscope/              # 🌟 初学者：星座新闻 Agent
+│   └── README.md                   # 📖 Java 专项文档
+├── examples-common/                    # 🔧 共享服务与工具
+├── scripts/                            # 🚀 快速启动脚本
 │   ├── kotlin/
-│   │   ├── shell.sh               # 启动 shell（带有 --docker-tools 选项）
+│   │   ├── shell.sh               # 启动 Shell（使用 --no-docker-tools 禁用）
 │   │   └── mcp_server.sh          # 启动 MCP 服务器
 │   ├── java/
-│   │   ├── shell.sh               # 启动 shell（带有 --docker-tools 选项）
+│   │   ├── shell.sh               # 启动 Shell（使用 --no-docker-tools 禁用）
 │   │   └── mcp_server.sh          # 启动 MCP 服务器
-│   ├── support/                   # 共享脚本工具
-│   └── README.md                  # 📖 脚本文档
+│   ├── support/                    # 共享脚本工具
+│   └── README.md                   # 📖 脚本说明文档
 └── pom.xml                         # 父级 Maven 配置
 ```
 
