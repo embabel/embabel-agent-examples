@@ -336,6 +336,17 @@ class StarNewsFinder {
 
 ---
 
+### Optional: Public counterparty evidence with Agent Guild
+
+The [Agent Guild Kotlin example](examples-kotlin/src/main/kotlin/com/embabel/example/agentguild/README.md)
+uses native `TypedTool` and opt-in `ToolGroup` registration for a selected public
+endpoint observation or a supplied public passport check. It preserves unknowns,
+checks expected identities and freshness, and keeps later delegation under the
+caller's policy. The example includes native tests with substituted HTTP; no model
+or payment is needed to run them.
+
+---
+
 ### 🔬 **Expert: Multi-LLM Research Agent**
 
 > **Available in:** Java, Kotlin | **Concept:** Self-Improving AI Workflows
