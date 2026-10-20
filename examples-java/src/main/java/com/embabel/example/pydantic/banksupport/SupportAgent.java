@@ -47,7 +47,7 @@ record SupportInput(
 
 record SupportOutput(
         @JsonPropertyDescription("Advice returned to the customer") String advice,
-        @JsonPropertyDescription("Whether to block their card or not") boolean blockCard,
+        @JsonPropertyDescription("Recommendation only: true if the card should be blocked. Setting this does not block the card.") boolean blockCard,
         @JsonPropertyDescription("Risk level of query") int risk) {
 }
 
@@ -68,7 +68,10 @@ record SupportAgent(CustomerRepository customerRepository) {
                         """
                                 You are a support agent in our bank, give the
                                 customer support and judge the risk level of their query.
-                                In some cases, you may need to block their card. In this case, explain why.
+                                You can only look up their balance. You cannot block cards or take any other action on the account.
+                                If their card may be lost, stolen or misused, set blockCard to true and explain why.
+                                In that case, recommend that they block it now in the bank's app or by calling the bank's card support line.
+                                Never say that you have blocked, are blocking, or have marked their card to be blocked.
                                 Reply using the customer's name, "%s".
                                 Currencies are in $.
                                 
