@@ -16,6 +16,8 @@
 package com.embabel.example.injection.travel;
 
 import com.embabel.agent.api.common.Ai;
+import com.embabel.common.ai.model.LlmOptions;
+import com.embabel.example.common.Effort;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.lang.Nullable;
@@ -64,7 +66,7 @@ public record ActivitySummarizer(
         // We can rely on the record's generated toString in this
         // case to expose the right data, as it will include all fields
         var report = ai
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .withToolObject(activity)
                 .generateText("""
                         Your job is to help staff of Antechinus Travel understand their customers.

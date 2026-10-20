@@ -19,6 +19,8 @@ import com.embabel.agent.api.common.workflow.loop.RepeatUntilAcceptableBuilder;
 import com.embabel.agent.api.common.workflow.loop.TextFeedback;
 import com.embabel.agent.api.models.OpenAiModels;
 import com.embabel.agent.core.Agent;
+import com.embabel.common.ai.model.LlmOptions;
+import com.embabel.example.common.Effort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,7 +52,7 @@ public class GoatWriterConfig {
                                     Goat.class);
                 })
                 .withEvaluator(context ->
-                        context.ai().withDefaultLlm().createObject(
+                        context.ai().withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW)).createObject(
                                 """
                                         Evaluate the goat description for creativity and detail.
                                         The goat must have a name.

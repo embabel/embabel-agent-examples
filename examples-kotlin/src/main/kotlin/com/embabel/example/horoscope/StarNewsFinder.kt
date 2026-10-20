@@ -30,6 +30,7 @@ import com.embabel.agent.domain.library.HasContent
 import com.embabel.agent.domain.library.Person
 import com.embabel.agent.domain.library.RelevantNewsStories
 import com.embabel.common.ai.model.LlmOptions
+import com.embabel.example.common.Effort
 import com.embabel.ux.form.Text
 import com.fasterxml.jackson.annotation.JsonClassDescription
 import com.fasterxml.jackson.annotation.JsonPropertyDescription
@@ -120,7 +121,7 @@ class StarNewsFinder(
     @Action
     fun extractPerson(userInput: UserInput, context: OperationContext): Person? =
         // All prompts are typesafe
-        context.ai().withDefaultLlm().createObjectIfPossible(
+        context.ai().withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW)).createObjectIfPossible(
             """
             Create a person from this user input, extracting their name:
             ${userInput.content}

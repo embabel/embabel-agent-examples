@@ -18,6 +18,8 @@ package com.embabel.example.injection.travel;
 import com.embabel.agent.api.common.Ai;
 import com.embabel.agent.api.common.PromptRunner;
 import com.embabel.agent.test.unit.FakeOperationContext;
+import com.embabel.common.ai.model.LlmOptions;
+import com.embabel.example.common.Effort;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -25,7 +27,9 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
 class ActivitySummarizerTest {
@@ -55,7 +59,7 @@ class ActivitySummarizerTest {
 
         var travellerActivity = createSampleTravellerActivity();
         when(mockReportingService.report(1L)).thenReturn(travellerActivity);
-        when(mockAi.withDefaultLlm()).thenReturn(mockPromptRunner);
+        when(mockAi.withLlm(any(LlmOptions.class))).thenReturn(mockPromptRunner);
         when(mockPromptRunner.withToolObject(travellerActivity)).thenReturn(mockPromptRunner);
         when(mockPromptRunner.generateText(anyString())).thenThrow(new RuntimeException("LLM service unavailable"));
 
@@ -64,7 +68,7 @@ class ActivitySummarizerTest {
         assertThrows(RuntimeException.class, () -> activitySummarizer.summarizeActivity(1L));
 
         Mockito.verify(mockReportingService).report(1L);
-        Mockito.verify(mockAi).withDefaultLlm();
+        Mockito.verify(mockAi).withLlm(argThat((LlmOptions llm) -> llm.getThinking() == Effort.LOW));
         Mockito.verify(mockPromptRunner).withToolObject(travellerActivity);
     }
 
@@ -79,7 +83,7 @@ class ActivitySummarizerTest {
         var expectedSummary = "John Doe is a frequent traveler who has taken 2 trips to Paris and Tokyo, spending $3000 total. As a high spender, he enjoys premium destinations.";
 
         when(mockReportingService.report(1L)).thenReturn(travellerActivity);
-        when(mockAi.withDefaultLlm()).thenReturn(mockPromptRunner);
+        when(mockAi.withLlm(any(LlmOptions.class))).thenReturn(mockPromptRunner);
         when(mockPromptRunner.withToolObject(travellerActivity)).thenReturn(mockPromptRunner);
         when(mockPromptRunner.generateText(anyString())).thenReturn(expectedSummary);
 
@@ -90,7 +94,7 @@ class ActivitySummarizerTest {
         assertEquals(travellerActivity, result.activity());
 
         Mockito.verify(mockReportingService).report(1L);
-        Mockito.verify(mockAi).withDefaultLlm();
+        Mockito.verify(mockAi).withLlm(argThat((LlmOptions llm) -> llm.getThinking() == Effort.LOW));
         Mockito.verify(mockPromptRunner).withToolObject(travellerActivity);
         Mockito.verify(mockPromptRunner).generateText(anyString());
     }
