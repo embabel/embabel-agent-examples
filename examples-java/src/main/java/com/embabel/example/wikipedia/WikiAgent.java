@@ -45,7 +45,7 @@ public class WikiAgent {
 
     public WikiAgent(
             @Value("${wiki.wordcount:200}") int wordCount,
-            @Value("${wiki.llm:gpt-4.1-nano}") String model) {
+            @Value("${wiki.llm:gpt-6-luna}") String model) {
         this.wordCount = wordCount;
         this.llm = LlmOptions.withModel(model);
     }

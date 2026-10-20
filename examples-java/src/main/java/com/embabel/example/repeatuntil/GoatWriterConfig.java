@@ -40,7 +40,7 @@ public class GoatWriterConfig {
                     var lastAttempt = context.lastAttempt();
                     var feedback = lastAttempt != null ? "Feedback: " + lastAttempt.getFeedback() : "";
                     return context.ai()
-                            .withLlm(OpenAiModels.GPT_5_NANO)
+                            .withLlm(OpenAiModels.GPT_6_LUNA)
                             .createObject(
                                     """
                                             Describe a goat in 200 words. Be creative.

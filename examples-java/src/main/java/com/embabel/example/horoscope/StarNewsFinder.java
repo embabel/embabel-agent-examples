@@ -166,7 +166,7 @@ public class StarNewsFinder {
                 person.name(), person.sign(), horoscope.summary(), newsItems);
         return ai
                 .withLlm(LlmOptions
-                        .withFirstAvailableLlmOf(AnthropicModels.CLAUDE_37_SONNET, OpenAiModels.GPT_41_MINI)
+                        .withFirstAvailableLlmOf(AnthropicModels.CLAUDE_SONNET_5_5, OpenAiModels.GPT_41_MINI)
                         .withTemperature(0.9))
                 .createObject(prompt, Writeup.class);
     }

@@ -4,7 +4,7 @@ examples:
     max-concurrency: 8
 
     researcher-llm:
-      model: gpt-4.1-nano
+      model: gpt-6-luna
       temperature: 0.7
 
     writer-llm:
