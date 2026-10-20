@@ -23,6 +23,8 @@ import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.core.CoreToolGroups;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.agent.mcpserver.security.SecureAgentTool;
+import com.embabel.common.ai.model.LlmOptions;
+import com.embabel.example.common.Effort;
 
 import java.util.stream.Collectors;
 
@@ -61,7 +63,7 @@ public class NewsDigestAgent {
     @Action
     public NewsTopic extractTopic(UserInput userInput, OperationContext context) {
         return context.ai()
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .createObject(
                         """
                         Extract a research topic from the following user input.
@@ -106,7 +108,7 @@ public class NewsDigestAgent {
                 : "";
 
         DigestItemList digestItemList = context.ai()
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject(
                         """
@@ -118,7 +120,7 @@ public class NewsDigestAgent {
                 );
 
         String narrative = context.ai()
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .createObject(
                         """
                         Write a 3-sentence editorial summary of these news items about %s.

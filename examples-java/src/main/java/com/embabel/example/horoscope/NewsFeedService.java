@@ -21,6 +21,7 @@ import com.embabel.agent.api.tool.Tool;
 import com.embabel.agent.api.tool.ToolCallContext;
 import com.embabel.agent.spi.ToolGroupResolver;
 import com.embabel.common.ai.model.LlmOptions;
+import com.embabel.example.common.Effort;
 import tools.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,7 @@ public class NewsFeedService {
                 return result;
             }
         };
-        ai.withLlm(LlmOptions.withModel(defaultLlm).withTimeout(Duration.ofMinutes(3)))
+        ai.withLlm(LlmOptions.withModel(defaultLlm).withThinking(Effort.LOW).withTimeout(Duration.ofMinutes(3)))
                 .withId("fetch_news_feed")
                 .withTool(directFetch)
                 .generateText("Call %s once with url=%s%s. Do not summarize or search."
