@@ -96,7 +96,7 @@ class ActivitySummarizerTest {
     }
 
     @Test
-    void promptStatesTheWordLimitFirmlyAndForbidsCurrency() {
+    void promptEncouragesWordLimitAndForbidsCurrency() {
         var mockReportingService = Mockito.mock(TravelActivityReportingService.class);
         var config = new ActivitySummarizer.Config(80, 2000.0f, 10f);
         var travellerActivity = createSampleTravellerActivity();
@@ -107,7 +107,7 @@ class ActivitySummarizerTest {
         new ActivitySummarizer(mockReportingService, context.ai(), config).summarizeActivity(1L);
 
         var prompt = context.getLlmInvocations().getFirst().getMessages().getFirst().getContent();
-        assertTrue(prompt.contains("80 words or fewer. This is a hard limit with no exceptions"));
+        assertTrue(prompt.contains("Keep the summary to 80 words or fewer"));
         assertTrue(prompt.contains("aim for about 60 words"));
         assertTrue(prompt.contains("Amounts carry no currency"));
         assertTrue(prompt.contains("never add a currency symbol or code such as $"));
