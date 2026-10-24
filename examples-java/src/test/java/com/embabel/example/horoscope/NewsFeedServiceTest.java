@@ -16,6 +16,8 @@
 package com.embabel.example.horoscope;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import com.embabel.agent.api.common.Ai;
 import com.embabel.agent.api.common.PromptRunner;
 import com.embabel.agent.api.tool.Tool;
@@ -37,16 +39,17 @@ class NewsFeedServiceTest {
 
     private static final String RSS = "<rss><channel><item><title>News</title><link>https://www.bbc.co.uk/news/original</link><description>Summary</description></item></channel></rss>";
 
-    @Test
-    void invokesResolvedMcpFetchAndReturnsOriginalStory() {
+    @ParameterizedTest
+    @ValueSource(strings = {"fetch", "fetch_html"})
+    void invokesResolvedMcpFetchAndReturnsOriginalStory(String toolName) {
         var resolver = mock(ToolGroupResolver.class);
         var group = mock(ToolGroup.class);
         var fetch = mock(Tool.class);
         var definition = mock(Tool.Definition.class);
-        when(definition.getName()).thenReturn("fetch");
+        when(definition.getName()).thenReturn(toolName);
         when(fetch.getDefinition()).thenReturn(definition);
         when(group.getTools()).thenReturn(List.of(fetch));
-        when(resolver.findToolGroupForTool("fetch")).thenReturn(new ToolGroupResolution(group, null));
+        when(resolver.findToolGroupForTool(toolName)).thenReturn(new ToolGroupResolution(group, null));
         when(fetch.call(anyString(), any())).thenReturn(Tool.Result.text(RSS));
         var ai = mock(Ai.class);
         var runner = mock(PromptRunner.class, RETURNS_SELF);
@@ -57,8 +60,13 @@ class NewsFeedServiceTest {
             return runner;
         }).when(runner).withTool(any(Tool.class));
         when(runner.generateText(anyString())).thenAnswer(invocation -> {
+            String prompt = invocation.getArgument(0);
+            assertTrue(prompt.contains("Call " + toolName + " once"));
+            assertEquals(toolName.equals("fetch"), prompt.contains("raw=true"));
             assertTrue(registered.get().getMetadata().getReturnDirect());
-            registered.get().call("{\"url\":\"https://feeds.bbci.co.uk/news/rss.xml\",\"raw\":true,\"max_length\":100000}");
+            registered.get().call(toolName.equals("fetch")
+                    ? "{\"url\":\"https://feeds.bbci.co.uk/news/rss.xml\",\"raw\":true,\"max_length\":100000}"
+                    : "{\"url\":\"https://feeds.bbci.co.uk/news/rss.xml\"}");
             return "This model text must not replace the tool result";
         });
         var service = new NewsFeedService(URI.create("https://feeds.bbci.co.uk/news/rss.xml"), resolver, "test-model");
@@ -67,6 +75,17 @@ class NewsFeedServiceTest {
 
         assertEquals("https://www.bbc.co.uk/news/original", stories.getFirst().getUrl());
         verify(fetch, times(1)).call(anyString(), any());
+    }
+
+    @Test
+    void reportsMissingCompatibleToolsBeforeCallingTheModel() {
+        var resolver = mock(ToolGroupResolver.class);
+        when(resolver.findToolGroupForTool(anyString())).thenReturn(new ToolGroupResolution(null, "Not found"));
+        var ai = mock(Ai.class);
+        var service = new NewsFeedService(URI.create("https://feeds.bbci.co.uk/news/rss.xml"), resolver, "test-model");
+        var error = assertThrows(IllegalStateException.class, () -> service.latestStories(ai));
+        assertTrue(error.getMessage().contains("fetch or fetch_html"));
+        verifyNoInteractions(ai);
     }
 
     @Test
