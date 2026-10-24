@@ -19,19 +19,19 @@ import com.embabel.agent.api.invocation.AgentInvocation;
 import com.embabel.agent.core.AgentPlatform;
 import com.embabel.agent.core.ProcessOptions;
 import com.embabel.agent.core.Verbosity;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
+import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
+import org.springframework.stereotype.Component;
 
-@ShellComponent
+@Component
 public record SupportAgentShellCommands(
         AgentPlatform agentPlatform
 ) {
 
-    @ShellMethod("Get bank support for a customer query")
+    @Command(name = "bank-support", description = "Get bank support for a customer query")
     public String bankSupport(
-            @ShellOption(value = "id", help = "customer id", defaultValue = "123") Long id,
-            @ShellOption(value = "query", help = "customer query", defaultValue = "What's my balance, including pending amounts?") String query
+            @Option(longName = "id", description = "customer id", defaultValue = "123") Long id,
+            @Option(longName = "query", description = "customer query", defaultValue = "What's my balance, including pending amounts?") String query
     ) {
         var supportInput = new SupportInput(id, query);
         System.out.println("Support input: " + supportInput);

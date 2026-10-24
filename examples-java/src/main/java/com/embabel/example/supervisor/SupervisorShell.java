@@ -19,18 +19,18 @@ import com.embabel.agent.api.common.scope.AgentScopeBuilder;
 import com.embabel.agent.api.invocation.SupervisorInvocation;
 import com.embabel.agent.core.AgentPlatform;
 import com.embabel.agent.domain.io.UserInput;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
+import org.springframework.shell.core.command.annotation.Command;
+import org.springframework.shell.core.command.annotation.Option;
+import org.springframework.stereotype.Component;
 
-@ShellComponent
+@Component
 public record SupervisorShell(
         AgentPlatform agentPlatform,
         Stages stages
 ) {
 
-    @ShellMethod("let's cook")
-    public String cook(@ShellOption(defaultValue = "Steak tartare for Rod--ask Jamie to cook") String request) {
+    @Command(name = "cook", description = "let's cook")
+    public String cook(@Option(longName = "request", defaultValue = "Steak tartare for Rod--ask Jamie to cook") String request) {
         var meal = SupervisorInvocation.on(agentPlatform)
                 .returning(Stages.Meal.class)
                 .withScope(AgentScopeBuilder.fromInstance(stages))
