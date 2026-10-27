@@ -170,8 +170,7 @@ public class StarNewsFinder {
                 person.name(), person.sign(), horoscope.summary(), newsItems);
         var text = ai
                 .withLlm(LlmOptions
-                        .withFirstAvailableLlmOf(AnthropicModels.CLAUDE_37_SONNET, OpenAiModels.GPT_41_MINI, defaultLlm)
-                        .withTemperature(0.9)
+                        .withFirstAvailableLlmOf(AnthropicModels.CLAUDE_SONNET_5_5, OpenAiModels.GPT_41_MINI, defaultLlm)
                         .withTimeout(Duration.ofMinutes(3)))
                 .generateText(prompt);
         var sources = relevantNewsStories.getItems().stream()

@@ -52,7 +52,7 @@ data class Critique(
 class ResearcherProperties(
     val responseFormat: ResponseFormat = ResponseFormat.MARKDOWN,
     val maxWordCount: Int = 300,
-    val claudeModelName: String = AnthropicModels.CLAUDE_35_HAIKU,
+    val claudeModelName: String = AnthropicModels.CLAUDE_HAIKU_4_5,
     val openAiModelName: String = OpenAiModels.GPT_41_MINI,
     val criticModeName: String = OpenAiModels.GPT_41,
     val mergeModelName: String = OpenAiModels.GPT_41_MINI,

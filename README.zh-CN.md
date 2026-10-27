@@ -295,7 +295,7 @@ class StarNewsFinder {
 @ConfigurationProperties(prefix = "embabel.examples.researcher")
 data class ResearcherProperties(
     val maxWordCount: Int = 300,
-    val claudeModelName: String = AnthropicModels.CLAUDE_35_HAIKU,
+    val claudeModelName: String = AnthropicModels.CLAUDE_HAIKU_4_5,
     val openAiModelName: String = OpenAiModels.GPT_41_MINI
 )
 ```

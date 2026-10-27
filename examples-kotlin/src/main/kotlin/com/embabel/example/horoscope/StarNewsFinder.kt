@@ -100,7 +100,7 @@ class StarNewsFinder(
     @param:Value("\${star-news-finder.model:gpt-4.1-mini}")
 //    @Value("\${star-news-finder.model:ai/llama3.2}")
 
-    private val model: String = OpenAiModels.GPT_41_NANO,
+    private val model: String = OpenAiModels.GPT_6_LUNA,
     @param:Value("\${star-news-finder.story.count:5}")
     private val storyCount: Int,
     @param:Value("\${star-news-finder.word.count:100}")
