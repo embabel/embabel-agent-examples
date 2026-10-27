@@ -6,6 +6,7 @@ Our version demonstrates:
 
 - Integration with Spring Data for production-quality data access
 - A true domain model with LLM tools on domain objects.
+- An honest action contract: the agent's only tool reads the balance, so `blockCard` is a recommendation and the advice tells the customer how to block the card themselves.
 
 Run within Spring Shell with:
 
