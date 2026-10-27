@@ -51,13 +51,8 @@ public class NewsFeedService {
     }
 
     public List<NewsStory> latestStories(Ai ai) {
-        var resolution = toolGroupResolver.findToolGroupForTool("fetch");
-        var group = resolution.getResolvedToolGroup();
-        if (group == null) {
-            throw new IllegalStateException("MCP fetch tool unavailable: " + resolution.getFailureMessage());
-        }
-        var fetch = group.getTools().stream().filter(tool -> tool.getDefinition().getName().equals("fetch"))
-                .findFirst().orElseThrow(() -> new IllegalStateException("MCP fetch tool unavailable"));
+        var fetch = resolveFetchTool();
+        var rawFetch = fetch.getDefinition().getName().equals("fetch");
         var captured = new java.util.concurrent.atomic.AtomicReference<String>();
         var directFetch = new Tool() {
             @Override
@@ -73,7 +68,7 @@ public class NewsFeedService {
             public Result call(String input, ToolCallContext context) {
                 var arguments = JsonMapper.builder().build().readTree(input);
                 if (!feedUrl.toString().equals(arguments.path("url").asText())
-                        || !arguments.path("raw").asBoolean()
+                        || (rawFetch && !arguments.path("raw").asBoolean())
                         || arguments.path("start_index").asInt(0) != 0) {
                     throw new IllegalArgumentException("Fetch must retrieve the configured raw RSS feed from its beginning");
                 }
@@ -92,12 +87,29 @@ public class NewsFeedService {
         ai.withLlm(LlmOptions.withModel(defaultLlm).withTimeout(Duration.ofMinutes(3)))
                 .withId("fetch_news_feed")
                 .withTool(directFetch)
-                .generateText("Call fetch once with url=%s, raw=true, max_length=100000. Do not summarize or search."
-                        .formatted(feedUrl));
+                .generateText("Call %s once with url=%s%s. Do not summarize or search."
+                        .formatted(fetch.getDefinition().getName(), feedUrl,
+                                rawFetch ? ", raw=true, max_length=100000" : ""));
         if (captured.get() == null) {
             throw new IllegalStateException("The model did not invoke the MCP fetch tool");
         }
         return parseToolResult(captured.get());
+    }
+
+    private Tool resolveFetchTool() {
+        // Docker/uvx fetch and the Linux npx server use different names and schemas.
+        // fetch_html returns the raw response body; fetch_txt/markdown discard RSS markup.
+        for (var name : List.of("fetch", "fetch_html")) {
+            var resolution = toolGroupResolver.findToolGroupForTool(name);
+            if (resolution != null && resolution.getResolvedToolGroup() != null) {
+                var tool = resolution.getResolvedToolGroup().getTools().stream()
+                        .filter(candidate -> candidate.getDefinition().getName().equals(name)).findFirst();
+                if (tool.isPresent()) {
+                    return tool.get();
+                }
+            }
+        }
+        throw new IllegalStateException("MCP RSS retrieval requires fetch or fetch_html; neither tool is available");
     }
 
     static List<NewsStory> parseToolResult(String result) {

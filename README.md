@@ -311,6 +311,13 @@ x "Find horoscope news for Alice who is a Gemini"
 
 `x` is short for `execute`, which triggers the agent to run its workflow.
 
+The Java example retrieves an RSS feed through MCP and selects relevant stories from it.
+It supports `fetch` (Docker/uvx) and `fetch_html` (the `npx-linux` profile used by the
+A2A container). Both return the original feed markup; `fetch_txt` and `fetch_markdown`
+are not suitable because they remove the XML needed to preserve article titles and URLs.
+The final writeup includes links to the selected sources. If neither compatible tool
+is available, check the active MCP profile and server startup logs.
+
 **Code Comparison:**
 
 - **Kotlin:** `examples-kotlin/src/main/kotlin/com/embabel/example/horoscope/StarNewsFinder.kt`
