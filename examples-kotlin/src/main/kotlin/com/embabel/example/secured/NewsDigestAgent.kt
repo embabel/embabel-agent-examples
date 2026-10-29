@@ -24,6 +24,8 @@ import com.embabel.agent.api.common.createObject
 import com.embabel.agent.core.CoreToolGroups
 import com.embabel.agent.domain.io.UserInput
 import com.embabel.agent.mcpserver.security.SecureAgentTool
+import com.embabel.common.ai.model.LlmOptions
+import com.embabel.example.common.Effort
 
 /**
  * Agent that researches a topic via web search and returns a curated news digest
@@ -61,7 +63,7 @@ class NewsDigestAgent {
         userInput: UserInput,
         context: OperationContext,
     ): NewsTopic = context.ai()
-        .withDefaultLlm()
+        .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
         .createObject(
             """
             Extract a research topic from the following user input.
@@ -105,7 +107,7 @@ class NewsDigestAgent {
         else ""
 
         val digestItemList = context.ai()
-            .withDefaultLlm()
+            .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
             .withToolGroup(CoreToolGroups.WEB)
             .createObject<DigestItemList>(
                 """
@@ -116,7 +118,7 @@ class NewsDigestAgent {
             )
 
         val narrative = context.ai()
-            .withDefaultLlm()
+            .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
             .createObject<String>(
                 """
                 Write a 3-sentence editorial summary of these news items about ${topic.topic}.

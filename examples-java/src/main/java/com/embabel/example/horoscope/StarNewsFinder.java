@@ -25,6 +25,7 @@ import com.embabel.agent.domain.library.Person;
 import com.embabel.agent.domain.library.PersonImpl;
 import com.embabel.agent.domain.library.RelevantNewsStories;
 import com.embabel.common.ai.model.LlmOptions;
+import com.embabel.example.common.Effort;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Duration;
@@ -112,7 +113,7 @@ public class StarNewsFinder {
                 .mapToObj(i -> i + ": " + stories.get(i).getTitle() + " — " + stories.get(i).getSummary())
                 .collect(Collectors.joining("\n"));
         var selection = ai
-                .withLlm(LlmOptions.withModel(defaultLlm).withTimeout(Duration.ofMinutes(3)))
+                .withLlm(LlmOptions.withModel(defaultLlm).withThinking(Effort.LOW).withTimeout(Duration.ofMinutes(3)))
                 .withId("select_news_stories")
                 .createObject("""
                         Select between 1 and %d news stories relevant to %s's horoscope.

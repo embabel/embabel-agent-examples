@@ -23,6 +23,8 @@ import com.embabel.agent.api.common.OperationContext;
 import com.embabel.agent.core.CoreToolGroups;
 import com.embabel.agent.domain.io.UserInput;
 import com.embabel.agent.mcpserver.security.SecureAgentTool;
+import com.embabel.common.ai.model.LlmOptions;
+import com.embabel.example.common.Effort;
 
 import java.util.stream.Collectors;
 
@@ -66,7 +68,7 @@ public class MarketIntelligenceAgent {
     @Action
     public AnalysisSubject parseSubject(UserInput userInput, OperationContext context) {
         return context.ai()
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .createObject(
                         """
                         Extract the subject of market analysis from the following user input.
@@ -93,7 +95,7 @@ public class MarketIntelligenceAgent {
     @Action
     public String gatherIntelligence(AnalysisSubject subject, OperationContext context) {
         return context.ai()
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .withToolGroup(CoreToolGroups.WEB)
                 .createObject(
                         """
@@ -147,7 +149,7 @@ public class MarketIntelligenceAgent {
             OperationContext context
     ) {
         SwotEntryList swotList = context.ai()
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .createObject(
                         """
                         Based on the following market intelligence, produce a SWOT analysis for %s.
@@ -161,7 +163,7 @@ public class MarketIntelligenceAgent {
                 );
 
         CompetitorInsightList competitorList = context.ai()
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .createObject(
                         """
                         Based on the following market intelligence, identify the top 4 competitors
@@ -175,7 +177,7 @@ public class MarketIntelligenceAgent {
                 );
 
         KeyTrendList trendList = context.ai()
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .createObject(
                         """
                         Based on the following market intelligence, extract the 5 most significant
@@ -189,7 +191,7 @@ public class MarketIntelligenceAgent {
                 );
 
         String summary = context.ai()
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .createObject(
                         """
                         Write a 4-sentence executive summary for a market intelligence report on

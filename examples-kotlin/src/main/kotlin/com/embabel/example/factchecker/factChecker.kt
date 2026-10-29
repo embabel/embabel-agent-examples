@@ -27,6 +27,7 @@ import com.embabel.agent.domain.library.InternetResource
 import com.embabel.agent.domain.library.InternetResources
 import com.embabel.common.ai.model.LlmOptions
 import com.embabel.common.core.types.ZeroToOne
+import com.embabel.example.common.Effort
 import com.fasterxml.jackson.annotation.JsonPropertyDescription
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -82,8 +83,10 @@ class FactCheckerAgentConfiguration {
     fun factChecker(factCheckerProperties: FactCheckerProperties): Agent {
         return factCheckerAgent(
             llms = listOf(
-                LlmOptions(AnthropicModels.CLAUDE_HAIKU_4_5).withTemperature(.3),
-                LlmOptions(AnthropicModels.CLAUDE_HAIKU_4_5).withTemperature(.0),
+                // Sonnet, because smaller models extract opinions as facts.
+                // Two effort levels give the aggregate two different readings.
+                LlmOptions(AnthropicModels.CLAUDE_SONNET_5_5).withThinking(Effort.LOW),
+                LlmOptions(AnthropicModels.CLAUDE_SONNET_5_5).withThinking(Effort.MEDIUM),
             ),
             properties = factCheckerProperties,
         )
@@ -121,7 +124,9 @@ fun factCheckerAgent(
                 }
             },
             merge = { list, context ->
-                context.ai().withDefaultLlm().createObject<RationalizedFactualAssertions>(
+                // Sonnet, because smaller models merge an assertion with its negation.
+                context.ai().withLlm(LlmOptions(AnthropicModels.CLAUDE_SONNET_5_5).withThinking(Effort.LOW))
+                    .createObject<RationalizedFactualAssertions>(
                     """
                     Given the following factual assertions, merge them into a single list if
                     any are the same. Condense into one assertion if one assertion negates another.
