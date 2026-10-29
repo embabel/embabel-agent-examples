@@ -26,6 +26,9 @@ import com.embabel.agent.core.ToolGroupResolution;
 import com.embabel.agent.spi.ToolGroupResolver;
 import com.embabel.common.ai.model.LlmOptions;
 import tools.jackson.databind.json.JsonMapper;
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -78,14 +81,30 @@ class NewsFeedServiceTest {
     }
 
     @Test
-    void reportsMissingCompatibleToolsBeforeCallingTheModel() {
-        var resolver = mock(ToolGroupResolver.class);
-        when(resolver.findToolGroupForTool(anyString())).thenReturn(new ToolGroupResolution(null, "Not found"));
-        var ai = mock(Ai.class);
-        var service = new NewsFeedService(URI.create("https://feeds.bbci.co.uk/news/rss.xml"), resolver, "test-model");
-        var error = assertThrows(IllegalStateException.class, () -> service.latestStories(ai));
-        assertTrue(error.getMessage().contains("fetch or fetch_html"));
-        verifyNoInteractions(ai);
+    void fallsBackToDirectHttpWithoutCallingTheModelWhenNoMcpFetchIsAvailable() throws Exception {
+        var server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+        server.createContext("/rss.xml", exchange -> {
+            var body = RSS.getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, body.length);
+            try (var out = exchange.getResponseBody()) {
+                out.write(body);
+            }
+        });
+        server.start();
+        try {
+            var resolver = mock(ToolGroupResolver.class);
+            when(resolver.findToolGroupForTool(anyString())).thenReturn(new ToolGroupResolution(null, "Not found"));
+            var ai = mock(Ai.class);
+            var feedUrl = URI.create("http://localhost:%d/rss.xml".formatted(server.getAddress().getPort()));
+            var service = new NewsFeedService(feedUrl, resolver, "test-model");
+
+            var stories = service.latestStories(ai);
+
+            assertEquals("https://www.bbc.co.uk/news/original", stories.getFirst().getUrl());
+            verifyNoInteractions(ai);
+        } finally {
+            server.stop(0);
+        }
     }
 
     @Test
