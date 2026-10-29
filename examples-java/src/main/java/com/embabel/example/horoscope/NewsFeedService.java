@@ -22,6 +22,8 @@ import com.embabel.agent.api.tool.ToolCallContext;
 import com.embabel.agent.spi.ToolGroupResolver;
 import com.embabel.common.ai.model.LlmOptions;
 import tools.jackson.databind.json.JsonMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Element;
@@ -29,14 +31,21 @@ import org.w3c.dom.Element;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class NewsFeedService {
+
+    private static final Logger logger = LoggerFactory.getLogger(NewsFeedService.class);
 
     private final URI feedUrl;
     private final ToolGroupResolver toolGroupResolver;
@@ -51,7 +60,13 @@ public class NewsFeedService {
     }
 
     public List<NewsStory> latestStories(Ai ai) {
-        var fetch = resolveFetchTool();
+        var mcpFetch = resolveFetchTool();
+        if (mcpFetch.isEmpty()) {
+            // MCP fetch is optional: users without a fetch server still get the example working.
+            logger.info("No MCP fetch or fetch_html tool available; reading {} directly over HTTP", feedUrl);
+            return fetchDirectly();
+        }
+        var fetch = mcpFetch.get();
         var rawFetch = fetch.getDefinition().getName().equals("fetch");
         var captured = new java.util.concurrent.atomic.AtomicReference<String>();
         var directFetch = new Tool() {
@@ -96,7 +111,27 @@ public class NewsFeedService {
         return parseToolResult(captured.get());
     }
 
-    private Tool resolveFetchTool() {
+    private List<NewsStory> fetchDirectly() {
+        var request = HttpRequest.newBuilder(feedUrl).timeout(Duration.ofMinutes(1)).GET().build();
+        try (var client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .connectTimeout(Duration.ofSeconds(30))
+                .build()) {
+            var response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() != 200) {
+                throw new IllegalStateException("News feed request to %s returned HTTP %d"
+                        .formatted(feedUrl, response.statusCode()));
+            }
+            return parse(response.body());
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot fetch news feed " + feedUrl, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while fetching news feed " + feedUrl, e);
+        }
+    }
+
+    private Optional<Tool> resolveFetchTool() {
         // Docker/uvx fetch and the Linux npx server use different names and schemas.
         // fetch_html returns the raw response body; fetch_txt/markdown discard RSS markup.
         for (var name : List.of("fetch", "fetch_html")) {
@@ -105,11 +140,11 @@ public class NewsFeedService {
                 var tool = resolution.getResolvedToolGroup().getTools().stream()
                         .filter(candidate -> candidate.getDefinition().getName().equals(name)).findFirst();
                 if (tool.isPresent()) {
-                    return tool.get();
+                    return tool;
                 }
             }
         }
-        throw new IllegalStateException("MCP RSS retrieval requires fetch or fetch_html; neither tool is available");
+        return Optional.empty();
     }
 
     static List<NewsStory> parseToolResult(String result) {
