@@ -43,7 +43,7 @@ class InjectedComponentTest {
     }
 
     @Test
-    void tellJokeAboutTreatsTheTopicAsData() {
+    void promptLabelsTopicAsUntrustedData() {
         var context = new FakeOperationContext();
         context.expectResponse("A penguin joke");
 
@@ -58,7 +58,7 @@ class InjectedComponentTest {
     }
 
     @Test
-    void createJokeObjectAboutTreatsTopicsAndVoiceAsData() {
+    void promptLabelsTopicsAndVoiceAsUntrustedData() {
         var context = new FakeOperationContext();
         var expected = new InjectedComponent.Joke("Why did the tax form", "file a complaint?");
         context.expectResponse(expected);

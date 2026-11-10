@@ -71,8 +71,7 @@ public record ActivitySummarizer(
                         You will be given a report of customer activity over a period of time.
                         Summarize the activity in a way that draws our staff member's
                         attention to important details and also includes the customer's name.
-                        The summary must be %s words or fewer. This is a hard limit with no exceptions,
-                        so aim for about %s words and leave out minor details.
+                        Keep the summary to %s words or fewer; aim for about %s words and leave out minor details.
                         Write one short paragraph of plain prose: no headings, bullet points or bold text.
                         Amounts carry no currency. Report them as plain numbers:
                         never add a currency symbol or code such as $, € or USD.
