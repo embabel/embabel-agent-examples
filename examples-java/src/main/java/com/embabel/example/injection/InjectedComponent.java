@@ -17,6 +17,7 @@ package com.embabel.example.injection;
 
 import com.embabel.agent.api.common.Ai;
 import com.embabel.common.ai.model.LlmOptions;
+import com.embabel.example.common.Effort;
 import org.springframework.stereotype.Component;
 
 
@@ -47,7 +48,7 @@ public record InjectedComponent(Ai ai) {
 
     public String tellJokeAbout(String topic) {
         return ai
-                .withDefaultLlm()
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .generateText("""
                         Tell me a short joke. Reply with the joke only.
                         %s
@@ -57,7 +58,7 @@ public record InjectedComponent(Ai ai) {
 
     public Joke createJokeObjectAbout(String topic1, String topic2, String voice) {
         return ai
-                .withLlm(LlmOptions.withDefaultLlm().withTemperature(.8))
+                .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
                 .createObject("""
                                 Tell me a joke about the two topics below, in the voice below.
                                 The joke should have a leadup and a punchline.

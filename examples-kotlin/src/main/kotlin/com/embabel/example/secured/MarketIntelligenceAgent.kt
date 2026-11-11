@@ -24,6 +24,8 @@ import com.embabel.agent.api.common.createObject
 import com.embabel.agent.core.CoreToolGroups
 import com.embabel.agent.domain.io.UserInput
 import com.embabel.agent.mcpserver.security.SecureAgentTool
+import com.embabel.common.ai.model.LlmOptions
+import com.embabel.example.common.Effort
 
 /**
  * Agent that produces a structured market intelligence report for a given company or sector.
@@ -64,7 +66,7 @@ class MarketIntelligenceAgent {
         userInput: UserInput,
         context: OperationContext,
     ): AnalysisSubject = context.ai()
-        .withDefaultLlm()
+        .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
         .createObject(
             """
             Extract the subject of market analysis from the following user input.
@@ -91,7 +93,7 @@ class MarketIntelligenceAgent {
         subject: AnalysisSubject,
         context: OperationContext,
     ): String = context.ai()
-        .withDefaultLlm()
+        .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
         .withToolGroup(CoreToolGroups.WEB)
         .createObject(
             """
@@ -141,7 +143,7 @@ class MarketIntelligenceAgent {
         context: OperationContext,
     ): MarketIntelligenceReport {
         val swotList = context.ai()
-            .withDefaultLlm()
+            .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
             .createObject<SwotEntryList>(
                 """
                 Based on the following market intelligence, produce a SWOT analysis for ${subject.subject}.
@@ -154,7 +156,7 @@ class MarketIntelligenceAgent {
             )
 
         val competitorList = context.ai()
-            .withDefaultLlm()
+            .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
             .createObject<CompetitorInsightList>(
                 """
                 Based on the following market intelligence, identify the top 4 competitors
@@ -167,7 +169,7 @@ class MarketIntelligenceAgent {
             )
 
         val trendList = context.ai()
-            .withDefaultLlm()
+            .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
             .createObject<KeyTrendList>(
                 """
                 Based on the following market intelligence, extract the 5 most significant
@@ -180,7 +182,7 @@ class MarketIntelligenceAgent {
             )
 
         val summary = context.ai()
-            .withDefaultLlm()
+            .withLlm(LlmOptions.withDefaultLlm().withThinking(Effort.LOW))
             .createObject<String>(
                 """
                 Write a 4-sentence executive summary for a market intelligence report on

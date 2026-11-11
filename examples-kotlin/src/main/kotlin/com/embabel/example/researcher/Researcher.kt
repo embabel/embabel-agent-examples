@@ -30,6 +30,7 @@ import com.embabel.common.ai.model.ModelProvider.Companion.CHEAPEST_ROLE
 import com.embabel.common.ai.prompt.PromptContributor
 import com.embabel.common.ai.prompt.PromptContributorConsumer
 import com.embabel.common.core.types.Timestamped
+import com.embabel.example.common.Effort
 import com.embabel.example.common.prompt.PromptUtils
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -54,8 +55,9 @@ class ResearcherProperties(
     val maxWordCount: Int = 300,
     val claudeModelName: String = AnthropicModels.CLAUDE_HAIKU_4_5,
     val openAiModelName: String = OpenAiModels.GPT_41_MINI,
-    val criticModeName: String = OpenAiModels.GPT_41,
-    val mergeModelName: String = OpenAiModels.GPT_41_MINI,
+    // TODO use AnthropicModels.CLAUDE_HAIKU_5_5 once embabel-agent#2173 is released
+    val criticModeName: String = "claude-haiku-5-5",
+    val mergeModelName: String = OpenAiModels.GPT_41,
     personaName: String = "Sherlock",
     personaDescription: String = "A resourceful researcher agent that can perform deep web research on a topic. Nothing escapes Sherlock",
     personaVoice: String = "Your voice is dry and in the style of Sherlock Holmes. Occasionally you address the user as Watson",
@@ -123,7 +125,7 @@ class Researcher(
         userInput: UserInput,
         context: OperationContext,
     ): Categorization = context.ai()
-        .withLlmByRole(CHEAPEST_ROLE)
+        .withLlm(LlmOptions.withLlmForRole(CHEAPEST_ROLE).withThinking(Effort.LOW))
         .create(
             """
         Categorize the following user input:
@@ -365,7 +367,7 @@ class Researcher(
         userInput: UserInput,
         @RequireNameMatch mergedReport: ResearchReport,
         context: OperationContext,
-    ): Critique = context.ai().withLlm(properties.criticModeName)
+    ): Critique = context.ai().withLlm(LlmOptions(properties.criticModeName).withThinking(Effort.MEDIUM))
         .create(
             """
             Is this research report satisfactory? Consider the following question:
@@ -403,7 +405,7 @@ class Researcher(
             claudeReport,
         )
         return context.promptRunner(
-            llm = LlmOptions(properties.criticModeName),
+            llm = LlmOptions(properties.mergeModelName),
             promptContributors = properties.promptContributors,
         ).create(
             """

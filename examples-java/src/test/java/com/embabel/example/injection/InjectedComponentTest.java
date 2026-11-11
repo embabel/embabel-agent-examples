@@ -16,9 +16,11 @@
 package com.embabel.example.injection;
 
 import com.embabel.agent.test.unit.FakeOperationContext;
+import com.embabel.example.common.Effort;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -40,6 +42,7 @@ class InjectedComponentTest {
 
         assertEquals(terribleJoke, joke);
         assertTrue(promptOf(context).contains("Topic: frogs"));
+        assertSame(Effort.LOW, context.getLlmInvocations().getFirst().getInteraction().getLlm().getThinking());
     }
 
     @Test
