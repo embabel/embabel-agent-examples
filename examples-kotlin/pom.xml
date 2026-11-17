@@ -10,6 +10,11 @@
     <name>Embabel Agent Kotlin Examples</name>
     <description>Agent Examples for Kotlin Developers</description>
 
+    <properties>
+        <examples.default-llm>gpt-4.1-mini</examples.default-llm>
+        <examples.cheapest-llm>gpt-6-luna</examples.cheapest-llm>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -32,6 +37,18 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes><exclude>models.properties</exclude></excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes><include>models.properties</include></includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -71,6 +88,10 @@
         </profile>
         <profile>
             <id>anthropic-models</id>
+            <properties>
+                <examples.default-llm>claude-haiku-5-5</examples.default-llm>
+                <examples.cheapest-llm>claude-haiku-5-5</examples.cheapest-llm>
+            </properties>
             <activation>
                 <property>
                     <name>env.ANTHROPIC_API_KEY</name>
