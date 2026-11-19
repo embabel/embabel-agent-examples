@@ -30,6 +30,7 @@ import com.embabel.agent.domain.io.UserInput;
 import com.embabel.agent.domain.library.InternetResource;
 import com.embabel.common.ai.model.LlmOptions;
 import com.embabel.common.ai.prompt.PromptContributor;
+import com.embabel.example.common.Effort;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.google.common.base.Supplier;
 import org.slf4j.LoggerFactory;
@@ -75,12 +76,13 @@ record FactCheckerProperties(
         List<String> trustedSources,
         List<String> untrustedSources,
         List<String> models,
+        List<String> extractionModels,
         String deduplicationModel,
         int maxConcurrency
 ) {
 
     LlmOptions deduplicationLlm() {
-        return LlmOptions.withModel(deduplicationModel);
+        return LlmOptions.withModel(deduplicationModel).withThinking(Effort.LOW);
     }
 
     /**
@@ -172,7 +174,7 @@ class FactChecker {
     }
 
     private Stream<Supplier<DistinctFactualAssertions>> factualAssertionExtractors(UserInput userInput, ActionContext actionContext) {
-        return properties.models().stream()
+        return properties.extractionModels().stream()
                 .map(model -> () -> extractFactualAssertionsWithModel(userInput, actionContext, model));
     }
 
@@ -181,7 +183,7 @@ class FactChecker {
      */
     private DistinctFactualAssertions extractFactualAssertionsWithModel(UserInput userInput, ActionContext context, String model) {
         return context.ai()
-                .withLlm(model)
+                .withLlm(LlmOptions.withModel(model).withThinking(Effort.LOW))
                 .createObject(
                         """
                                 Extract distinct factual assertions from the following text.
