@@ -225,6 +225,62 @@ spring:
               args: [mcp, gateway, run]
 ```
 
+##### Connect to a remote MCP server
+
+Use [Loom](https://github.com/ClickHouse/loom) to let an agent search saved team decisions. Start with a running Loom server and a viewer token scoped to the namespace that holds the decisions.
+
+In the Java example, add `examples-java/src/main/resources/application-loom.yml`:
+
+```yaml
+spring:
+  ai:
+    mcp:
+      client:
+        type: SYNC
+        streamable-http:
+          connections:
+            loom:
+              url: ${LOOM_BASE_URL}
+              endpoint: "/mcp?toolset=readonly"
+```
+
+Add `LoomMcpConfiguration.java` under `examples-java/src/main/java/com/embabel/example/`. The customizer applies the bearer header only to the `loom` connection:
+
+```java
+package com.embabel.example;
+
+import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
+import org.springframework.ai.mcp.customizer.McpClientCustomizer;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+
+@Configuration(proxyBeanMethods = false)
+@Profile("loom")
+class LoomMcpConfiguration {
+
+    @Bean
+    McpClientCustomizer<HttpClientStreamableHttpTransport.Builder> loomBearer(
+            @Value("${LOOM_API_KEY}") String token) {
+        return (name, transport) -> {
+            if ("loom".equals(name)) {
+                transport.httpRequestCustomizer((request, method, endpoint, body, context) ->
+                        request.setHeader("Authorization", "Bearer " + token));
+            }
+        };
+    }
+}
+```
+
+Set `LOOM_BASE_URL` to the Loom server origin. Use HTTPS for remote deployments. Provide `LOOM_API_KEY` through the application environment. After building the examples, start the Java shell from `examples-java` with the `loom` Spring profile:
+
+```bash
+../mvnw -P enable-shell spring-boot:run -Dspring-boot.run.profiles=loom
+```
+
+In an action, use `McpToolFactory.requiredToolByName("loom_search")` to get the tool that searches saved decisions.
+
 ---
 
 ## Setting up MCP Tools
